@@ -9,7 +9,7 @@ class User
   end
 
   def self.create(params)
-    params = params.transform_keys(&:to_s)
+    params = RequestHelper.normalize_params(params)
     password_digest = Password.create(params['password'])
 
     db.exec_params(

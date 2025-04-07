@@ -42,6 +42,14 @@ RSpec.describe "POST /auth/login" do
     expect(JSON.parse(last_response.body)["error"]).to match(/invalid/i)
   end
 
+  it "returns 400 for invalid JSON" do
+    post "/auth/login", "this is not json", { "CONTENT_TYPE" => "application/json" }
+
+    expect(last_response.status).to eq(400)
+    expect(JSON.parse(last_response.body)["error"]).to match(/Invalid JSON payload/i)
+  end
+
+
   it "fails if user is not confirmed" do
     unconfirmed_data = valid_user_data.merge(username: "unconfirmed", email: "u@example.com")
     User.create(unconfirmed_data)

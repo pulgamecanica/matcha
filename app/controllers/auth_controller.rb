@@ -4,10 +4,11 @@ require_relative "../models/user"
 require_relative "../helpers/user_validator"
 require_relative "../helpers/auth"
 require_relative "../helpers/session_token"
+require_relative "./base_controller"
 
 include APIDoc
 
-class AuthController < Sinatra::Base
+class AuthController < BaseController
 
   # ---------------------------
   # REGISTER
@@ -28,7 +29,7 @@ class AuthController < Sinatra::Base
   end
 
   post "/auth/register" do
-    data = JSON.parse(request.body.read)
+    data = json_body
 
     begin
       UserValidator.validate!(data)
@@ -57,7 +58,7 @@ class AuthController < Sinatra::Base
   end
 
   post "/auth/login" do
-    data = JSON.parse(request.body.read)
+    data = json_body
     user = User.verify_credentials(data["username"], data["password"])
 
     if user.nil?
@@ -89,7 +90,7 @@ class AuthController < Sinatra::Base
   end
 
   post "/auth/social" do
-    data = JSON.parse(request.body.read)
+    data = json_body
     provider = data["provider"]
     uid = data["provider_user_id"]
 
@@ -128,7 +129,7 @@ class AuthController < Sinatra::Base
   end
 
   post "/auth/confirm" do
-    data = JSON.parse(request.body.read)
+    data = json_body
     user = User.find_by_username(data["username"])
     halt 404, { error: "User not found" }.to_json unless user
 

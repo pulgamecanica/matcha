@@ -5,7 +5,9 @@ require "json"
 require "sinatra/reloader"
 
 require_relative "../app/doc/api_doc"
-Dir["./app/controllers/*.rb"].each { |f| require f }
+Dir[File.expand_path("../app/controllers/*.rb", __dir__)].sort.each do |file|
+  require file unless file.end_with?("base_controller.rb")
+end
 Dir["./app/models/*.rb"].each { |f| require f }
 Dir["./app/helpers/*.rb"].each { |f| require f }
 
