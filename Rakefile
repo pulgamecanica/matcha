@@ -58,6 +58,34 @@ namespace :db do
     end
   end
 
+  desc "Drop the database"
+  task :drop do
+    uri = URI.parse(ENV['DATABASE_URL'])
+    dbname = uri.path[1..-1]
+
+    # Connect to a different DB like `postgres`
+    conn = PG.connect(
+      dbname: 'postgres',
+      host: uri.host,
+      user: uri.user,
+      password: uri.password
+    )
+
+    begin
+      # Terminate all connections to the DB we're dropping
+      conn.exec <<~SQL
+        REVOKE CONNECT ON DATABASE #{dbname} FROM public;
+        SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '#{dbname}';
+      SQL
+
+      # Drop it
+      conn.exec("DROP DATABASE IF EXISTS #{dbname}")
+      puts "🗑️  Dropped database: #{dbname}"
+    ensure
+      conn.close
+    end
+  end
+
   desc "Seed the database"
   task :seed do
     load './db/seeds.rb'
@@ -68,10 +96,3 @@ desc "Run the test suite"
 task :test do
   sh "bundle exec rspec"
 end
-
-# desc "Start the Sinatra server using rackup"
-# task :server do
-#   sh "rackup -o 0.0.0.0"
-# end
-
-# task :s => :server

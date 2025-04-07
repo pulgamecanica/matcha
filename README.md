@@ -1,10 +1,10 @@
-# 🧪 Matcha API — Love, Logic & Low-Latency 💘
+# 🧪 Matcha API — Love & Ruby 💘
 
 [![Sinatra](https://img.shields.io/badge/Made%20with-Sinatra-ff69b4?logo=sinatra)](http://sinatrarb.com/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql)](https://www.postgresql.org/)
 [![Dockerized](https://img.shields.io/badge/Dockerized-Yes-blue?logo=docker)](https://www.docker.com/)
 [![Tested with RSpec](https://img.shields.io/badge/Tested%20with-RSpec-ff4155?logo=ruby)](https://rspec.info/)
-[![TDD](https://img.shields.io/badge/TDD-Driven-%23cc0066?logo=testing-library)]
+[![TDD](https://img.shields.io/badge/TDD-Driven-%23cc0066?logo=testing-library)]()
 [![Custom DSL](https://img.shields.io/badge/DSL-api_doc-%23bada55)]()
 
 > The only thing better than a Matcha latte is a **match made in Ruby**.  
@@ -153,10 +153,10 @@ make docs
 
 > Don't write docs later — build them in.  
 > Don't trust specs — test first.  
-> 🧙‍♂️ Made With Love
-> code clarity
-> full test coverage
-> zero-dependency power
+> 🧙‍♂️ Made With Love.
+> Code clarity.
+> Full test coverage.
+> Zero-dependency power.
 
 ---
 

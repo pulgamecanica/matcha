@@ -2,12 +2,16 @@ GEM
   remote: https://rubygems.org/
   specs:
     base64 (0.2.0)
+    bcrypt (3.1.20)
     diff-lcs (1.6.1)
     dotenv (3.1.7)
+    json (2.10.2)
     logger (1.7.0)
+    multi_json (1.15.0)
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.7.4)
+    openssl (3.3.0)
     pg (1.5.9)
     puma (6.6.0)
       nio4r (~> 2.0)
@@ -38,12 +42,19 @@ GEM
       rspec-support (~> 3.13.0)
     rspec-support (3.13.2)
     ruby2_keywords (0.0.5)
+    securerandom (0.4.1)
     sinatra (4.1.1)
       logger (>= 1.6.0)
       mustermann (~> 3.0)
       rack (>= 3.0.0, < 4)
       rack-protection (= 4.1.1)
       rack-session (>= 2.0.0, < 3)
+      tilt (~> 2.0)
+    sinatra-contrib (4.1.1)
+      multi_json (>= 0.0.2)
+      mustermann (~> 3.0)
+      rack-protection (= 4.1.1)
+      sinatra (= 4.1.1)
       tilt (~> 2.0)
     tilt (2.6.0)
 
@@ -52,7 +63,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  base64 (~> 0.2.0)
+  bcrypt
   dotenv
+  json (~> 2.10)
+  openssl (~> 3.3)
   pg
   puma
   rack
@@ -60,7 +75,9 @@ DEPENDENCIES
   rackup
   rake
   rspec
+  securerandom (~> 0.4.1)
   sinatra
+  sinatra-contrib
 
 BUNDLED WITH
    2.6.7

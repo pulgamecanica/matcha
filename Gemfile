@@ -9,3 +9,14 @@ gem "rake"
 gem "dotenv"
 gem "rspec"
 gem "rack-test"
+gem "bcrypt"
+gem "securerandom", "~> 0.4.1"
+gem "base64", "~> 0.2.0"
+gem "json", "~> 2.10"
+gem "openssl", "~> 3.3"
+
+group :development do
+  gem 'sinatra-contrib'
+end
+
+
