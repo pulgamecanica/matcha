@@ -52,12 +52,6 @@ class UsersController < BaseController
     end
   end
 
-  delete "/me" do
-    halt 401, { error: "Unauthorized" }.to_json unless current_user
-    User.delete(current_user["id"])
-    { message: "User deleted" }.to_json
-  end
-
   # ---------------------------
   # LOOKUP USERNAME
   # ---------------------------
@@ -83,5 +77,20 @@ class UsersController < BaseController
       online_status: user["online_status"] == "t",
       last_seen_at: user["last_seen_at"]
     }.to_json
+  end
+
+  # ---------------------------
+  # DELETE USERNAME
+  # ---------------------------
+  api_doc "/me", method: :delete do
+    description "Delete the current authenticated user account and all related data"
+    response 204, "User deleted"
+    response 401, "Unauthorized - missing or invalid token"
+  end
+
+  delete "/me" do
+    halt 401, { error: "Unauthorized" }.to_json unless @current_user
+    User.delete(@current_user["id"])
+    status 204
   end
 end

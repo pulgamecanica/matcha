@@ -157,4 +157,35 @@ describe "User Endpoints" do
       expect(last_response.status).to eq(404)
     end
   end
+
+  describe "DELETE /me" do
+    let(:user_data) do
+      {
+        username: "deleteme",
+        email: "deleteme@example.com",
+        password: "secure123",
+        first_name: "Del",
+        last_name: "Me",
+        gender: "other",
+        sexual_preferences: "everyone"
+      }
+    end
+
+    before do
+      @user, @token = create_and_authenticate!(user_data)
+    end
+
+    it "deletes the authenticated user" do
+      delete "/me", nil, auth_headers(@token)
+      expect(last_response.status).to eq(204)
+
+      user = User.find_by_id(@user["id"])
+      expect(user).to be_nil
+    end
+
+    it "returns 401 without a token" do
+      delete "/me", nil, headers
+      expect(last_response.status).to eq(401)
+    end
+  end
 end
