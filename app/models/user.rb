@@ -9,6 +9,7 @@ class User
   end
 
   def self.create(params)
+    params = params.transform_keys(&:to_s)
     password_digest = Password.create(params['password'])
 
     db.exec_params(

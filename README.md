@@ -140,7 +140,7 @@ make docs
 - [x] RSpec + test coverage
 - [x] Custom DSL for inline route docs
 - [x] Rake-based dev tasks
-- [ ] Auth system (`/auth/register`, `/auth/login`)
+- [x] Auth system (`/auth/register`, `/auth/login`)
 - [ ] Password hashing with BCrypt
 - [ ] User validation
 - [ ] Tag system and search

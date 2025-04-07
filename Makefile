@@ -17,10 +17,10 @@ logs:
 
 run:
 	docker compose run \
-                -it \
-                --remove-orphans \
-                ${DOCKER_CONTAINER_NAME} \
-                /bin/bash
+    -it \
+    --remove-orphans \
+    ${DOCKER_CONTAINER_NAME} \
+    /bin/bash
 
 docs:
 	docker compose run \
