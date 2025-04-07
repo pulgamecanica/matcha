@@ -4,7 +4,7 @@ require "dotenv/load"
 require "json"
 require "sinatra/reloader"
 
-require_relative "../app/doc/api_doc"
+require_relative "../app/lib/api_doc"
 Dir[File.expand_path("../app/controllers/*.rb", __dir__)].sort.each do |file|
   require file unless file.end_with?("base_controller.rb")
 end

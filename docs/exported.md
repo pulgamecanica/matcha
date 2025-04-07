@@ -35,6 +35,14 @@
 - `404`: User not found or banned
 
 ---
+## DELETE /me
+**Description**: Delete the current authenticated user account and all related data
+
+**Responses:**
+- `204`: User deleted
+- `401`: Unauthorized - missing or invalid token
+
+---
 ## POST /auth/register
 **Description**: Register a new user
 **Params:**

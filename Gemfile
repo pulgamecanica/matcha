@@ -17,6 +17,7 @@ gem "openssl", "~> 3.3"
 
 group :development do
   gem 'sinatra-contrib'
+  gem 'pry'
 end
 
 

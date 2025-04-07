@@ -5,7 +5,7 @@ require 'fileutils'
 
 desc "Export all API docs"
 task "doc:export" do
-  require_relative "./app/doc/api_doc"
+  require_relative "./app/lib/api_doc"
   require_relative "./app"
   
   controllers = ObjectSpace.each_object(Class).select { |cls| cls < Sinatra::Base }

@@ -14,30 +14,34 @@
 
 ## 📦 Tech Stack
 
-| Layer | Tech |
-|-------|------|
-| Framework | Sinatra (modular) |
-| Language | Ruby 3.2 |
-| Database | PostgreSQL 14 |
-| ORM | Raw SQL (for now) |
-| Containerization | Docker + Compose |
-| Testing | RSpec + Rack::Test |
-| API Docs | `api_doc` DSL (custom-built) |
-| Tasking | Rakefile & Makefile |
-| Console | `bin/console` via IRB |
+| Layer         | Tech                    |
+|---------------|-------------------------|
+| Framework     | Sinatra (modular style) |
+| Language      | Ruby 3.2                |
+| Database      | PostgreSQL 14           |
+| Persistence   | Raw SQL + SQLHelper     |
+| Auth          | JWT (handrolled)        |
+| Container     | Docker + Compose        |
+| Testing       | RSpec + Rack::Test      |
+| Docs          | `api_doc` DSL (custom)  |
+| Console       | IRB via bin/console     |
+| Tasks         | Rake + Makefile         |
 
 ---
 
 ## ⚙️ Features
 
-- 🔥 Modular Sinatra architecture
-- 🧪 TDD with RSpec from the start
-- 📚 Internal `api_doc` DSL for route-level documentation
-- 🐘 PostgreSQL-powered persistence
-- 🐳 Fully Dockerized dev environment
-- 🔄 Hot-reloading compatible
-- 🧵 Clean task system via `rake`
-- 👨‍💻 IRB dev console with app context
+- 🔐 **Authentication**: Email/password & social (Google, Facebook, Snapchat)
+- 🧪 **TDD-first** with RSpec specs for everything
+- 🧼 **Clean architecture**: Helpers, controllers, and models separated
+- 🔒 **JWT-based sessions** (no gem dependencies)
+- 🧠 **Robust validation** with reusable DSL-based `Validator`
+- 🌍 **RESTful routes**: `/auth`, `/me`, `/users/:username`, etc.
+- 🚫 **Ban & Confirm logic**: No banned or unconfirmed user can access the API
+- 💾 **Smart SQL helper**: `SQLHelper.create`, `update`, `find_by`, etc.
+- 🧾 **API docs**: Exportable via `make docs`
+- 🐳 **Fully dockerized**
+- 💬 Friendly, readable logs
 
 ---
 
@@ -46,23 +50,24 @@
 ```
 .
 ├── app/
-│   ├── controllers/     # Modular Sinatra route files
-│   ├── doc/             # DSL for API documentation
-│   ├── helpers/         # Request validation, shared logic
+│   ├── controllers/     # Modular Sinatra apps (AuthController, UsersController)
+│   ├── helpers/         # Validators, SQLHelper, Request parsing, Auth, Database
+│   ├── models/          # Models (User, ...)
+│   ├── lib/             # Shared error classes, doc
 ├── config/
-│   └── environment.rb   # Loads env, controllers, etc
+│   └── database.yml     # Database settings
+│   └── environment.rb   # Loads everything
 ├── db/
-│   ├── migrate/         # DB migrations (manual for now)
-│   └── seeds.rb
-├── spec/                # RSpec tests
-├── docker/              # Dockerfile lives here
-├── bin/
-│   └── console          # IRB REPL with app context
+│   ├── migrate/         # DB migrations
+│   └── seeds.rb         # (optional)
+├── spec/                # RSpec suite
+├── docker/              # Dockerfile
 ├── docker-compose.yml
-├── .env
 ├── Rakefile
-├── README.md
-└── config.ru
+├── Makefile
+├── .env
+├── config.ru
+└── README.md
 ```
 
 ---
@@ -72,59 +77,64 @@
 ### 🔧 Local Dev (Dockerized)
 
 ```bash
-git clone https://github.com/yourname/matcha-api
-cd matcha-api
+git clone https://github.com/pulgamecanica/matcha
+cd matcha
 
-# build the containers
+# Build containers
 docker compose build
 
-# run the app
+# Start the app
 docker compose up
 
-# test it
-docker compose run web bundle exec rspec
+# Open dev console
+make console
 
-# open a console
-docker compose run web ./bin/console
+# Run the test suite
+make test
+```
+
+---
+
+## 🧪 Testing
+
+RSpec tests live in `spec/`, with:
+- Integration tests for endpoints
+- Unit tests for helpers
+- Full TDD on auth, validation, sessions, and core models
+
+```bash
+make test
 ```
 
 ---
 
 ## 🛠️ Developer Shortcuts (Makefile)
 
-For quick and consistent dev flow, use the provided `Makefile`:
-
 ```bash
-# Export API docs to docs/exported.md
-make docs
-
-# Create the database
-make create
-
-# Run all migrations
-make migrate
-
-# Run tests via RSpec
-make test
-
-# Open an interactive Ruby console with app context
-make console
+make create   # db:create
+make migrate  # db:migrate
+make test     # run all specs
+make console  # open IRB console
+make docs     # export route documentation
 ```
 
-Behind the scenes, these commands run inside the Docker container and use `rake` + `irb` for tasks and dev tooling.
+---
+
+## 🔐 Authentication
+
+Stateless JWT (no libraries!) via `SessionToken`.
+
+```rb
+SessionToken.generate(user_id)  # => "encoded.jwt.token"
+SessionToken.decode(token)      # => { "user_id" => 42, ... }
+```
 
 ---
 
-## 🧪 Testing
+## 📘 API Documentation
 
-All tests live in `spec/`, written with `RSpec` and `Rack::Test`.
-
----
-
-## 📘 API Docs (WIP)
-
-Every route is documented inline using the `api_doc` DSL.  
-You can export them as Markdown:
+Each route is documented inline with the `api_doc` DSL.  
+To export to markdown:
 
 ```bash
 make docs
@@ -132,31 +142,58 @@ make docs
 
 ➡ Output: `docs/exported.md`
 
+Example:
+
+```ruby
+api_doc "/auth/register", method: :post do
+  description "Register a new user"
+  param :email, String, required: true
+  param :username, String, required: true
+  param :password, String, required: true
+  response 201, "User created"
+end
+```
+
+---
+
+## 🚀 Endpoints (Implemented)
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/social`
+- `GET  /me`
+- `PATCH /me`
+- `DELETE /me`
+- `GET  /users/:username`
+
+(⚠️ All protected endpoints require JWT via `Authorization: Bearer <token>`)
+
 ---
 
 ## 🎯 Roadmap
 
-- [x] Docker support
-- [x] RSpec + test coverage
-- [x] Custom DSL for inline route docs
-- [x] Rake-based dev tasks
-- [x] Auth system (`/auth/register`, `/auth/login`)
-- [ ] Password hashing with BCrypt
-- [ ] User validation
-- [ ] Tag system and search
-- [ ] Real-time notifications (optional)
-- [ ] Deployment docs
+- [x] JWT session system
+- [x] Login, Register, Social Auth
+- [x] Patch & Delete `/me`
+- [x] Ban, confirm & protect endpoints
+- [x] Public profiles `/users/:username`
+- [x] API Docs via DSL
+- [x] Validation system
+- [x] SQLHelper abstraction
+- [ ] Tag system
+- [ ] Connections, Likes, Notifications
+- [ ] Admin endpoints
+- [ ] Real-time messaging (WebSocket or polling)
+- [ ] Full CI/CD pipeline
 
 ---
 
 ## 💡 Philosophy
 
-> Don't write docs later — build them in.  
-> Don't trust specs — test first.  
-> 🧙‍♂️ Made With Love.
-> Code clarity.
-> Full test coverage.
-> Zero-dependency power.
+> 📜 Everything documented  
+> 🧪 Everything tested  
+> 🚫 No unhandled JSON  
+> 💥 No silent failures  
+> 💎 Code should read like Ruby poetry  
 
 ---
-
