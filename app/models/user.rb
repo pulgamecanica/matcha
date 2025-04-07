@@ -77,6 +77,14 @@ class User
     )
   end
 
+  def self.ban!(username)
+    result = db.exec_params(
+      "UPDATE users SET is_banned = TRUE, updated_at = NOW() WHERE username = $1",
+      [username]
+    )
+    result.cmd_tuples > 0
+  end
+
   def self.delete(id)
     db.exec_params("DELETE FROM users WHERE id = $1", [id])
   end

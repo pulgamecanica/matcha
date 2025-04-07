@@ -9,7 +9,6 @@ module RequestHelper
     raise Errors::ValidationError.new("Invalid JSON payload")
   end
 
-
   def self.normalize_params(params)
     params.transform_keys(&:to_s)
   end

@@ -4,7 +4,6 @@ module Validator
   def self.validate!(params:, required: [], enums: {})
     errors = []
 
-    # Check required fields
     required.each do |field|
       value = params[field.to_s] || params[field.to_sym]
       if value.nil? || value.to_s.strip.empty?
@@ -12,7 +11,6 @@ module Validator
       end
     end
 
-    # Check enum values
     enums.each do |field, valid_values|
       value = params[field.to_s] || params[field.to_sym]
       if value && !valid_values.include?(value)
