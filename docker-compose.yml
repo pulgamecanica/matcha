@@ -1,0 +1,25 @@
+services:
+  web:
+    build: .
+    ports:
+      - "4567:4567"
+    env_file: .env
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    restart: on-failure
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: matcha
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: matcha_db
+    ports:
+      - "15432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

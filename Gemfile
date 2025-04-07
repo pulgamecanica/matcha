@@ -1,0 +1,11 @@
+source "https://rubygems.org"
+
+gem "sinatra"
+gem "pg"
+gem "rackup"
+gem "puma"
+gem "rack"
+gem "rake"
+gem "dotenv"
+gem "rspec"
+gem "rack-test"
