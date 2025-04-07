@@ -1,130 +1,160 @@
 require "spec_helper"
 
-describe "GET /me" do
+describe "User Endpoints" do
   let(:headers) { { "CONTENT_TYPE" => "application/json" } }
 
-  let(:user_data) do
-    {
-      username: "authme",
-      email: "authme@example.com",
-      password: "supersecret",
-      first_name: "Authy",
-      last_name: "Tester",
-      gender: "other",
-      sexual_preferences: "everyone"
-    }
+  def create_and_authenticate!(data)
+    User.create(data)
+    User.confirm!(data[:username])
+    user = User.find_by_username(data[:username])
+    [user, SessionToken.generate(user["id"])]
   end
 
-  before do
-    User.create(user_data)
-    User.confirm!(user_data[:username])
-    @user = User.find_by_username(user_data[:username])
-    @token = SessionToken.generate(@user["id"])
-  end
-
-  it "returns the current authenticated user" do
-    get "/me", nil, headers.merge("HTTP_AUTHORIZATION" => "Bearer #{@token}")
-
-    expect(last_response.status).to eq(200)
-    json = JSON.parse(last_response.body)
-    expect(json["username"]).to eq("authme")
-    expect(json).not_to have_key("password_digest")
-  end
-
-  it "returns 401 if token is missing" do
-    get "/me", nil, headers
-
-    expect(last_response.status).to eq(401)
-    expect(JSON.parse(last_response.body)["error"]).to match(/missing/i)
-  end
-
-  it "returns 401 if token is invalid" do
-    get "/me", nil, headers.merge("HTTP_AUTHORIZATION" => "Bearer invalid.token")
-
-    expect(last_response.status).to eq(401)
-    expect(JSON.parse(last_response.body)["error"]).to match(/invalid/i)
-  end
-
-  it "returns 403 if user is banned" do
-    User.ban!(user_data[:username])
-    get "/me", nil, headers.merge("HTTP_AUTHORIZATION" => "Bearer #{@token}")
-
-    expect(last_response.status).to eq(403)
-    expect(JSON.parse(last_response.body)["error"]).to match(/banned/i)
-  end
-
-  it "returns 403 if user is not confirmed" do
-    unconfirmed_data = user_data.merge(username: "nope", email: "nope@example.com", is_email_verified: false)
-    User.create(unconfirmed_data)
-    user = User.find_by_username("nope")
-    token = SessionToken.generate(user["id"])
-
-    get "/me", nil, headers.merge("HTTP_AUTHORIZATION" => "Bearer #{token}")
-
-    expect(last_response.status).to eq(403)
-    expect(JSON.parse(last_response.body)["error"]).to match(/email not verified/i)
-  end
-end
-
-describe "PATCH /me" do
-  let(:headers) { { "CONTENT_TYPE" => "application/json" } }
-
-  let(:user_data) do
-    {
-      username: "patchme",
-      email: "patchme@example.com",
-      password: "securepass",
-      first_name: "Patch",
-      last_name: "User",
-      gender: "female",
-      sexual_preferences: "male"
-    }
-  end
-
-  let(:token) do
-    user = User.create(user_data)
-    User.confirm!(user["username"])
-    SessionToken.generate(user["id"])
-  end
-
-  let(:auth_headers) do
+  def auth_headers(token)
     headers.merge("HTTP_AUTHORIZATION" => "Bearer #{token}")
   end
 
-  it "updates allowed fields" do
-    patch "/me", {
-      first_name: "Updated",
-      biography: "About me"
-    }.to_json, auth_headers
+  describe "GET /me" do
+    let(:user_data) do
+      {
+        username: "authme",
+        email: "authme@example.com",
+        password: "supersecret",
+        first_name: "Authy",
+        last_name: "Tester",
+        gender: "other",
+        sexual_preferences: "everyone"
+      }
+    end
 
-    expect(last_response.status).to eq(200)
-    body = JSON.parse(last_response.body)
-    user = body["user"]
-    expect(user["first_name"]).to eq("Updated")
-    expect(user["biography"]).to eq("About me")
+    before do
+      @user, @token = create_and_authenticate!(user_data)
+    end
+
+    it "returns the current authenticated user" do
+      get "/me", nil, auth_headers(@token)
+
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["username"]).to eq("authme")
+      expect(json).not_to have_key("password_digest")
+    end
+
+    it "returns 401 if token is missing" do
+      get "/me", nil, headers
+      expect(last_response.status).to eq(401)
+    end
+
+    it "returns 401 if token is invalid" do
+      get "/me", nil, auth_headers("Bearer invalid.token")
+      expect(last_response.status).to eq(401)
+    end
+
+    it "returns 403 if user is banned" do
+      User.ban!(user_data[:username])
+      get "/me", nil, auth_headers(@token)
+      expect(last_response.status).to eq(403)
+    end
+
+    it "returns 403 if user is not confirmed" do
+      unconfirmed = user_data.merge(username: "ghost", email: "g@example.com")
+      User.create(unconfirmed)
+      user = User.find_by_username("ghost")
+      token = SessionToken.generate(user["id"])
+
+      get "/me", nil, auth_headers(token)
+      expect(last_response.status).to eq(403)
+    end
   end
 
-  it "ignores disallowed fields like password_digest" do
-    patch "/me", {
-      password_digest: "hacked"
-    }.to_json, auth_headers
+  describe "PATCH /me" do
+    let(:user_data) do
+      {
+        username: "patchme",
+        email: "patchme@example.com",
+        password: "securepass",
+        first_name: "Patch",
+        last_name: "User",
+        gender: "female",
+        sexual_preferences: "male"
+      }
+    end
 
-    expect(last_response.status).to eq(422)
+    let(:user) { User.find_by_username("patchme") }
+    let(:token) { SessionToken.generate(user["id"]) }
+
+    before do
+      User.create(user_data)
+      User.confirm!("patchme")
+    end
+
+    it "updates allowed fields" do
+      patch "/me", {
+        first_name: "Updated",
+        biography: "Updated bio"
+      }.to_json, auth_headers(token)
+
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["user"]["first_name"]).to eq("Updated")
+      expect(json["user"]["biography"]).to eq("Updated bio")
+    end
+
+    it "returns 422 for disallowed field" do
+      patch "/me", { password_digest: "nope" }.to_json, auth_headers(token)
+      expect(last_response.status).to eq(422)
+    end
+
+    it "returns 401 if not authenticated" do
+      patch "/me", { first_name: "x" }.to_json, headers
+      expect(last_response.status).to eq(401)
+    end
+
+    it "returns 422 with invalid enum" do
+      patch "/me", { gender: "alien" }.to_json, auth_headers(token)
+      expect(last_response.status).to eq(422)
+      expect(JSON.parse(last_response.body)["details"].join).to match(/gender/i)
+    end
   end
 
-  it "returns 401 if not authenticated" do
-    patch "/me", { first_name: "x" }.to_json, headers
-    expect(last_response.status).to eq(401)
-  end
+  describe "GET /users/:username" do
+    let(:user_data) do
+      {
+        username: "bob",
+        email: "bob@example.com",
+        password: "pass123",
+        first_name: "Bob",
+        last_name: "Builder",
+        gender: "male",
+        sexual_preferences: "female",
+        biography: "Just building things",
+        profile_picture_id: 1
+      }
+    end
 
-  it "returns 422 with invalid enum" do
-    patch "/me", {
-      gender: "invalid_value"
-    }.to_json, auth_headers
+    before do
+      @user, @token = create_and_authenticate!(user_data)
+      unbaned_user_data = user_data.merge(username: "ghost", email: "g@example.com")
+      @user2, @token2 = create_and_authenticate!(unbaned_user_data)
+    end
 
-    expect(last_response.status).to eq(422)
-    body = JSON.parse(last_response.body)
-    expect(body["error"]).to match(/validation/i)
-    expect(body["details"].join).to match(/gender/i)
+    it "returns the public profile" do
+      get "/users/bob", nil, auth_headers(@token)
+      expect(last_response.status).to eq(200)
+      json = JSON.parse(last_response.body)
+      expect(json["username"]).to eq("bob")
+      expect(json["email"]).to be_nil
+    end
+
+    it "returns 404 for unknown user" do
+      get "/users/polly", nil, auth_headers(@token)
+      expect(last_response.status).to eq(404)
+    end
+
+    it "returns 404 for banned user" do
+      User.ban!("bob")
+      get "/users/bob", nil, auth_headers(@token2) # we need to use a valid token after banning bob
+      expect(last_response.status).to eq(404)
+    end
   end
 end

@@ -1,3 +1,40 @@
+## GET /me
+**Description**: Get the currently authenticated user
+
+**Responses:**
+- `200`: User object
+- `401`: Missing or invalid token
+- `403`: User not confirmed or banned
+
+---
+## PATCH /me
+**Description**: Update profile fields for the current authenticated user
+**Params:**
+- `username` (String) - New username (must be unique)
+- `first_name` (String) - 
+- `last_name` (String) - 
+- `gender` (String) - One of: male, female, other
+- `sexual_preferences` (String) - One of: male, female, non_binary, everyone
+- `biography` (String) - 
+- `latitude` (Float) - 
+- `longitude` (Float) - 
+
+**Responses:**
+- `200`: Profile updated & user object
+- `401`: Unauthorized
+- `422`: Validation failed
+
+---
+## GET /users/:username
+**Description**: Fetch the public profile of a user by their username
+**Params:**
+- `username` (String, required) - The unique username of the user
+
+**Responses:**
+- `200`: Public user data
+- `404`: User not found or banned
+
+---
 ## POST /auth/register
 **Description**: Register a new user
 **Params:**

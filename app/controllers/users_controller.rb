@@ -35,7 +35,7 @@ class UsersController < BaseController
     param :biography, String, required: false
     param :latitude, Float, required: false
     param :longitude, Float, required: false
-    response 200, "Profile updated"
+    response 200, "Profile updated & user object"
     response 401, "Unauthorized"
     response 422, "Validation failed"
   end
@@ -50,5 +50,38 @@ class UsersController < BaseController
     rescue Errors::ValidationError => e
       halt 422, { error: e.message, details: e.details }.to_json
     end
+  end
+
+  delete "/me" do
+    halt 401, { error: "Unauthorized" }.to_json unless current_user
+    User.delete(current_user["id"])
+    { message: "User deleted" }.to_json
+  end
+
+  # ---------------------------
+  # LOOKUP USERNAME
+  # ---------------------------
+  api_doc "/users/:username", method: :get do
+    description "Fetch the public profile of a user by their username"
+    param :username, String, required: true, desc: "The unique username of the user"
+    response 200, "Public user data"
+    response 404, "User not found or banned"
+  end
+
+  get "/users/:username" do
+    user = User.find_by_username(params[:username])
+    halt 404, { error: "User not found" }.to_json unless user
+    halt 404, { error: "User not available" }.to_json if user["is_banned"] == "t"
+    {
+      username: user["username"],
+      first_name: user["first_name"],
+      last_name: user["last_name"],
+      biography: user["biography"],
+      gender: user["gender"],
+      sexual_preferences: user["sexual_preferences"],
+      profile_picture_id: user["profile_picture_id"],
+      online_status: user["online_status"] == "t",
+      last_seen_at: user["last_seen_at"]
+    }.to_json
   end
 end
