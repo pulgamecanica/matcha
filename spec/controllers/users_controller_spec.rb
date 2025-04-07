@@ -65,3 +65,66 @@ describe "GET /me" do
     expect(JSON.parse(last_response.body)["error"]).to match(/email not verified/i)
   end
 end
+
+describe "PATCH /me" do
+  let(:headers) { { "CONTENT_TYPE" => "application/json" } }
+
+  let(:user_data) do
+    {
+      username: "patchme",
+      email: "patchme@example.com",
+      password: "securepass",
+      first_name: "Patch",
+      last_name: "User",
+      gender: "female",
+      sexual_preferences: "male"
+    }
+  end
+
+  let(:token) do
+    user = User.create(user_data)
+    User.confirm!(user["username"])
+    SessionToken.generate(user["id"])
+  end
+
+  let(:auth_headers) do
+    headers.merge("HTTP_AUTHORIZATION" => "Bearer #{token}")
+  end
+
+  it "updates allowed fields" do
+    patch "/me", {
+      first_name: "Updated",
+      biography: "About me"
+    }.to_json, auth_headers
+
+    expect(last_response.status).to eq(200)
+    body = JSON.parse(last_response.body)
+    user = body["user"]
+    expect(user["first_name"]).to eq("Updated")
+    expect(user["biography"]).to eq("About me")
+  end
+
+  it "ignores disallowed fields like password_digest" do
+    patch "/me", {
+      password_digest: "hacked"
+    }.to_json, auth_headers
+
+    expect(last_response.status).to eq(422)
+  end
+
+  it "returns 401 if not authenticated" do
+    patch "/me", { first_name: "x" }.to_json, headers
+    expect(last_response.status).to eq(401)
+  end
+
+  it "returns 422 with invalid enum" do
+    patch "/me", {
+      gender: "invalid_value"
+    }.to_json, auth_headers
+
+    expect(last_response.status).to eq(422)
+    body = JSON.parse(last_response.body)
+    expect(body["error"]).to match(/validation/i)
+    expect(body["details"].join).to match(/gender/i)
+  end
+end

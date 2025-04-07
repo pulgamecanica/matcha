@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe "POST /auth/register" do
+describe "POST /auth/register" do
   let(:headers) { { "CONTENT_TYPE" => "application/json" } }
 
   it "creates a user" do

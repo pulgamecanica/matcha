@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe "POST /auth/login" do
+describe "POST /auth/login" do
   let(:headers) { { "CONTENT_TYPE" => "application/json" } }
 
   let(:valid_user_data) do

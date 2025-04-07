@@ -1,5 +1,7 @@
-require_relative '../helpers/database'
 require 'bcrypt'
+
+require_relative '../helpers/database'
+require_relative '../helpers/sql_helper'
 
 class User
   include BCrypt
@@ -10,38 +12,31 @@ class User
 
   def self.create(params)
     params = RequestHelper.normalize_params(params)
-    password_digest = Password.create(params['password'])
+    params['password_digest'] = Password.create(params.delete('password'))
 
-    db.exec_params(
-      <<~SQL,
-        INSERT INTO users (
-          username, email, password_digest,
-          first_name, last_name,
-          gender, sexual_preferences
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING id
-      SQL
-      [
-        params['username'],
-        params['email'],
-        password_digest,
-        params['first_name'],
-        params['last_name'],
-        params['gender'],
-        params['sexual_preferences']
-      ]
-    )
+    allowed_fields = %w[
+      username email password_digest first_name
+      last_name gender sexual_preferences
+    ]
+
+    SQLHelper.create(:users, params, allowed_fields)
+  end
+
+  def self.update(user_id, fields)
+    allowed_fields = %w[
+      username first_name last_name biography
+      gender sexual_preferences latitude longitude
+    ]
+
+    SQLHelper.update(:users, user_id, fields, allowed_fields)
   end
 
   def self.find_by_username(username)
-    res = db.exec_params("SELECT * FROM users WHERE username = $1", [username])
-    res.first
+    SQLHelper.find_by(:users, :username, username)
   end
 
   def self.find_by_id(id)
-    res = db.exec_params("SELECT * FROM users WHERE id = $1", [id])
-    res.first
+    SQLHelper.find_by_id(:users, id)
   end
 
   def self.find_by_social_login(provider, provider_user_id)
@@ -55,10 +50,15 @@ class User
   end
 
   def self.link_social_login(user_id, provider, provider_user_id)
-    db.exec_params(
-      "INSERT INTO user_social_logins (user_id, provider, provider_user_id, created_at)
-       VALUES ($1, $2, $3, NOW())",
-      [user_id, provider, provider_user_id]
+    SQLHelper.create(
+      :user_social_logins,
+      {
+        user_id: user_id,
+        provider: provider,
+        provider_user_id: provider_user_id,
+        created_at: Time.now
+      },
+      %w[user_id provider provider_user_id created_at]
     )
   end
 
@@ -71,22 +71,17 @@ class User
   end
 
   def self.confirm!(username)
-    db.exec_params(
-      "UPDATE users SET is_email_verified = TRUE WHERE username = $1",
-      [username]
-    )
+    SQLHelper.update_column(:users, :is_email_verified, true, { username: username })
   end
 
   def self.ban!(username)
-    result = db.exec_params(
-      "UPDATE users SET is_banned = TRUE, updated_at = NOW() WHERE username = $1",
-      [username]
-    )
+    result = SQLHelper.update_column(:users, :is_banned, true, { username: username })
     result.cmd_tuples > 0
   end
 
   def self.delete(id)
-    db.exec_params("DELETE FROM users WHERE id = $1", [id])
+    result = SQLHelper.delete(:users, id)
+    result.cmd_tuples > 0
   end
 
 end
