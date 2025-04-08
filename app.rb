@@ -10,7 +10,8 @@ class MatchaApp < Sinatra::Base
   use UsersController
   use TagsController
   use BlockedUsersController
-
+  use LikesController
+  
   get '/' do
     { status: "Matcha API v4.2" }.to_json
   end

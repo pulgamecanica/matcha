@@ -93,4 +93,26 @@ class User
   def self.tags(user_id)
     SQLHelper.many_to_many(:user, :tags, user_id)
   end
+
+  def self.likes(user_id)
+    ids = Like.liked_user_ids(user_id)
+    SQLHelper.find_many_by_ids(:users, ids)
+  end
+
+  def self.liked_by(user_id)
+    ids = Like.liked_by_user_ids(user_id) 
+    SQLHelper.find_many_by_ids(:users, ids)    
+  end
+
+  def self.matches(user_id)
+    Like.matches(user_id)
+  end
+
+  def self.blocked_users(user_id)
+    BlockedUser.blocked_users_for(user_id)
+  end
+
+  def self.blocked_by(user_id)
+    BlockedUser.blocked_by(user_id)
+  end
 end

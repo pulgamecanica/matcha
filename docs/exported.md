@@ -1,47 +1,43 @@
-## GET /tags
-**Description**: List all tags
-
-**Responses:**
-- `200`: Returns a list of available tags
-
----
-## POST /tags
-**Description**: Create a new tag
+## POST /me/like
+**Description**: Like another user
 **Params:**
-- `name` (String, required) - The name of the tag
+- `username` (String, required) - The username of the user to like
 
 **Responses:**
-- `201`: Tag created
-- `422`: Missing or invalid name
-- `422`: Tag name already taken
+- `200`: User liked
+- `404`: User not found or unavailable
+- `422`: Invalid request
 
 ---
-## GET /me/tags
-**Description**: List all tags for the current user
-
-**Responses:**
-- `200`: Returns user’s tags
-- `401`: Unauthorized
-
----
-## POST /me/tags
-**Description**: Add a tag to the current user
+## DELETE /me/like
+**Description**: Unlike a user
 **Params:**
-- `name` (String, required) - The name of the tag to add, if tag doesn't exist it's created
+- `username` (String, required) - The username of the user to unlike
 
 **Responses:**
-- `200`: Tag added to user
-- `422`: Tag name missing or invalid
+- `200`: User unliked
+- `404`: User not found
 
 ---
-## DELETE /me/tags
-**Description**: Remove a tag from the current user
-**Params:**
-- `name` (String, required) - The name of the tag to remove
+## GET /me/likes
+**Description**: Get list of users you have liked
 
 **Responses:**
-- `200`: Tag removed
-- `422`: Missing or invalid tag
+- `200`: Array of liked user objects
+
+---
+## GET /me/liked_by
+**Description**: Get list of users you have liked
+
+**Responses:**
+- `200`: Array of liked user objects
+
+---
+## GET /me/matches
+**Description**: Get list of users who liked you back (matches)
+
+**Responses:**
+- `200`: Array of matched user objects
 
 ---
 ## POST /me/block
@@ -177,5 +173,51 @@
 **Responses:**
 - `204`: User deleted
 - `401`: Unauthorized - missing or invalid token
+
+---
+## GET /tags
+**Description**: List all tags
+
+**Responses:**
+- `200`: Returns a list of available tags
+
+---
+## POST /tags
+**Description**: Create a new tag
+**Params:**
+- `name` (String, required) - The name of the tag
+
+**Responses:**
+- `201`: Tag created
+- `422`: Missing or invalid name
+- `422`: Tag name already taken
+
+---
+## GET /me/tags
+**Description**: List all tags for the current user
+
+**Responses:**
+- `200`: Returns user’s tags
+- `401`: Unauthorized
+
+---
+## POST /me/tags
+**Description**: Add a tag to the current user
+**Params:**
+- `name` (String, required) - The name of the tag to add, if tag doesn't exist it's created
+
+**Responses:**
+- `200`: Tag added to user
+- `422`: Tag name missing or invalid
+
+---
+## DELETE /me/tags
+**Description**: Remove a tag from the current user
+**Params:**
+- `name` (String, required) - The name of the tag to remove
+
+**Responses:**
+- `200`: Tag removed
+- `422`: Missing or invalid tag
 
 ---

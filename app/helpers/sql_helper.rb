@@ -82,6 +82,16 @@ module SQLHelper
     res.first
   end
 
+  def self.find_many_by_ids(table, ids)
+    return [] if ids.empty?
+
+    placeholders = ids.each_index.map { |i| "$#{i + 1}" }.join(", ")
+    sql = "SELECT * FROM #{table} WHERE id IN (#{placeholders})"
+
+    res = db.exec_params(sql, ids)
+    res.to_a
+  end
+
   def self.delete(table, id)
     db.exec_params("DELETE FROM #{table} WHERE id = $1", [id])
   end

@@ -30,7 +30,7 @@ class BlockedUser
 
   def self.blocked_by(user_id)
     res = db.exec_params(<<~SQL, [user_id])
-      SELECT users.username FROM users
+      SELECT users.* FROM users
       JOIN blocked_users ON users.id = blocked_users.blocker_id
       WHERE blocked_users.blocked_id = $1
     SQL
