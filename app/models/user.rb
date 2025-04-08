@@ -129,4 +129,16 @@ class User
     Picture.for_user(user_id)
   end
 
+  def self.locations(user_id)
+    LocationHistory.for_user(user_id)
+  end
+
+  def self.location(user_id)
+    user = find_by_id(user_id)
+    {
+      latitude: user["latitude"],
+      longitude: user["longitude"]
+    }
+  end
+
 end

@@ -189,7 +189,8 @@ end
 - [x] Validation system
 - [x] SQLHelper abstraction
 - [x] Tag system
-- [ ] Connections, Likes, Notifications
+- [x] Connections, Likes
+- [ ] Notifications
 - [ ] Admin endpoints
 - [ ] Real-time messaging (WebSocket or polling)
 - [ ] Full CI/CD pipeline

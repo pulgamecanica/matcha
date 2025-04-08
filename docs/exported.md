@@ -77,58 +77,6 @@
 - `200`: Returns a list of users who blocked you
 
 ---
-## POST /auth/register
-**Description**: Register a new user
-**Params:**
-- `username` (String, required) - Unique username (max 20 characters)
-- `email` (String, required) - User email address used for login and verification
-- `password` (String, required) - User password (will be securely hashed)
-- `first_name` (String, required) - User's first name
-- `last_name` (String, required) - User's last name
-- `gender` (String, required) - User's gender: one of 'male', 'female', 'other'
-- `sexual_preferences` (String, required) - Who the user is interested in: one of 'male', 'female', 'both'
-
-**Responses:**
-- `201`: User created
-- `422`: Validation error (missing fields, invalid values, or already taken)
-
----
-## POST /auth/login
-**Description**: Authenticate an existing user using username and password
-**Params:**
-- `username` (String, required) - User's unique username
-- `password` (String, required) - User's account password
-
-**Responses:**
-- `200`: Login successful, session token returned
-- `401`: Invalid credentials
-- `403`: Email not confirmed or user is banned
-
----
-## POST /auth/social
-**Description**: Authenticate or register a user via social login (OAuth provider)
-**Params:**
-- `provider` (String, required) - OAuth provider (e.g., 'google', 'github', 'intra')
-- `provider_user_id` (String, required) - Unique ID returned by the provider for this user
-- `first_name` (String) - User's first name (optional if new user)
-- `last_name` (String) - User's last name (optional if new user)
-
-**Responses:**
-- `200`: User authenticated successfully
-- `201`: User created via social login
-- `422`: Missing required social login fields
-
----
-## POST /auth/confirm
-**Description**: Confirm a user manually (simulated email confirmation)
-**Params:**
-- `username` (String, required) - Username of the user to confirm
-
-**Responses:**
-- `200`: User confirmed
-- `404`: User not found
-
----
 ## GET /me
 **Description**: Get the currently authenticated user
 
@@ -234,5 +182,123 @@
 
 **Responses:**
 - `200`: List of profiles you viewed
+
+---
+## GET /me/pictures
+**Description**: List all pictures uploaded by the current user
+
+**Responses:**
+- `200`: Returns list of pictures
+
+---
+## POST /me/pictures
+**Description**: Upload a new picture
+**Params:**
+- `url` (String, required) - URL of the picture
+- `is_profile` (TrueClass) - Set as profile picture
+
+**Responses:**
+- `201`: Picture created
+- `422`: Invalid data
+
+---
+## PATCH /me/pictures/:id
+**Description**: Edit a picture (e.g., set as profile)
+**Params:**
+- `id` (Integer, required) - 
+- `is_profile` (TrueClass) - 
+- `url` (String) - 
+
+**Responses:**
+- `200`: Picture updated
+- `404`: Picture not found
+- `403`: Not your picture
+
+---
+## DELETE /me/pictures/:id
+**Description**: Delete a picture
+**Params:**
+- `id` (Integer, required) - 
+
+**Responses:**
+- `200`: Picture deleted
+- `404`: Not found
+- `403`: Unauthorized
+
+---
+## POST /auth/register
+**Description**: Register a new user
+**Params:**
+- `username` (String, required) - Unique username (max 20 characters)
+- `email` (String, required) - User email address used for login and verification
+- `password` (String, required) - User password (will be securely hashed)
+- `first_name` (String, required) - User's first name
+- `last_name` (String, required) - User's last name
+- `gender` (String, required) - User's gender: one of 'male', 'female', 'other'
+- `sexual_preferences` (String, required) - Who the user is interested in: one of 'male', 'female', 'both'
+
+**Responses:**
+- `201`: User created
+- `422`: Validation error (missing fields, invalid values, or already taken)
+
+---
+## POST /auth/login
+**Description**: Authenticate an existing user using username and password
+**Params:**
+- `username` (String, required) - User's unique username
+- `password` (String, required) - User's account password
+
+**Responses:**
+- `200`: Login successful, session token returned
+- `401`: Invalid credentials
+- `403`: Email not confirmed or user is banned
+
+---
+## POST /auth/social
+**Description**: Authenticate or register a user via social login (OAuth provider)
+**Params:**
+- `provider` (String, required) - OAuth provider (e.g., 'google', 'github', 'intra')
+- `provider_user_id` (String, required) - Unique ID returned by the provider for this user
+- `first_name` (String) - User's first name (optional if new user)
+- `last_name` (String) - User's last name (optional if new user)
+
+**Responses:**
+- `200`: User authenticated successfully
+- `201`: User created via social login
+- `422`: Missing required social login fields
+
+---
+## POST /auth/confirm
+**Description**: Confirm a user manually (simulated email confirmation)
+**Params:**
+- `username` (String, required) - Username of the user to confirm
+
+**Responses:**
+- `200`: User confirmed
+- `404`: User not found
+
+---
+## GET /me/location
+**Description**: Returns the last known latitude and longitude of the current user
+
+**Responses:**
+- `200`: Returns current location of the user
+
+---
+## POST /me/location
+**Description**: Record the current user's location (estimated from IP)
+
+**Responses:**
+- `200`: Location saved
+- `401`: Unauthorized
+- `422`: Geolocation service failed
+
+---
+## GET /me/location/history
+**Description**: Get your full location history
+
+**Responses:**
+- `200`: List of location records
+- `401`: Unauthorized
 
 ---

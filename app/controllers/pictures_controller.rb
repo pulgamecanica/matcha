@@ -76,14 +76,13 @@ class PicturesController < BaseController
 
     updates = data.slice("url", "is_profile")
 
-    Picture.update(picture["id"], updates)
+    picture = Picture.update(picture["id"], updates)
 
     if updates["is_profile"]
       Picture.set_profile(@current_user["id"], picture["id"])
       User.update(@current_user["id"], { profile_picture_id: picture["id"] })
     end
-
-    { message: "Picture updated" }.to_json
+    { message: "Picture updated!", data: picture }.to_json
   end
 
   # ---------------------------

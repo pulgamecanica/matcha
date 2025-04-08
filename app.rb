@@ -13,6 +13,7 @@ class MatchaApp < Sinatra::Base
   use LikesController
   use ProfileViewsController
   use PicturesController
+  use LocationController
   
   get '/' do
     { status: "Matcha API v4.2" }.to_json
