@@ -74,6 +74,14 @@
 
 ## 🚀 Getting Started
 
+---
+
+### 📘 Postman Collection
+
+> Visit the [Postman Colleciton](https://pulgamecanica.postman.co/workspace/pulgamecanica~fddcef76-1724-4c9d-8f90-c24cfe79c2b9/collection/13231501-422c8247-c0ee-4bec-834b-ede0215c4e05?action=share&creator=13231501) to run all the API endpoints.
+
+---
+
 ### 🔧 Local Dev (Dockerized)
 
 ```bash
