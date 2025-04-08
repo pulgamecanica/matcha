@@ -32,6 +32,7 @@ class User
     allowed_fields = %w[
       username first_name last_name biography
       gender sexual_preferences latitude longitude
+      profile_picture_id
     ]
 
     SQLHelper.update(:users, user_id, fields, allowed_fields)
@@ -115,4 +116,17 @@ class User
   def self.blocked_by(user_id)
     BlockedUser.blocked_by(user_id)
   end
+
+  def self.visitors_for(user_id)
+    ProfileView.visited(user_id)
+  end
+
+  def self.viewed_by(user_id)
+    ProfileView.viewed_by(user_id)
+  end
+
+  def self.pictures(user_id)
+    Picture.for_user(user_id)
+  end
+
 end

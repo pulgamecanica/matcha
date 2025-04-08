@@ -1,5 +1,6 @@
 require_relative './base_controller'
 require_relative '../models/blocked_user'
+require_relative '../models/profile_view'
 
 class UsersController < BaseController
   before do
@@ -71,6 +72,9 @@ class UsersController < BaseController
     halt 404, { error: "User not available" }.to_json if user["is_banned"] == "t"
     halt 404, { error: "User blocked you" }.to_json if BlockedUser.blocked?(user["id"], @current_user["id"])
     halt 404, { error: "User is blocked" }.to_json if BlockedUser.blocked?(@current_user["id"], user["id"])
+    
+    ProfileView.record(@current_user["id"], user["id"])
+
     public_data = {
       username: user["username"],
       first_name: user["first_name"],
@@ -87,7 +91,7 @@ class UsersController < BaseController
   end
 
   # ---------------------------
-  # DELETE USERNAME
+  # DELETE USER
   # ---------------------------
   api_doc "/me", method: :delete do
     description "Delete the current authenticated user account and all related data"

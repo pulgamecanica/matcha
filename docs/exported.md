@@ -17,6 +17,7 @@
 **Responses:**
 - `200`: User unliked
 - `404`: User not found
+- `422`: Like does not exist
 
 ---
 ## GET /me/likes
@@ -219,5 +220,19 @@
 **Responses:**
 - `200`: Tag removed
 - `422`: Missing or invalid tag
+
+---
+## GET /me/visits
+**Description**: See who has viewed your profile
+
+**Responses:**
+- `200`: List of users who viewed you
+
+---
+## GET /me/viewed_by
+**Description**: See which users you have viewed
+
+**Responses:**
+- `200`: List of profiles you viewed
 
 ---

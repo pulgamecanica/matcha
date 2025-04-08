@@ -11,6 +11,8 @@ class MatchaApp < Sinatra::Base
   use TagsController
   use BlockedUsersController
   use LikesController
+  use ProfileViewsController
+  use PicturesController
   
   get '/' do
     { status: "Matcha API v4.2" }.to_json

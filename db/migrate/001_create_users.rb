@@ -13,7 +13,6 @@ conn.exec <<~SQL
     gender VARCHAR(10) NOT NULL CHECK (gender IN ('male', 'female', 'other')),
     sexual_preferences VARCHAR(20) NOT NULL CHECK (sexual_preferences IN ('male', 'female', 'non_binary', 'everyone')),
     biography TEXT,
-    profile_picture_id INTEGER,
     is_email_verified BOOLEAN DEFAULT FALSE,
     is_banned BOOLEAN DEFAULT FALSE,
     fame_rating FLOAT DEFAULT 0.0,

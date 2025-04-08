@@ -22,8 +22,10 @@ module SQLHelper
   def self.build_update_set(fields, allowed_fields)
     set_fragments = []
     values = []
-
-    fields.each_with_index do |(key, value), index|
+    
+    normalized_fields = fields.transform_keys(&:to_s)
+    
+    normalized_fields.each_with_index do |(key, value), index|
       next unless allowed_fields.include?(key)
       set_fragments << "#{key} = $#{index + 1}"
       values << value
