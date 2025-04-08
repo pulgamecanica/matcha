@@ -180,7 +180,7 @@ end
 - [x] API Docs via DSL
 - [x] Validation system
 - [x] SQLHelper abstraction
-- [ ] Tag system
+- [x] Tag system
 - [ ] Connections, Likes, Notifications
 - [ ] Admin endpoints
 - [ ] Real-time messaging (WebSocket or polling)

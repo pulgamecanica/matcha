@@ -36,8 +36,10 @@ describe "User Endpoints" do
 
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["username"]).to eq("authme")
-      expect(json).not_to have_key("password_digest")
+      expect(json).to have_key("data")
+      user = json["data"]
+      expect(user["username"]).to eq("authme")
+      expect(user).not_to have_key("password_digest")
     end
 
     it "returns 401 if token is missing" do
@@ -96,8 +98,10 @@ describe "User Endpoints" do
 
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["user"]["first_name"]).to eq("Updated")
-      expect(json["user"]["biography"]).to eq("Updated bio")
+      expect(json).to have_key("data")
+      user = json["data"]
+      expect(user["first_name"]).to eq("Updated")
+      expect(user["biography"]).to eq("Updated bio")
     end
 
     it "returns 422 for disallowed field" do
@@ -142,8 +146,10 @@ describe "User Endpoints" do
       get "/users/bob", nil, auth_headers(@token)
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
-      expect(json["username"]).to eq("bob")
-      expect(json["email"]).to be_nil
+      expect(json).to have_key("data")
+      user = json["data"]
+      expect(user["username"]).to eq("bob")
+      expect(user["email"]).to be_nil
     end
 
     it "returns 404 for unknown user" do

@@ -19,7 +19,7 @@ class UsersController < BaseController
     require_auth!
 
     user_data = @current_user.reject { |k, _| k == "password_digest" }
-    user_data.to_json
+    { data: user_data }.to_json
   end
 
   # ---------------------------
@@ -46,7 +46,7 @@ class UsersController < BaseController
     begin
       UserValidator.validate_update!(data)
       updated_user = User.update(@current_user["id"], data)
-      { message: "Profile updated!", user: updated_user.reject { |k, _| k == "password_digest" } }.to_json
+      { message: "Profile updated!", data: updated_user.reject { |k, _| k == "password_digest" } }.to_json
     rescue Errors::ValidationError => e
       halt 422, { error: e.message, details: e.details }.to_json
     end
@@ -66,7 +66,7 @@ class UsersController < BaseController
     user = User.find_by_username(params[:username])
     halt 404, { error: "User not found" }.to_json unless user
     halt 404, { error: "User not available" }.to_json if user["is_banned"] == "t"
-    {
+    public_data = {
       username: user["username"],
       first_name: user["first_name"],
       last_name: user["last_name"],
@@ -76,7 +76,9 @@ class UsersController < BaseController
       profile_picture_id: user["profile_picture_id"],
       online_status: user["online_status"] == "t",
       last_seen_at: user["last_seen_at"]
-    }.to_json
+    }
+
+    { data: public_data }.to_json
   end
 
   # ---------------------------

@@ -43,6 +43,13 @@ migrate:
 		${DOCKER_CONTAINER_NAME} \
 		rake db:migrate
 
+seed:
+	docker compose run \
+		-it \
+		--remove-orphans \
+		${DOCKER_CONTAINER_NAME} \
+		rake db:seed
+
 drop:
 	docker compose run \
 		-it \
@@ -55,7 +62,7 @@ test:
 		-it \
 		--remove-orphans \
 		${DOCKER_CONTAINER_NAME} \
-		bundle exec rspec
+		bundle exec rspec $(filter-out $@,$(MAKECMDGOALS))
 
 console:
 	docker compose run \

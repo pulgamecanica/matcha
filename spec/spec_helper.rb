@@ -16,7 +16,7 @@ RSpec.configure do |config|
   config.before(:each) do
     require_relative '../app/helpers/database'
     conn = Database.connection
-    %w[users].each do |table|
+    %w[users tags].each do |table|
       conn.exec("DELETE FROM #{table}")
     end
     conn.close

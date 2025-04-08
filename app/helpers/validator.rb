@@ -1,7 +1,7 @@
 require_relative '../lib/errors'
 
 module Validator
-  def self.validate!(params:, required: [], enums: {})
+  def self.validate!(params:, required: [], enums: {}, length: {})
     errors = []
 
     required.each do |field|
@@ -15,6 +15,18 @@ module Validator
       value = params[field.to_s] || params[field.to_sym]
       if value && !valid_values.include?(value)
         errors << "#{field} must be one of: #{valid_values.join(', ')}"
+      end
+    end
+
+    length.each do |field, rules|
+      value = params[field.to_s] || params[field.to_sym]
+      next unless value
+
+      if rules[:min] && value.length < rules[:min]
+        errors << "#{field} must be at least #{rules[:min]} characters"
+      end
+      if rules[:max] && value.length > rules[:max]
+        errors << "#{field} must be at most #{rules[:max]} characters"
       end
     end
 

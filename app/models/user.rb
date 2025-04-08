@@ -2,12 +2,18 @@ require 'bcrypt'
 
 require_relative '../helpers/database'
 require_relative '../helpers/sql_helper'
+require_relative '../helpers/request_helper'
 
 class User
   include BCrypt
 
   def self.db
     @db ||= ::Database.connection
+  end
+
+  def self.all
+    res = db.exec("SELECT * FROM users ORDER BY username ASC")
+    res.to_a
   end
 
   def self.create(params)
@@ -84,4 +90,7 @@ class User
     result.cmd_tuples > 0
   end
 
+  def self.tags(user_id)
+    SQLHelper.many_to_many(:user, :tags, user_id)
+  end
 end
