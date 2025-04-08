@@ -1,4 +1,5 @@
 require_relative './base_controller'
+require_relative '../models/blocked_user'
 
 class UsersController < BaseController
   before do
@@ -60,12 +61,16 @@ class UsersController < BaseController
     param :username, String, required: true, desc: "The unique username of the user"
     response 200, "Public user data"
     response 404, "User not found or banned"
+    response 404, "User blocked you"
+    response 404, "User is blocked"
   end
 
   get "/users/:username" do
     user = User.find_by_username(params[:username])
     halt 404, { error: "User not found" }.to_json unless user
     halt 404, { error: "User not available" }.to_json if user["is_banned"] == "t"
+    halt 404, { error: "User blocked you" }.to_json if BlockedUser.blocked?(user["id"], @current_user["id"])
+    halt 404, { error: "User is blocked" }.to_json if BlockedUser.blocked?(@current_user["id"], user["id"])
     public_data = {
       username: user["username"],
       first_name: user["first_name"],
