@@ -2,10 +2,6 @@ require_relative './base_controller'
 require_relative '../models/user'
 
 class ProfileViewsController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # WHO VISITED ME
   # ---------------------------

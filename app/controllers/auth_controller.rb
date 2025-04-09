@@ -37,7 +37,7 @@ class AuthController < BaseController
       status 201
       { message: "User created!" }.to_json
     rescue Errors::ValidationError => e
-      halt 422, { error: e.message }.to_json
+      halt 422, { error: e.message, details: e.details }.to_json
     rescue PG::UniqueViolation
       halt 422, { error: "Username or email already taken" }.to_json
     end

@@ -4,10 +4,6 @@ require_relative '../models/user'
 require_relative '../helpers/like_validator'
 
 class LikesController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # NEW LIKE
   # ---------------------------

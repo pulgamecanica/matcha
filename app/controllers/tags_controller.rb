@@ -4,10 +4,6 @@ require_relative '../models/user_tag'
 require_relative '../helpers/tag_validator'
 
 class TagsController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # TAGS
   # ---------------------------

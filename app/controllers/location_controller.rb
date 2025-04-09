@@ -2,10 +2,6 @@ require_relative './base_controller'
 require_relative '../models/location_history'
 
 class LocationController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # GET /me/location
   # ---------------------------

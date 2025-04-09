@@ -4,10 +4,6 @@ require_relative '../models/user'
 require_relative '../helpers/picture_validator'
 
 class PicturesController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # USER PICTURES
   # ---------------------------

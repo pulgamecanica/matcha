@@ -6,6 +6,10 @@ require_relative "../lib/errors"
 class BaseController < Sinatra::Base
   before do
     content_type :json
+    
+    pass if request.path_info == "/" || request.path_info.start_with?("/auth")
+
+    require_auth!
   end
 
   helpers do

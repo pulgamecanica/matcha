@@ -3,10 +3,6 @@ require_relative '../models/blocked_user'
 require_relative '../models/user'
 
 class BlockedUsersController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # BLOCK A USER
   # ---------------------------
