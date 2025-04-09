@@ -3,11 +3,11 @@ DOCKER_CONTAINER_NAME = web
 up:
 	docker compose up -d
 	@echo "Container ip:" 
-	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' matcha-web-1
+	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' api-web-1
 
 build:
 	docker compose up --build -d
-	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' matcha-web-1
+	@docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' api-web-1
 
 down:
 	docker compose down

@@ -15,6 +15,12 @@ class MatchaApp < Sinatra::Base
   use PicturesController
   use LocationController
   
+  before do
+     content_type :json    
+     headers 'Access-Control-Allow-Origin' => '*', 
+              'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST', 'PATCH', 'PUT', 'DELETE']  
+  end
+
   get '/' do
     { status: "Matcha API v4.2" }.to_json
   end
