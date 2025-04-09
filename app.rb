@@ -14,14 +14,23 @@ class MatchaApp < Sinatra::Base
   use ProfileViewsController
   use PicturesController
   use LocationController
-  
+
   before do
-     content_type :json    
-     headers 'Access-Control-Allow-Origin' => '*', 
-              'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST', 'PATCH', 'PUT', 'DELETE']  
+    content_type :json
+    headers 'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => ['OPTIONS', 'GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+            'Access-Control-Allow-Headers' => 'Authorization, Content-Type'
+  end
+
+  # Preflight route for CORS
+  options "*" do
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
+    200
   end
 
   get '/' do
-    { status: "Matcha API v4.2" }.to_json
+    { message: "Welcome to MatchaApp" }.to_json
   end
 end
