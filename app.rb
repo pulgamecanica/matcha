@@ -12,10 +12,6 @@ class MatchaApp < Sinatra::Base
     { message: "Welcome to MatchaApp" }.to_json
   end
 
-  options '*' do
-    200
-  end
-
   use AuthController
   use UsersController
   use TagsController

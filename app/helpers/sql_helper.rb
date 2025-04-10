@@ -16,7 +16,7 @@ module SQLHelper
   def self.table_exists?(table)
     sql = "SELECT to_regclass($1) IS NOT NULL AS exists"
     result = db.exec_params(sql, [table])
-    result.first["exists"] == "t"
+    result&.first["exists"] == "t"
   end
 
   def self.build_update_set(fields, allowed_fields)
@@ -48,7 +48,7 @@ module SQLHelper
     SQL
 
     res = db.exec_params(sql, values)
-    res.first
+    res&.first
   end
   
   def self.update(table, id, fields, allowed_fields)
@@ -64,7 +64,7 @@ module SQLHelper
 
     values << id
     res = db.exec_params(sql, values)
-    res.first
+    res&.first
   end
 
   def self.update_column(table, column, value, conditions)
@@ -76,12 +76,12 @@ module SQLHelper
 
   def self.find_by(table, field, value)
     sql = "SELECT * FROM #{table} WHERE #{field} = $1 LIMIT 1"
-    db.exec_params(sql, [value]).first
+    db.exec_params(sql, [value])&.first
   end
 
   def self.find_by_id(table, id)
     res = db.exec_params("SELECT * FROM #{table} WHERE id = $1", [id])
-    res.first
+    res&.first
   end
 
   def self.find_many_by_ids(table, ids)

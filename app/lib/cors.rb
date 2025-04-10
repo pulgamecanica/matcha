@@ -4,12 +4,23 @@ class CORS
   end
 
   def call(env)
-    status, headers, body = @app.call(env)
+    status, headers, body = if env['REQUEST_METHOD'] == 'OPTIONS'
+      [200, cors_headers, []]
+    else
+      @app.call(env)
+    end
 
-    headers['Access-Control-Allow-Origin'] = '*'
-    headers['Access-Control-Allow-Methods'] = 'GET, POST, PATCH, PUT, DELETE, OPTIONS'
-    headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, If-Modified-Since'
+    [status, headers.merge(cors_headers), body]
+  end
 
-    [status, headers, body]
+  private
+
+  def cors_headers
+    {
+      'access-control-allow-origin' => '*',
+      'access-control-allow-methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+      'access-control-allow-headers' => 'content-type, authorization',
+      'access-control-max-age' => '86400'
+    }
   end
 end
