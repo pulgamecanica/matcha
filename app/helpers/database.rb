@@ -1,14 +1,30 @@
 require 'pg'
 require 'uri'
+require 'connection_pool'
 
 module Database
-  def self.connection
-    uri = URI.parse(ENV['DATABASE_URL'])
-    PG.connect(
-      host: uri.host,
-      user: uri.user,
-      password: uri.password,
-      dbname: uri.path[1..-1]
-    )
+  def self.pool
+    @pool ||= ConnectionPool.new(size: 5, timeout: 5) do
+      uri = URI.parse(ENV['DATABASE_URL'])
+      PG.connect(
+        host: uri.host,
+        user: uri.user,
+        password: uri.password,
+        dbname: uri.path[1..-1]
+      )
+    end
+  end
+
+  def self.with_open_conn
+    pool ||= ConnectionPool.new(size: 5, timeout: 5) do
+      uri = URI.parse(ENV['DATABASE_URL'])
+      PG.connect(
+        host: uri.host,
+        user: uri.user,
+        password: uri.password,
+        dbname: uri.path[1..-1]
+      )
+    end
+    pool.with { |conn| yield(conn) }
   end
 end

@@ -2,13 +2,11 @@ require_relative '../helpers/database'
 require_relative '../helpers/sql_helper'
 
 class Tag
-  def self.db
-    @db ||= ::Database.connection
-  end
-
   def self.all
-    res = db.exec("SELECT * FROM tags ORDER BY name ASC")
-    res.to_a
+    Database.pool.with do |conn|
+      res = db.exec("SELECT * FROM tags ORDER BY name ASC")
+      res.to_a
+    end
   end
 
   def self.create(name)

@@ -7,13 +7,11 @@ require_relative '../helpers/request_helper'
 class User
   include BCrypt
 
-  def self.db
-    @db ||= ::Database.connection
-  end
-
   def self.all
-    res = db.exec("SELECT * FROM users ORDER BY username ASC")
-    res.to_a
+    Database.pool.with do |conn|
+      res = conn.exec("SELECT * FROM users ORDER BY username ASC")
+      res.to_a
+    end
   end
 
   def self.create(params)
@@ -47,13 +45,15 @@ class User
   end
 
   def self.find_by_social_login(provider, provider_user_id)
-    sql = <<~SQL
-      SELECT users.* FROM users
-      JOIN user_social_logins usl ON usl.user_id = users.id
-      WHERE usl.provider = $1 AND usl.provider_user_id = $2
-    SQL
-    res = db.exec_params(sql, [provider, provider_user_id])
-    res.first
+    Database.pool.with do |conn|
+      sql = <<~SQL
+        SELECT users.* FROM users
+        JOIN user_social_logins usl ON usl.user_id = users.id
+        WHERE usl.provider = $1 AND usl.provider_user_id = $2
+      SQL
+      res = conn.exec_params(sql, [provider, provider_user_id])
+      res&.first
+    end
   end
 
   def self.link_social_login(user_id, provider, provider_user_id)

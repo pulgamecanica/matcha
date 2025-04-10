@@ -15,9 +15,11 @@ gem "base64", "~> 0.2.0"
 gem "json", "~> 2.10"
 gem "openssl", "~> 3.3"
 gem 'sinatra-contrib'
+gem "connection_pool", "~> 2.5"
 
 group :development do
   gem 'pry'
   gem 'faker'
   gem 'ruby-progressbar'
 end
+

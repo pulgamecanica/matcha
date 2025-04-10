@@ -21,3 +21,8 @@ class MatchaApp < Sinatra::Base
   use PicturesController
   use LocationController
 end
+
+at_exit do
+  puts "Shutting down DB connections..."
+  Database.pool.shutdown { |conn| conn.close rescue nil }
+end
