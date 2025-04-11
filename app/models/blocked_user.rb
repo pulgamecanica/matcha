@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 require_relative '../helpers/database'
 
 class BlockedUser
   def self.block!(blocker_id, blocked_id)
-    raise Errors::ValidationError.new("You cannot block yourself") if blocker_id == blocked_id
+    raise Errors::ValidationError, 'You cannot block yourself' if blocker_id == blocked_id
 
     Database.pool.with do |conn|
       conn.exec_params(
-        "INSERT INTO blocked_users (blocker_id, blocked_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+        'INSERT INTO blocked_users (blocker_id, blocked_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
         [blocker_id, blocked_id]
       )
     end
@@ -15,7 +17,7 @@ class BlockedUser
   def self.unblock!(blocker_id, blocked_id)
     Database.pool.with do |conn|
       conn.exec_params(
-        "DELETE FROM blocked_users WHERE blocker_id = $1 AND blocked_id = $2",
+        'DELETE FROM blocked_users WHERE blocker_id = $1 AND blocked_id = $2',
         [blocker_id, blocked_id]
       )
     end
@@ -46,7 +48,7 @@ class BlockedUser
   def self.blocked?(blocker_id, blocked_id)
     Database.pool.with do |conn|
       res = conn.exec_params(
-        "SELECT 1 FROM blocked_users WHERE blocker_id = $1 AND blocked_id = $2 LIMIT 1",
+        'SELECT 1 FROM blocked_users WHERE blocker_id = $1 AND blocked_id = $2 LIMIT 1',
         [blocker_id, blocked_id]
       )
       !res.to_a.empty?

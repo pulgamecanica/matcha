@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../app/helpers/database'
 
 Database.with_open_conn do |conn|

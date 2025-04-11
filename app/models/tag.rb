@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require_relative '../helpers/database'
 require_relative '../helpers/sql_helper'
 
 class Tag
   def self.all
     Database.pool.with do |conn|
-      res = db.exec("SELECT * FROM tags ORDER BY name ASC")
+      res = conn.exec('SELECT * FROM tags ORDER BY name ASC')
       res.to_a
     end
   end

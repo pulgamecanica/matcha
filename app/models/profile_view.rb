@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require_relative '../helpers/database'
 
 class ProfileView
   def self.record(viewer_id, viewed_id)
     return if viewer_id == viewed_id
+
     Database.pool.with do |conn|
       conn.exec_params(<<~SQL, [viewer_id, viewed_id])
         INSERT INTO profile_views (viewer_id, viewed_id, visited_at)

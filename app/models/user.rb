@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bcrypt'
 
 require_relative '../helpers/database'
@@ -9,7 +11,7 @@ class User
 
   def self.all
     Database.pool.with do |conn|
-      res = conn.exec("SELECT * FROM users ORDER BY username ASC")
+      res = conn.exec('SELECT * FROM users ORDER BY username ASC')
       res.to_a
     end
   end
@@ -73,7 +75,7 @@ class User
     user = find_by_username(username)
     return nil unless user
 
-    digest = Password.new(user["password_digest"])
+    digest = Password.new(user['password_digest'])
     digest == password ? user : nil
   end
 
@@ -83,12 +85,12 @@ class User
 
   def self.ban!(username)
     result = SQLHelper.update_column(:users, :is_banned, true, { username: username })
-    result.cmd_tuples > 0
+    result.cmd_tuples.positive?
   end
 
   def self.delete(id)
     result = SQLHelper.delete(:users, id)
-    result.cmd_tuples > 0
+    result.cmd_tuples.positive?
   end
 
   def self.tags(user_id)
@@ -101,8 +103,8 @@ class User
   end
 
   def self.liked_by(user_id)
-    ids = Like.liked_by_user_ids(user_id) 
-    SQLHelper.find_many_by_ids(:users, ids)    
+    ids = Like.liked_by_user_ids(user_id)
+    SQLHelper.find_many_by_ids(:users, ids)
   end
 
   def self.matches(user_id)
@@ -136,9 +138,8 @@ class User
   def self.location(user_id)
     user = find_by_id(user_id)
     {
-      latitude: user["latitude"],
-      longitude: user["longitude"]
+      latitude: user['latitude'],
+      longitude: user['longitude']
     }
   end
-
 end

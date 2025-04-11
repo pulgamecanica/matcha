@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative './validator'
 
 module UserValidator
@@ -26,9 +28,7 @@ module UserValidator
     ]
 
     unknown_keys = params.keys - allowed_keys
-    unless unknown_keys.empty?
-      raise Errors::ValidationError.new("Unknown fields", unknown_keys)
-    end
+    raise Errors::ValidationError.new('Unknown fields', unknown_keys) unless unknown_keys.empty?
 
     Validator.validate!(
       params: params,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CORS
   def initialize(app)
     @app = app
@@ -5,10 +7,10 @@ class CORS
 
   def call(env)
     status, headers, body = if env['REQUEST_METHOD'] == 'OPTIONS'
-      [200, cors_headers, []]
-    else
-      @app.call(env)
-    end
+                              [200, cors_headers, []]
+                            else
+                              @app.call(env)
+                            end
 
     [status, headers.merge(cors_headers), body]
   end

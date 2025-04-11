@@ -1,39 +1,44 @@
+# frozen_string_literal: true
+
 module SQLHelper
-  def self.with_conn
-    Database.pool.with { |conn| yield(conn) }
+  def self.with_conn(&block)
+    Database.pool.with(&block)
   end
 
   def self.singularize(word)
-    return word if word.end_with?("ss")
+    return word if word.end_with?('ss')
+
     word.sub(/s$/, '')
   end
 
   def self.pluralize(word)
-    return word if word.end_with?("s")
-    word + "s"
+    return word if word.end_with?('s')
+
+    "#{word}s"
   end
 
   def self.table_exists?(table)
     with_conn do |conn|
-      sql = "SELECT to_regclass($1) IS NOT NULL AS exists"
+      sql = 'SELECT to_regclass($1) IS NOT NULL AS exists'
       result = conn.exec_params(sql, [table])
-      result&.first["exists"] == "t"
+      result&.first&.[]('exists') == 't'
     end
   end
 
   def self.build_update_set(fields, allowed_fields)
     set_fragments = []
     values = []
-    
+
     normalized_fields = fields.transform_keys(&:to_s)
-    
+
     normalized_fields.each_with_index do |(key, value), index|
       next unless allowed_fields.include?(key)
+
       set_fragments << "#{key} = $#{index + 1}"
       values << value
     end
 
-    [set_fragments.join(", "), values]
+    [set_fragments.join(', '), values]
   end
 
   def self.create(table, fields, allowed_fields)
@@ -45,8 +50,8 @@ module SQLHelper
       placeholders = keys.each_index.map { |i| "$#{i + 1}" }
 
       sql = <<~SQL
-        INSERT INTO #{table} (#{keys.join(", ")})
-        VALUES (#{placeholders.join(", ")})
+        INSERT INTO #{table} (#{keys.join(', ')})
+        VALUES (#{placeholders.join(', ')})
         RETURNING *
       SQL
 
@@ -54,12 +59,11 @@ module SQLHelper
       res&.first
     end
   end
-  
+
   def self.update(table, id, fields, allowed_fields)
     return find_by_id(table, id) if fields.empty?
 
     with_conn do |conn|
-
       set_clause, values = build_update_set(fields, allowed_fields)
       sql = <<~SQL
         UPDATE #{table}
@@ -76,7 +80,7 @@ module SQLHelper
 
   def self.update_column(table, column, value, conditions)
     with_conn do |conn|
-      condition_sql = conditions.keys.each_with_index.map { |k, i| "#{k} = $#{i + 2}" }.join(" AND ")
+      condition_sql = conditions.keys.each_with_index.map { |k, i| "#{k} = $#{i + 2}" }.join(' AND ')
       sql = "UPDATE #{table} SET #{column} = $1, updated_at = NOW() WHERE #{condition_sql}"
       values = [value] + conditions.values
       conn.exec_params(sql, values)
@@ -101,7 +105,7 @@ module SQLHelper
     return [] if ids.empty?
 
     with_conn do |conn|
-      placeholders = ids.each_index.map { |i| "$#{i + 1}" }.join(", ")
+      placeholders = ids.each_index.map { |i| "$#{i + 1}" }.join(', ')
       sql = "SELECT * FROM #{table} WHERE id IN (#{placeholders})"
 
       res = conn.exec_params(sql, ids)
@@ -117,7 +121,6 @@ module SQLHelper
 
   def self.many_to_many(source_sym, target_sym, source_id)
     with_conn do |conn|
-
       source      = source_sym.to_s
       target      = target_sym.to_s
       join_table  = "#{source}_#{target}"

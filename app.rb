@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative './config/environment'
 require_relative './app/lib/cors'
 
@@ -9,7 +11,7 @@ class MatchaApp < Sinatra::Base
   use CORS
 
   get '/' do
-    { message: "Welcome to MatchaApp" }.to_json
+    { message: 'Welcome to MatchaApp' }.to_json
   end
 
   use AuthController
@@ -23,6 +25,10 @@ class MatchaApp < Sinatra::Base
 end
 
 at_exit do
-  puts "Shutting down DB connections..."
-  Database.pool.shutdown { |conn| conn.close rescue nil }
+  puts 'Shutting down DB connections...'
+  Database.pool.shutdown do |conn|
+    conn.close
+  rescue StandardError
+    nil
+  end
 end

@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'rake'
 require 'pg'
 require 'uri'
 require 'fileutils'
 
-desc "Export all API docs"
-task "doc:export" do
-  require_relative "./app/lib/api_doc"
-  require_relative "./app"
-  
+desc 'Export all API docs'
+task 'doc:export' do
+  require_relative './app/lib/api_doc'
+  require_relative './app'
+
   controllers = ObjectSpace.each_object(Class).select { |cls| cls < Sinatra::Base }
-  File.open("docs/exported.md", "w") do |file|
+  File.open('docs/exported.md', 'w') do |file|
     controllers.each do |ctrl|
       next unless ctrl.respond_to?(:docs)
 
@@ -17,7 +19,7 @@ task "doc:export" do
         file.puts "## #{method} #{path}"
         file.puts "**Description**: #{doc[:description]}\n"
         if doc[:params].any?
-          file.puts "**Params:**"
+          file.puts '**Params:**'
           doc[:params].each do |p|
             file.puts "- `#{p[:name]}` (#{p[:type]}#{p[:required] ? ', required' : ''}) - #{p[:desc]}"
           end
@@ -31,14 +33,14 @@ task "doc:export" do
     end
   end
 
-  puts "✅ Exported documentation to docs/exported.md"
+  puts '✅ Exported documentation to docs/exported.md'
 end
 
 namespace :db do
-  desc "Create the database"
+  desc 'Create the database'
   task :create do
     uri = URI.parse(ENV['DATABASE_URL'])
-    dbname = uri.path[1..-1]
+    dbname = uri.path[1..]
     conn = PG.connect(dbname: 'postgres', user: uri.user, password: uri.password, host: uri.host)
     begin
       conn.exec("CREATE DATABASE #{dbname}")
@@ -50,18 +52,18 @@ namespace :db do
     end
   end
 
-  desc "Run all migrations"
+  desc 'Run all migrations'
   task :migrate do
-    Dir.glob("db/migrate/*.rb").sort.each do |file|
+    Dir.glob('db/migrate/*.rb').sort.each do |file|
       puts "🔧 Running #{file}"
       require_relative "./#{file}"
     end
   end
 
-  desc "Drop the database"
+  desc 'Drop the database'
   task :drop do
     uri = URI.parse(ENV['DATABASE_URL'])
-    dbname = uri.path[1..-1]
+    dbname = uri.path[1..]
 
     # Connect to a different DB like `postgres`
     conn = PG.connect(
@@ -86,13 +88,13 @@ namespace :db do
     end
   end
 
-  desc "Seed the database"
+  desc 'Seed the database'
   task :seed do
     load './db/seeds.rb'
   end
 end
 
-desc "Run the test suite"
+desc 'Run the test suite'
 task :test do
-  sh "bundle exec rspec"
+  sh 'bundle exec rspec'
 end

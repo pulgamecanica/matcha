@@ -1,25 +1,27 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-gem "sinatra"
-gem "pg"
-gem "rackup"
-gem "puma"
-gem "rack"
-gem "rake"
-gem "dotenv"
-gem "rspec"
-gem "rack-test"
-gem "bcrypt"
-gem "securerandom", "~> 0.4.1"
-gem "base64", "~> 0.2.0"
-gem "json", "~> 2.10"
-gem "openssl", "~> 3.3"
+source 'https://rubygems.org'
+
+gem 'base64', '~> 0.2.0'
+gem 'bcrypt'
+gem 'connection_pool', '~> 2.5'
+gem 'dotenv'
+gem 'json', '~> 2.10'
+gem 'openssl', '~> 3.3'
+gem 'pg'
+gem 'puma'
+gem 'rack'
+gem 'rack-test'
+gem 'rackup'
+gem 'rake'
+gem 'rspec'
+gem 'securerandom', '~> 0.4.1'
+gem 'sinatra'
 gem 'sinatra-contrib'
-gem "connection_pool", "~> 2.5"
 
 group :development do
-  gem 'pry'
   gem 'faker'
+  gem 'pry'
+  gem 'rubocop', require: false
   gem 'ruby-progressbar'
 end
-
