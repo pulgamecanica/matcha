@@ -22,6 +22,7 @@ class MatchaApp < Sinatra::Base
   use ProfileViewsController
   use PicturesController
   use LocationController
+  use ConnectionsController
 end
 
 at_exit do

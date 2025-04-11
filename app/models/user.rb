@@ -142,4 +142,12 @@ class User
       longitude: user['longitude']
     }
   end
+
+  def self.connections(user_id)
+    Connection.all_for_user(user_id)
+  end
+
+  def self.connected_with?(user1_id, user2_id)
+    !!Connection.find_between(user1_id, user2_id)
+  end
 end

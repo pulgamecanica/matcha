@@ -1,82 +1,3 @@
-## POST /me/like
-**Description**: Like another user
-**Params:**
-- `username` (String, required) - The username of the user to like
-
-**Responses:**
-- `200`: User liked
-- `404`: User not found or unavailable
-- `422`: Invalid request
-
----
-## DELETE /me/like
-**Description**: Unlike a user
-**Params:**
-- `username` (String, required) - The username of the user to unlike
-
-**Responses:**
-- `200`: User unliked
-- `404`: User not found
-- `422`: Like does not exist
-
----
-## GET /me/likes
-**Description**: Get list of users you have liked
-
-**Responses:**
-- `200`: Array of liked user objects
-
----
-## GET /me/liked_by
-**Description**: Get list of users you have liked
-
-**Responses:**
-- `200`: Array of liked user objects
-
----
-## GET /me/matches
-**Description**: Get list of users who liked you back (matches)
-
-**Responses:**
-- `200`: Array of matched user objects
-
----
-## POST /me/block
-**Description**: Block a user by username
-**Params:**
-- `username` (String, required) - The username of the user to block
-
-**Responses:**
-- `200`: User blocked
-- `401`: Unauthorized
-- `404`: User not found
-- `422`: Cannot block yourself
-
----
-## DELETE /me/block
-**Description**: Unblock a user by username
-**Params:**
-- `username` (String, required) - The username of the user to unblock
-
-**Responses:**
-- `200`: User unblocked
-- `404`: User not found
-
----
-## GET /me/blocked
-**Description**: List users you've blocked
-
-**Responses:**
-- `200`: Returns a list of blocked users
-
----
-## GET /me/blocked_by
-**Description**: List users who have blocked you
-
-**Responses:**
-- `200`: Returns a list of users who blocked you
-
----
 ## GET /me
 **Description**: Get the currently authenticated user
 
@@ -122,6 +43,48 @@
 **Responses:**
 - `204`: User deleted
 - `401`: Unauthorized - missing or invalid token
+
+---
+## GET /me/pictures
+**Description**: List all pictures uploaded by the current user
+
+**Responses:**
+- `200`: Returns list of pictures
+
+---
+## POST /me/pictures
+**Description**: Upload a new picture
+**Params:**
+- `url` (String, required) - URL of the picture
+- `is_profile` (TrueClass) - Set as profile picture
+
+**Responses:**
+- `201`: Picture created
+- `422`: Invalid data
+
+---
+## PATCH /me/pictures/:id
+**Description**: Edit a picture (e.g., set as profile)
+**Params:**
+- `id` (Integer, required) - 
+- `is_profile` (TrueClass) - 
+- `url` (String) - 
+
+**Responses:**
+- `200`: Picture updated
+- `404`: Picture not found
+- `403`: Not your picture
+
+---
+## DELETE /me/pictures/:id
+**Description**: Delete a picture
+**Params:**
+- `id` (Integer, required) - 
+
+**Responses:**
+- `200`: Picture deleted
+- `404`: Not found
+- `403`: Unauthorized
 
 ---
 ## GET /tags
@@ -184,48 +147,6 @@
 - `200`: List of profiles you viewed
 
 ---
-## GET /me/pictures
-**Description**: List all pictures uploaded by the current user
-
-**Responses:**
-- `200`: Returns list of pictures
-
----
-## POST /me/pictures
-**Description**: Upload a new picture
-**Params:**
-- `url` (String, required) - URL of the picture
-- `is_profile` (TrueClass) - Set as profile picture
-
-**Responses:**
-- `201`: Picture created
-- `422`: Invalid data
-
----
-## PATCH /me/pictures/:id
-**Description**: Edit a picture (e.g., set as profile)
-**Params:**
-- `id` (Integer, required) - 
-- `is_profile` (TrueClass) - 
-- `url` (String) - 
-
-**Responses:**
-- `200`: Picture updated
-- `404`: Picture not found
-- `403`: Not your picture
-
----
-## DELETE /me/pictures/:id
-**Description**: Delete a picture
-**Params:**
-- `id` (Integer, required) - 
-
-**Responses:**
-- `200`: Picture deleted
-- `404`: Not found
-- `403`: Unauthorized
-
----
 ## POST /auth/register
 **Description**: Register a new user
 **Params:**
@@ -234,8 +155,6 @@
 - `password` (String, required) - User password (will be securely hashed)
 - `first_name` (String, required) - User's first name
 - `last_name` (String, required) - User's last name
-- `gender` (String, required) - User's gender: one of 'male', 'female', 'other'
-- `sexual_preferences` (String, required) - Who the user is interested in: one of 'male', 'female', 'both'
 
 **Responses:**
 - `201`: User created
@@ -300,5 +219,114 @@
 **Responses:**
 - `200`: List of location records
 - `401`: Unauthorized
+
+---
+## POST /me/like
+**Description**: Like another user
+**Params:**
+- `username` (String, required) - The username of the user to like
+
+**Responses:**
+- `200`: User liked
+- `404`: User not found or unavailable
+- `422`: Invalid request
+
+---
+## DELETE /me/like
+**Description**: Unlike a user
+**Params:**
+- `username` (String, required) - The username of the user to unlike
+
+**Responses:**
+- `200`: User unliked
+- `404`: User not found
+- `422`: Like does not exist
+
+---
+## GET /me/likes
+**Description**: Get list of users you have liked
+
+**Responses:**
+- `200`: Array of liked user objects
+
+---
+## GET /me/liked_by
+**Description**: Get list of users you have liked
+
+**Responses:**
+- `200`: Array of liked user objects
+
+---
+## GET /me/matches
+**Description**: Get list of users who liked you back (matches)
+
+**Responses:**
+- `200`: Array of matched user objects
+
+---
+## GET /me/connections
+**Description**: Get all users you are connected with
+
+**Responses:**
+- `200`: List of connected users
+
+---
+## POST /me/connect
+**Description**: Create a connection with a matched user
+**Params:**
+- `username` (String, required) - The username of the user to connect with
+
+**Responses:**
+- `200`: Connection created
+- `404`: User not found
+- `403`: User is not matched with you
+- `422`: Invalid request
+
+---
+## DELETE /me/connect
+**Description**: Remove an existing connection
+**Params:**
+- `username` (String, required) - The username of the user to disconnect from
+
+**Responses:**
+- `200`: Connection removed
+- `403`: You and username are not connected
+- `404`: User not found
+
+---
+## POST /me/block
+**Description**: Block a user by username
+**Params:**
+- `username` (String, required) - The username of the user to block
+
+**Responses:**
+- `200`: User blocked
+- `401`: Unauthorized
+- `404`: User not found
+- `422`: Cannot block yourself
+
+---
+## DELETE /me/block
+**Description**: Unblock a user by username
+**Params:**
+- `username` (String, required) - The username of the user to unblock
+
+**Responses:**
+- `200`: User unblocked
+- `404`: User not found
+
+---
+## GET /me/blocked
+**Description**: List users you've blocked
+
+**Responses:**
+- `200`: Returns a list of blocked users
+
+---
+## GET /me/blocked_by
+**Description**: List users who have blocked you
+
+**Responses:**
+- `200`: Returns a list of users who blocked you
 
 ---
