@@ -11,9 +11,7 @@ describe 'POST /auth/register' do
       email: 'alice@example.com',
       password: 'secret',
       first_name: 'Alice',
-      last_name: 'Liddell',
-      gender: 'female',
-      sexual_preferences: 'male'
+      last_name: 'Liddell'
     }.to_json, headers
 
     expect(last_response.status).to eq(201)
@@ -31,9 +29,7 @@ describe 'POST /auth/register' do
         email: 'original@example.com',
         password: 'secure123',
         first_name: 'First',
-        last_name: 'User',
-        gender: 'male',
-        sexual_preferences: 'female'
+        last_name: 'User'
       }
     end
 

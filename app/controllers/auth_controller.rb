@@ -20,9 +20,6 @@ class AuthController < BaseController
     param :password, String, required: true, desc: 'User password (will be securely hashed)'
     param :first_name, String, required: true, desc: "User's first name"
     param :last_name, String, required: true, desc: "User's last name"
-    param :gender, String, required: true, desc: "User's gender: one of 'male', 'female', 'other'"
-    param :sexual_preferences, String, required: true,
-                                       desc: "Who the user is interested in: one of 'male', 'female', 'both'"
 
     response 201, 'User created'
     response 422, 'Validation error (missing fields, invalid values, or already taken)'

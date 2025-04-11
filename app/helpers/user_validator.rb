@@ -12,12 +12,7 @@ module UserValidator
       required: %i[
         username email password
         first_name last_name
-        gender sexual_preferences
-      ],
-      enums: {
-        gender: VALID_GENDERS,
-        sexual_preferences: VALID_PREFS
-      }
+      ]
     )
   end
 
