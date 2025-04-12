@@ -2,265 +2,6 @@
 
 > **Note:** All authenticated endpoints require a valid token via `Authorization: Bearer <token>`.
 
-## `GET` /me
-**Description**: Get the currently authenticated user
-**Auth required**: Yes
-**Tags**: User
-
-### Responses
-- `200`: User object
-```json
-{
-  "data": {
-    "id": 1,
-    "username": "johndoe",
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "john@example.com",
-    "gender": "male",
-    "sexual_preferences": "everyone",
-    "biography": "Just a regular person.",
-    "latitude": 48.8566,
-    "longitude": 2.3522
-  }
-}
-```
-- `403`: User not confirmed or banned
-```json
-{
-  "error": "Access forbidden"
-}
-```
-
----
-## `PATCH` /me
-**Description**: Update profile fields for the current authenticated user
-**Auth required**: Yes
-**Tags**: User
-
-### Parameters
-- `username` (String)  - New username (must be unique)
-- `first_name` (String)  - 
-- `last_name` (String)  - 
-- `gender` (String)  - One of: male, female, other
-- `sexual_preferences` (String)  - One of: male, female, non_binary, everyone
-- `biography` (String)  - 
-- `latitude` (Float)  - 
-- `longitude` (Float)  - 
-
-### Responses
-- `200`: Profile updated & user object
-```json
-{
-  "message": "Profile updated!",
-  "data": {
-    "id": 1,
-    "username": "newname",
-    "biography": "Updated bio."
-  }
-}
-```
-- `422`: Validation failed
-```json
-{
-  "error": "Validation failed",
-  "details": {
-    "username": [
-      "has already been taken"
-    ]
-  }
-}
-```
-
----
-## `GET` /users/:username
-**Description**: Fetch the public profile of a user by their username
-**Auth required**: Yes
-**Tags**: User, PublicProfile
-
-### Parameters
-- `username` (String) **(required)** - The unique username of the user
-
-### Responses
-- `200`: Public user data
-```json
-{
-  "data": {
-    "username": "janedoe",
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "biography": "Hi there!",
-    "gender": "female",
-    "sexual_preferences": "male",
-    "profile_picture_id": 42,
-    "online_status": true,
-    "last_seen_at": "2025-04-11T14:53:00Z"
-  }
-}
-```
-- `404`: User not found or banned
-```json
-{
-  "error": "User not found"
-}
-```
-- `404`: User blocked you
-```json
-{
-  "error": "User blocked you"
-}
-```
-- `404`: User is blocked
-```json
-{
-  "error": "User is blocked"
-}
-```
-
----
-## `DELETE` /me
-**Description**: Delete the current authenticated user account and all related data
-**Auth required**: Yes
-**Tags**: User
-
-### Responses
-- `204`: User deleted
-
----
-## `GET` /tags
-**Description**: List all tags
-**Auth required**: Yes
-**Tags**: Tag
-
-### Responses
-- `200`: Returns a list of available tags
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "travel"
-    },
-    {
-      "id": 2,
-      "name": "music"
-    }
-  ]
-}
-```
-
----
-## `POST` /tags
-**Description**: Create a new tag
-**Auth required**: Yes
-**Tags**: Tag
-
-### Parameters
-- `name` (String) **(required)** - The name of the tag
-
-### Responses
-- `201`: Tag created
-```json
-{
-  "message": "Tag created",
-  "data": {
-    "id": 3,
-    "name": "photography"
-  }
-}
-```
-- `422`: Missing or invalid name
-```json
-{
-  "error": "Validation failed",
-  "details": {
-    "name": [
-      "is too short"
-    ]
-  }
-}
-```
-- `422`: Tag name already taken
-```json
-{
-  "error": "Tag name already taken"
-}
-```
-
----
-## `GET` /me/tags
-**Description**: List all tags for the current user
-**Auth required**: Yes
-**Tags**: User, Tag
-
-### Responses
-- `200`: Returns user’s tags
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "travel"
-    },
-    {
-      "id": 3,
-      "name": "photography"
-    }
-  ]
-}
-```
-
----
-## `POST` /me/tags
-**Description**: Add a tag to the current user
-**Auth required**: Yes
-**Tags**: User, Tag
-
-### Parameters
-- `name` (String) **(required)** - The name of the tag to add, if tag doesn't exist it's created
-
-### Responses
-- `200`: Tag added to user
-```json
-{
-  "message": "Tag added",
-  "data": {
-    "id": 4,
-    "name": "sports"
-  }
-}
-```
-- `422`: Tag name missing or invalid
-```json
-{
-  "error": "Missing tag name"
-}
-```
-
----
-## `DELETE` /me/tags
-**Description**: Remove a tag from the current user
-**Auth required**: Yes
-**Tags**: User, Tag
-
-### Parameters
-- `name` (String) **(required)** - The name of the tag to remove
-
-### Responses
-- `200`: Tag removed
-```json
-{
-  "message": "Tag removed"
-}
-```
-- `422`: Missing or invalid tag
-```json
-{
-  "error": "Tag not found"
-}
-```
-
----
 ## `GET` /me/visits
 **Description**: See who has viewed your profile
 **Auth required**: Yes
@@ -565,6 +306,30 @@
 ```
 
 ---
+## `POST` /auth/request_password_reset
+**Description**: Request a password reset via email
+**Auth required**: No
+**Tags**: Auth
+
+### Parameters
+- `token` (String) **(required)** - The reset token you get via email
+- `password` (String) **(required)** - The new password
+
+### Responses
+- `200`: Password reset successful
+```json
+{
+  "message": "Password reset successful."
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+
+---
 ## `POST` /me/messages
 **Description**: Send a message to a user (requires existing connection)
 **Auth required**: Yes
@@ -694,6 +459,265 @@
       ]
     }
   ]
+}
+```
+
+---
+## `GET` /me
+**Description**: Get the currently authenticated user
+**Auth required**: Yes
+**Tags**: User
+
+### Responses
+- `200`: User object
+```json
+{
+  "data": {
+    "id": 1,
+    "username": "johndoe",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john@example.com",
+    "gender": "male",
+    "sexual_preferences": "everyone",
+    "biography": "Just a regular person.",
+    "latitude": 48.8566,
+    "longitude": 2.3522
+  }
+}
+```
+- `403`: User not confirmed or banned
+```json
+{
+  "error": "Access forbidden"
+}
+```
+
+---
+## `PATCH` /me
+**Description**: Update profile fields for the current authenticated user
+**Auth required**: Yes
+**Tags**: User
+
+### Parameters
+- `username` (String)  - New username (must be unique)
+- `first_name` (String)  - 
+- `last_name` (String)  - 
+- `gender` (String)  - One of: male, female, other
+- `sexual_preferences` (String)  - One of: male, female, non_binary, everyone
+- `biography` (String)  - 
+- `latitude` (Float)  - 
+- `longitude` (Float)  - 
+
+### Responses
+- `200`: Profile updated & user object
+```json
+{
+  "message": "Profile updated!",
+  "data": {
+    "id": 1,
+    "username": "newname",
+    "biography": "Updated bio."
+  }
+}
+```
+- `422`: Validation failed
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "username": [
+      "has already been taken"
+    ]
+  }
+}
+```
+
+---
+## `GET` /users/:username
+**Description**: Fetch the public profile of a user by their username
+**Auth required**: Yes
+**Tags**: User, PublicProfile
+
+### Parameters
+- `username` (String) **(required)** - The unique username of the user
+
+### Responses
+- `200`: Public user data
+```json
+{
+  "data": {
+    "username": "janedoe",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "biography": "Hi there!",
+    "gender": "female",
+    "sexual_preferences": "male",
+    "profile_picture_id": 42,
+    "online_status": true,
+    "last_seen_at": "2025-04-11T14:53:00Z"
+  }
+}
+```
+- `404`: User not found or banned
+```json
+{
+  "error": "User not found"
+}
+```
+- `404`: User blocked you
+```json
+{
+  "error": "User blocked you"
+}
+```
+- `404`: User is blocked
+```json
+{
+  "error": "User is blocked"
+}
+```
+
+---
+## `DELETE` /me
+**Description**: Delete the current authenticated user account and all related data
+**Auth required**: Yes
+**Tags**: User
+
+### Responses
+- `204`: User deleted
+
+---
+## `GET` /tags
+**Description**: List all tags
+**Auth required**: Yes
+**Tags**: Tag
+
+### Responses
+- `200`: Returns a list of available tags
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "travel"
+    },
+    {
+      "id": 2,
+      "name": "music"
+    }
+  ]
+}
+```
+
+---
+## `POST` /tags
+**Description**: Create a new tag
+**Auth required**: Yes
+**Tags**: Tag
+
+### Parameters
+- `name` (String) **(required)** - The name of the tag
+
+### Responses
+- `201`: Tag created
+```json
+{
+  "message": "Tag created",
+  "data": {
+    "id": 3,
+    "name": "photography"
+  }
+}
+```
+- `422`: Missing or invalid name
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "name": [
+      "is too short"
+    ]
+  }
+}
+```
+- `422`: Tag name already taken
+```json
+{
+  "error": "Tag name already taken"
+}
+```
+
+---
+## `GET` /me/tags
+**Description**: List all tags for the current user
+**Auth required**: Yes
+**Tags**: User, Tag
+
+### Responses
+- `200`: Returns user’s tags
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "travel"
+    },
+    {
+      "id": 3,
+      "name": "photography"
+    }
+  ]
+}
+```
+
+---
+## `POST` /me/tags
+**Description**: Add a tag to the current user
+**Auth required**: Yes
+**Tags**: User, Tag
+
+### Parameters
+- `name` (String) **(required)** - The name of the tag to add, if tag doesn't exist it's created
+
+### Responses
+- `200`: Tag added to user
+```json
+{
+  "message": "Tag added",
+  "data": {
+    "id": 4,
+    "name": "sports"
+  }
+}
+```
+- `422`: Tag name missing or invalid
+```json
+{
+  "error": "Missing tag name"
+}
+```
+
+---
+## `DELETE` /me/tags
+**Description**: Remove a tag from the current user
+**Auth required**: Yes
+**Tags**: User, Tag
+
+### Parameters
+- `name` (String) **(required)** - The name of the tag to remove
+
+### Responses
+- `200`: Tag removed
+```json
+{
+  "message": "Tag removed"
+}
+```
+- `422`: Missing or invalid tag
+```json
+{
+  "error": "Tag not found"
 }
 ```
 
