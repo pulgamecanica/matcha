@@ -170,4 +170,8 @@ class User
   def self.dates(user_id)
     Date.all_for_user(user_id)
   end
+
+  def self.notifications(user_id)
+    Notification.for_user(user_id)
+  end
 end
