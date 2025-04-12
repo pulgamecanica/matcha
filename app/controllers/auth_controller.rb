@@ -143,4 +143,54 @@ class AuthController < BaseController
     User.confirm!(data['username'])
     { message: 'User confirmed!' }.to_json
   end
+
+  # ---------------------------
+  # PASSWORD RESET
+  # ---------------------------
+  api_doc '/auth/request_password_reset', method: :post do
+    tags 'Auth'
+    description 'Request a password reset via email'
+    param :email, String, required: true, desc: 'Email of the user to reset'
+    response 200, 'Password reset sent', example: { message: 'A reset link was sent.' }
+    response 404, 'User not found', example: { error: 'User not found' }
+    @data[:auth_required] = false
+  end
+
+  post '/auth/request_password_reset' do
+    data = json_body
+    user = User.find_by_email(data['email'])
+    halt 404, { error: 'User not found' }.to_json unless user
+
+    token_record = PasswordResetToken.generate_for(user['id'])
+    puts "🔗 Password reset link: https://yourapp.com/reset-password?token=#{token_record['token']}"
+
+    { message: 'A reset link was sent.' }.to_json
+  end
+
+  # ---------------------------
+  # PASSWORD RESET
+  # ---------------------------
+  api_doc '/auth/request_password_reset', method: :post do
+    tags 'Auth'
+    description 'Request a password reset via email'
+    param :token, String, required: true, desc: 'The reset token you get via email'
+    param :password, String, required: true, desc: 'The new password'
+    response 200, 'Password reset successful', example: { message: 'Password reset successful.' }
+    response 404, 'User not found', example: { error: 'User not found' }
+    @data[:auth_required] = false
+  end
+
+  post '/auth/reset_password' do
+    data = json_body
+    token = PasswordResetToken.find_valid(data['token'])
+    halt 400, { error: 'Invalid or expired token' }.to_json unless token
+
+    user = User.find_by_id(token['user_id'])
+    halt 404, { error: 'User not found' }.to_json unless user
+
+    User.update(user['id'], { password: data['password'] })
+    PasswordResetToken.mark_used(data['token'])
+
+    { message: 'Password reset successful' }.to_json
+  end
 end
