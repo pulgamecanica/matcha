@@ -10,30 +10,24 @@ task 'doc:export' do
   require_relative './app/lib/api_doc'
   require_relative './app'
 
-  controllers = ObjectSpace.each_object(Class).select { |cls| cls < Sinatra::Base }
-  File.open('docs/exported.md', 'w') do |file|
-    controllers.each do |ctrl|
-      next unless ctrl.respond_to?(:docs)
+  puts
+  puts '📘 Exporting API Documentation'
+  puts '────────────────────────────────────────────────'
 
-      ctrl.docs.each do |(method, path), doc|
-        file.puts "## #{method} #{path}"
-        file.puts "**Description**: #{doc[:description]}\n"
-        if doc[:params].any?
-          file.puts '**Params:**'
-          doc[:params].each do |p|
-            file.puts "- `#{p[:name]}` (#{p[:type]}#{p[:required] ? ', required' : ''}) - #{p[:desc]}"
-          end
-        end
-        if doc[:responses].any?
-          file.puts "\n**Responses:**"
-          doc[:responses].each { |r| file.puts "- `#{r[:code]}`: #{r[:desc]}" }
-        end
-        file.puts "\n---\n"
-      end
-    end
-  end
+  markdown_path = 'docs/exported.md'
+  webpage_path = 'docs/routes.json'
+  APIDoc.export_markdown(
+    path: markdown_path,
+    title: '📘 API Documentation',
+    include_auth_notice: true
+  )
+  APIDoc.export_json(path: webpage_path)
 
-  puts '✅ Exported documentation to docs/exported.md'
+  puts "✅ Done! Markdown exported to: #{markdown_path}"
+  puts "✅ Done! Data loaded to: #{webpage_path}"
+  puts '📄 You can open it in any Markdown viewer or GitHub'
+  puts '📄 Refresh your browser to see the updated documentation'
+  puts
 end
 
 namespace :db do

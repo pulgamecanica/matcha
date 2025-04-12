@@ -25,7 +25,7 @@ class ProfileView
     end
   end
 
-  def self.viewed_by(user_id)
+  def self.views(user_id)
     Database.pool.with do |conn|
       conn.exec_params(<<~SQL, [user_id]).to_a
         SELECT users.*, profile_views.visited_at FROM users

@@ -10,9 +10,16 @@ class ConnectionsController < BaseController
   # LIST CONNECTIONS
   # ---------------------------
   api_doc '/me/connections', method: :get do
+    tags 'User', 'Connection'
     description 'Get all users you are connected with'
-    response 200, 'List of connected users'
+    response 200, 'List of connected users', example: {
+      data: [
+        { username: 'janedoe', first_name: 'Jane', last_name: 'Doe' },
+        { username: 'bobsmith', first_name: 'Bob', last_name: 'Smith' }
+      ]
+    }
   end
+
   get '/me/connections' do
     connections = User.connections(@current_user['id'])
     { data: connections }.to_json
@@ -22,13 +29,25 @@ class ConnectionsController < BaseController
   # CREATE CONNECTION
   # ---------------------------
   api_doc '/me/connect', method: :post do
+    tags 'User', 'Connection'
     description 'Create a connection with a matched user'
     param :username, String, required: true, desc: 'The username of the user to connect with'
-    response 200, 'Connection created'
-    response 404, 'User not found'
-    response 403, 'User is not matched with you'
-    response 422, 'Invalid request'
+    response 200, 'Connection created', example: {
+      message: 'Connected with janedoe',
+      data: {
+        user_id: 1,
+        target_id: 2,
+        created_at: '2025-04-12T10:00:00Z'
+      }
+    }
+    response 403, 'User is not matched with you', example: { error: 'User is not matched with you' }
+    response 404, 'User not found', example: { error: 'User not found' }
+    response 422, 'Invalid request', example: {
+      error: 'Validation failed',
+      details: { username: ['is required'] }
+    }
   end
+
   post '/me/connect' do
     data = json_body
 
@@ -56,12 +75,16 @@ class ConnectionsController < BaseController
   # DELETE CONNECTION
   # ---------------------------
   api_doc '/me/connect', method: :delete do
+    tags 'User', 'Connection'
     description 'Remove an existing connection'
     param :username, String, required: true, desc: 'The username of the user to disconnect from'
-    response 200, 'Connection removed'
-    response 403, 'You and username are not connected'
-    response 404, 'User not found'
+    response 200, 'Connection removed', example: {
+      message: 'Disconnected from janedoe'
+    }
+    response 403, 'You and username are not connected', example: { error: 'You and janedoe are not connected' }
+    response 404, 'User not found', example: { error: 'User not found' }
   end
+
   delete '/me/connect' do
     data = json_body
 

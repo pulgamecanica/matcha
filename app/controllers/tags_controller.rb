@@ -10,9 +10,16 @@ class TagsController < BaseController
   # TAGS
   # ---------------------------
   api_doc '/tags', method: :get do
+    tags 'Tag'
     description 'List all tags'
-    response 200, 'Returns a list of available tags'
+    response 200, 'Returns a list of available tags', example: {
+      data: [
+        { id: 1, name: 'travel' },
+        { id: 2, name: 'music' }
+      ]
+    }
   end
+
   get '/tags' do
     { data: Tag.all }.to_json
   end
@@ -21,12 +28,20 @@ class TagsController < BaseController
   # NEW TAG
   # ---------------------------
   api_doc '/tags', method: :post do
+    tags 'Tag'
     description 'Create a new tag'
     param :name, String, required: true, desc: 'The name of the tag'
-    response 201, 'Tag created'
-    response 422, 'Missing or invalid name'
-    response 422, 'Tag name already taken'
+    response 201, 'Tag created', example: {
+      message: 'Tag created',
+      data: { id: 3, name: 'photography' }
+    }
+    response 422, 'Missing or invalid name', example: {
+      error: 'Validation failed',
+      details: { name: ['is too short'] }
+    }
+    response 422, 'Tag name already taken', example: { error: 'Tag name already taken' }
   end
+
   post '/tags' do
     data = json_body
 
@@ -46,10 +61,16 @@ class TagsController < BaseController
   # USER TAGS
   # ---------------------------
   api_doc '/me/tags', method: :get do
+    tags 'User', 'Tag'
     description 'List all tags for the current user'
-    response 200, 'Returns user’s tags'
-    response 401, 'Unauthorized'
+    response 200, 'Returns user’s tags', example: {
+      data: [
+        { id: 1, name: 'travel' },
+        { id: 3, name: 'photography' }
+      ]
+    }
   end
+
   get '/me/tags' do
     { data: User.tags(@current_user['id']) }.to_json
   end
@@ -58,11 +79,16 @@ class TagsController < BaseController
   # NEW USER TAG
   # ---------------------------
   api_doc '/me/tags', method: :post do
+    tags 'User', 'Tag'
     description 'Add a tag to the current user'
     param :name, String, required: true, desc: "The name of the tag to add, if tag doesn't exist it's created"
-    response 200, 'Tag added to user'
-    response 422, 'Tag name missing or invalid'
+    response 200, 'Tag added to user', example: {
+      message: 'Tag added',
+      data: { id: 4, name: 'sports' }
+    }
+    response 422, 'Tag name missing or invalid', example: { error: 'Missing tag name' }
   end
+
   post '/me/tags' do
     data = json_body
     halt 422, { error: 'Missing tag name' }.to_json unless data['name']
@@ -76,11 +102,13 @@ class TagsController < BaseController
   # DELETE USER TAG
   # ---------------------------
   api_doc '/me/tags', method: :delete do
+    tags 'User', 'Tag'
     description 'Remove a tag from the current user'
     param :name, String, required: true, desc: 'The name of the tag to remove'
-    response 200, 'Tag removed'
-    response 422, 'Missing or invalid tag'
+    response 200, 'Tag removed', example: { message: 'Tag removed' }
+    response 422, 'Missing or invalid tag', example: { error: 'Tag not found' }
   end
+
   delete '/me/tags' do
     data = json_body
     halt 422, { error: 'Missing tag name' }.to_json unless data['name']

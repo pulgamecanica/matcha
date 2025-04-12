@@ -10,9 +10,16 @@ class PicturesController < BaseController
   # USER PICTURES
   # ---------------------------
   api_doc '/me/pictures', method: :get do
+    tags 'User', 'Picture'
     description 'List all pictures uploaded by the current user'
-    response 200, 'Returns list of pictures'
+    response 200, 'Returns list of pictures', example: {
+      data: [
+        { id: 1, url: 'https://cdn.example.com/pic1.jpg', is_profile: false },
+        { id: 2, url: 'https://cdn.example.com/pic2.jpg', is_profile: true }
+      ]
+    }
   end
+
   get '/me/pictures' do
     pictures = User.pictures(@current_user['id'])
     { data: pictures }.to_json
@@ -22,12 +29,20 @@ class PicturesController < BaseController
   # ADD NEW PICTURE
   # ---------------------------
   api_doc '/me/pictures', method: :post do
+    tags 'User', 'Picture'
     description 'Upload a new picture'
     param :url, String, required: true, desc: 'URL of the picture'
     param :is_profile, TrueClass, required: false, desc: 'Set as profile picture'
-    response 201, 'Picture created'
-    response 422, 'Invalid data'
+    response 201, 'Picture created', example: {
+      message: 'Picture uploaded!',
+      data: { id: 3, url: 'https://cdn.example.com/pic3.jpg', is_profile: false }
+    }
+    response 422, 'Invalid data', example: {
+      error: 'Validation failed',
+      details: { url: ['is not a valid URL'] }
+    }
   end
+
   post '/me/pictures' do
     data = json_body
 
@@ -49,14 +64,19 @@ class PicturesController < BaseController
   # UPDATE PICTURE
   # ---------------------------
   api_doc '/me/pictures/:id', method: :patch do
+    tags 'User', 'Picture'
     description 'Edit a picture (e.g., set as profile)'
     param :id, Integer, required: true
     param :is_profile, TrueClass, required: false
     param :url, String, required: false
-    response 200, 'Picture updated'
-    response 404, 'Picture not found'
-    response 403, 'Not your picture'
+    response 200, 'Picture updated', example: {
+      message: 'Picture updated!',
+      data: { id: 2, url: 'https://cdn.example.com/updated.jpg', is_profile: true }
+    }
+    response 404, 'Picture not found', example: { error: 'Picture not found' }
+    response 403, 'Not your picture', example: { error: 'Unauthorized' }
   end
+
   patch '/me/pictures/:id' do
     picture = Picture.find_by_id(params[:id])
     halt 404, { error: 'Picture not found' }.to_json unless picture
@@ -85,12 +105,14 @@ class PicturesController < BaseController
   # DELETE PICTURE
   # ---------------------------
   api_doc '/me/pictures/:id', method: :delete do
+    tags 'User', 'Picture'
     description 'Delete a picture'
     param :id, Integer, required: true
-    response 200, 'Picture deleted'
-    response 404, 'Not found'
-    response 403, 'Unauthorized'
+    response 200, 'Picture deleted', example: { message: 'Picture deleted' }
+    response 404, 'Not found', example: { error: 'Picture not found' }
+    response 403, 'Unauthorized', example: { error: 'Unauthorized' }
   end
+
   delete '/me/pictures/:id' do
     picture = Picture.find_by_id(params[:id])
     halt 404, { error: 'Picture not found' }.to_json unless picture

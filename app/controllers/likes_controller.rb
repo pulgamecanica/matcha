@@ -10,11 +10,16 @@ class LikesController < BaseController
   # NEW LIKE
   # ---------------------------
   api_doc '/me/like', method: :post do
+    tags 'User', 'Like'
     description 'Like another user'
     param :username, String, required: true, desc: 'The username of the user to like'
-    response 200, 'User liked'
-    response 404, 'User not found or unavailable'
-    response 422, 'Invalid request'
+    response 200, 'User liked', example: {
+      message: 'You liked janedoe'
+    }
+    response 404, 'User not found or unavailable', example: { error: 'User not found' }
+    response 422, 'Invalid request', example: {
+      error: 'You cannot like yourself'
+    }
   end
 
   post '/me/like' do
@@ -39,11 +44,14 @@ class LikesController < BaseController
   # DELETE LIKE
   # ---------------------------
   api_doc '/me/like', method: :delete do
+    tags 'User', 'Like'
     description 'Unlike a user'
     param :username, String, required: true, desc: 'The username of the user to unlike'
-    response 200, 'User unliked'
-    response 404, 'User not found'
-    response 422, 'Like does not exist'
+    response 200, 'User unliked', example: {
+      message: 'janedoe has been unliked'
+    }
+    response 404, 'User not found', example: { error: 'User not found' }
+    response 422, 'Like does not exist', example: { error: "You haven't liked this user yet" }
   end
 
   delete '/me/like' do
@@ -68,8 +76,14 @@ class LikesController < BaseController
   # USER LIKES
   # ---------------------------
   api_doc '/me/likes', method: :get do
+    tags 'User', 'Like'
     description 'Get list of users you have liked'
-    response 200, 'Array of liked user objects'
+    response 200, 'Array of liked user objects', example: {
+      data: [
+        { username: 'janedoe', first_name: 'Jane', last_name: 'Doe' },
+        { username: 'bobsmith', first_name: 'Bob', last_name: 'Smith' }
+      ]
+    }
   end
 
   get '/me/likes' do
@@ -80,8 +94,13 @@ class LikesController < BaseController
   # USER LIKES
   # ---------------------------
   api_doc '/me/liked_by', method: :get do
-    description 'Get list of users you have liked'
-    response 200, 'Array of liked user objects'
+    tags 'User', 'Like'
+    description 'Get list of users who liked you'
+    response 200, 'Array of users who liked you', example: {
+      data: [
+        { username: 'alicewonder', first_name: 'Alice', last_name: 'Wonder' }
+      ]
+    }
   end
 
   get '/me/liked_by' do
@@ -92,8 +111,13 @@ class LikesController < BaseController
   # USER MATCHES
   # ---------------------------
   api_doc '/me/matches', method: :get do
+    tags 'User', 'Like'
     description 'Get list of users who liked you back (matches)'
-    response 200, 'Array of matched user objects'
+    response 200, 'Array of matched user objects', example: {
+      data: [
+        { username: 'janedoe', first_name: 'Jane', last_name: 'Doe' }
+      ]
+    }
   end
 
   get '/me/matches' do

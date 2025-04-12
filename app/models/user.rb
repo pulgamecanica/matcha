@@ -123,8 +123,8 @@ class User
     ProfileView.visited(user_id)
   end
 
-  def self.viewed_by(user_id)
-    ProfileView.viewed_by(user_id)
+  def self.views(user_id)
+    ProfileView.views(user_id)
   end
 
   def self.pictures(user_id)

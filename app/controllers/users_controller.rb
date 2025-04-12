@@ -9,10 +9,23 @@ class UsersController < BaseController
   # ME
   # ---------------------------
   api_doc '/me', method: :get do
+    tags 'User'
     description 'Get the currently authenticated user'
-    response 200, 'User object'
-    response 401, 'Missing or invalid token'
-    response 403, 'User not confirmed or banned'
+    response 200, 'User object', example: {
+      data: {
+        id: 1,
+        username: 'johndoe',
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john@example.com',
+        gender: 'male',
+        sexual_preferences: 'everyone',
+        biography: 'Just a regular person.',
+        latitude: 48.8566,
+        longitude: 2.3522
+      }
+    }
+    response 403, 'User not confirmed or banned', example: { error: 'Access forbidden' }
   end
 
   get '/me' do
@@ -26,6 +39,7 @@ class UsersController < BaseController
   # EDIT ME
   # ---------------------------
   api_doc '/me', method: :patch do
+    tags 'User'
     description 'Update profile fields for the current authenticated user'
     param :username, String, required: false, desc: 'New username (must be unique)'
     param :first_name, String, required: false
@@ -35,9 +49,18 @@ class UsersController < BaseController
     param :biography, String, required: false
     param :latitude, Float, required: false
     param :longitude, Float, required: false
-    response 200, 'Profile updated & user object'
-    response 401, 'Unauthorized'
-    response 422, 'Validation failed'
+    response 200, 'Profile updated & user object', example: {
+      message: 'Profile updated!',
+      data: {
+        id: 1,
+        username: 'newname',
+        biography: 'Updated bio.'
+      }
+    }
+    response 422, 'Validation failed', example: {
+      error: 'Validation failed',
+      details: { username: ['has already been taken'] }
+    }
   end
 
   patch '/me' do
@@ -56,12 +79,25 @@ class UsersController < BaseController
   # LOOKUP USERNAME
   # ---------------------------
   api_doc '/users/:username', method: :get do
+    tags 'User', 'PublicProfile'
     description 'Fetch the public profile of a user by their username'
     param :username, String, required: true, desc: 'The unique username of the user'
-    response 200, 'Public user data'
-    response 404, 'User not found or banned'
-    response 404, 'User blocked you'
-    response 404, 'User is blocked'
+    response 200, 'Public user data', example: {
+      data: {
+        username: 'janedoe',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        biography: 'Hi there!',
+        gender: 'female',
+        sexual_preferences: 'male',
+        profile_picture_id: 42,
+        online_status: true,
+        last_seen_at: '2025-04-11T14:53:00Z'
+      }
+    }
+    response 404, 'User not found or banned', example: { error: 'User not found' }
+    response 404, 'User blocked you', example: { error: 'User blocked you' }
+    response 404, 'User is blocked', example: { error: 'User is blocked' }
   end
 
   get '/users/:username' do
@@ -92,9 +128,9 @@ class UsersController < BaseController
   # DELETE USER
   # ---------------------------
   api_doc '/me', method: :delete do
+    tags 'User'
     description 'Delete the current authenticated user account and all related data'
     response 204, 'User deleted'
-    response 401, 'Unauthorized - missing or invalid token'
   end
 
   delete '/me' do

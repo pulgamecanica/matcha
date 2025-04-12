@@ -29,7 +29,7 @@ describe 'ProfileViewsController' do
   it 'records a profile view when Bob visits Alice' do
     get '/users/alice', nil, auth_headers(@bob_token)
     expect(last_response.status).to eq(200)
-    visitors = User.viewed_by(@alice['id'])
+    visitors = User.views(@alice['id'])
     expect(visitors).not_to be_empty
     expect(visitors.first['username']).to eq('bob')
   end
@@ -47,7 +47,7 @@ describe 'ProfileViewsController' do
   it 'shows who visits my profile' do
     get '/users/bob', nil, auth_headers(@alice_token)
 
-    get '/me/viewed_by', nil, auth_headers(@bob_token)
+    get '/me/views', nil, auth_headers(@bob_token)
     expect(last_response.status).to eq(200)
     users = JSON.parse(last_response.body)['data']
     expect(users).not_to be_empty

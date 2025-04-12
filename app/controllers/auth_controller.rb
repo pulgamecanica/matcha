@@ -14,15 +14,14 @@ class AuthController < BaseController
   # ---------------------------
   api_doc '/auth/register', method: :post do
     description 'Register a new user'
-
     param :username, String, required: true, desc: 'Unique username (max 20 characters)'
     param :email, String, required: true, desc: 'User email address used for login and verification'
     param :password, String, required: true, desc: 'User password (will be securely hashed)'
     param :first_name, String, required: true, desc: "User's first name"
     param :last_name, String, required: true, desc: "User's last name"
-
     response 201, 'User created'
     response 422, 'Validation error (missing fields, invalid values, or already taken)'
+    @data[:auth_required] = false
   end
 
   post '/auth/register' do
@@ -45,13 +44,12 @@ class AuthController < BaseController
   # ---------------------------
   api_doc '/auth/login', method: :post do
     description 'Authenticate an existing user using username and password'
-
     param :username, String, required: true, desc: "User's unique username"
     param :password, String, required: true, desc: "User's account password"
-
     response 200, 'Login successful, session token returned'
     response 401, 'Invalid credentials'
     response 403, 'Email not confirmed or user is banned'
+    @data[:auth_required] = false
   end
 
   post '/auth/login' do
@@ -75,15 +73,14 @@ class AuthController < BaseController
   # ---------------------------
   api_doc '/auth/social', method: :post do
     description 'Authenticate or register a user via social login (OAuth provider)'
-
     param :provider, String, required: true, desc: "OAuth provider (e.g., 'google', 'github', 'intra')"
     param :provider_user_id, String, required: true, desc: 'Unique ID returned by the provider for this user'
     param :first_name, String, required: false, desc: "User's first name (optional if new user)"
     param :last_name, String, required: false, desc: "User's last name (optional if new user)"
-
     response 200, 'User authenticated successfully'
     response 201, 'User created via social login'
     response 422, 'Missing required social login fields'
+    @data[:auth_required] = false
   end
 
   post '/auth/social' do
@@ -118,11 +115,10 @@ class AuthController < BaseController
   # ---------------------------
   api_doc '/auth/confirm', method: :post do
     description 'Confirm a user manually (simulated email confirmation)'
-
     param :username, String, required: true, desc: 'Username of the user to confirm'
-
     response 200, 'User confirmed'
     response 404, 'User not found'
+    @data[:auth_required] = false
   end
 
   post '/auth/confirm' do
