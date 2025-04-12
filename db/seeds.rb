@@ -10,6 +10,7 @@ require_relative '../app/models/picture'
 require_relative '../app/models/connection'
 require_relative '../app/models/message'
 require_relative '../app/models/date'
+require_relative '../app/models/notification'
 
 require 'faker'
 require 'ruby-progressbar'
@@ -211,6 +212,36 @@ users.each do |user|
 end
 
 # ---------------------------
+# Notifications
+# ---------------------------
+puts "\n🔔 Sending notifications..."
+notif_bar = ProgressBar.create(title: 'Notifications', total: users.size)
+
+users.each do |user|
+  notif_bar.increment
+
+  rand(1..3).times do
+    from_user = users.reject { |u| u['id'] == user['id'] }.sample
+    next unless from_user
+
+    message = [
+      'liked your profile',
+      'sent you a message',
+      'scheduled a date with you',
+      'viewed your profile'
+    ].sample
+
+    Notification.create(
+      user['id'],
+      "#{from_user['username']} #{message}",
+      from_user['id']
+    )
+
+    LOG[:notifications] << "🔔 #{from_user['username']} → #{user['username']}: #{message}"
+  end
+end
+
+# ---------------------------
 # Final Summary
 # ---------------------------
 puts "\n✅ Done seeding!\n\n"
@@ -225,6 +256,7 @@ puts "🚫 Blocks: #{summary[:blocks].size}"
 puts "🔗 Connections: #{LOG[:connections].size}"
 puts "✉️ Messages: #{LOG[:messages].size}"
 puts "📅 Dates: #{LOG[:dates].size}"
+puts "🔔 Notifications: #{LOG[:notifications].size}"
 
 if VERBOSE
   puts "\n📘 Detailed Log:\n"

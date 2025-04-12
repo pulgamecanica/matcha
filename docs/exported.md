@@ -2,54 +2,6 @@
 
 > **Note:** All authenticated endpoints require a valid token via `Authorization: Bearer <token>`.
 
-## `GET` /me/visits
-**Description**: See who has viewed your profile
-**Auth required**: Yes
-**Tags**: User, ProfileView
-
-### Responses
-- `200`: List of users who viewed you
-```json
-{
-  "data": [
-    {
-      "username": "janedoe",
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "viewed_at": "2025-04-12T10:00:00Z"
-    },
-    {
-      "username": "bobsmith",
-      "first_name": "Bob",
-      "last_name": "Smith",
-      "viewed_at": "2025-04-11T16:40:00Z"
-    }
-  ]
-}
-```
-
----
-## `GET` /me/views
-**Description**: See which users you have viewed
-**Auth required**: Yes
-**Tags**: User, ProfileView
-
-### Responses
-- `200`: List of profiles you viewed
-```json
-{
-  "data": [
-    {
-      "username": "alicewonder",
-      "first_name": "Alice",
-      "last_name": "Wonder",
-      "viewed_at": "2025-04-12T09:00:00Z"
-    }
-  ]
-}
-```
-
----
 ## `GET` /me/pictures
 **Description**: List all pictures uploaded by the current user
 **Auth required**: Yes
@@ -463,131 +415,6 @@
 ```
 
 ---
-## `GET` /me
-**Description**: Get the currently authenticated user
-**Auth required**: Yes
-**Tags**: User
-
-### Responses
-- `200`: User object
-```json
-{
-  "data": {
-    "id": 1,
-    "username": "johndoe",
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "john@example.com",
-    "gender": "male",
-    "sexual_preferences": "everyone",
-    "biography": "Just a regular person.",
-    "latitude": 48.8566,
-    "longitude": 2.3522
-  }
-}
-```
-- `403`: User not confirmed or banned
-```json
-{
-  "error": "Access forbidden"
-}
-```
-
----
-## `PATCH` /me
-**Description**: Update profile fields for the current authenticated user
-**Auth required**: Yes
-**Tags**: User
-
-### Parameters
-- `username` (String)  - New username (must be unique)
-- `first_name` (String)  - 
-- `last_name` (String)  - 
-- `gender` (String)  - One of: male, female, other
-- `sexual_preferences` (String)  - One of: male, female, non_binary, everyone
-- `biography` (String)  - 
-- `latitude` (Float)  - 
-- `longitude` (Float)  - 
-
-### Responses
-- `200`: Profile updated & user object
-```json
-{
-  "message": "Profile updated!",
-  "data": {
-    "id": 1,
-    "username": "newname",
-    "biography": "Updated bio."
-  }
-}
-```
-- `422`: Validation failed
-```json
-{
-  "error": "Validation failed",
-  "details": {
-    "username": [
-      "has already been taken"
-    ]
-  }
-}
-```
-
----
-## `GET` /users/:username
-**Description**: Fetch the public profile of a user by their username
-**Auth required**: Yes
-**Tags**: User, PublicProfile
-
-### Parameters
-- `username` (String) **(required)** - The unique username of the user
-
-### Responses
-- `200`: Public user data
-```json
-{
-  "data": {
-    "username": "janedoe",
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "biography": "Hi there!",
-    "gender": "female",
-    "sexual_preferences": "male",
-    "profile_picture_id": 42,
-    "online_status": true,
-    "last_seen_at": "2025-04-11T14:53:00Z"
-  }
-}
-```
-- `404`: User not found or banned
-```json
-{
-  "error": "User not found"
-}
-```
-- `404`: User blocked you
-```json
-{
-  "error": "User blocked you"
-}
-```
-- `404`: User is blocked
-```json
-{
-  "error": "User is blocked"
-}
-```
-
----
-## `DELETE` /me
-**Description**: Delete the current authenticated user account and all related data
-**Auth required**: Yes
-**Tags**: User
-
-### Responses
-- `204`: User deleted
-
----
 ## `GET` /tags
 **Description**: List all tags
 **Auth required**: Yes
@@ -718,6 +545,54 @@
 ```json
 {
   "error": "Tag not found"
+}
+```
+
+---
+## `GET` /me/visits
+**Description**: See who has viewed your profile
+**Auth required**: Yes
+**Tags**: User, ProfileView
+
+### Responses
+- `200`: List of users who viewed you
+```json
+{
+  "data": [
+    {
+      "username": "janedoe",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "viewed_at": "2025-04-12T10:00:00Z"
+    },
+    {
+      "username": "bobsmith",
+      "first_name": "Bob",
+      "last_name": "Smith",
+      "viewed_at": "2025-04-11T16:40:00Z"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/views
+**Description**: See which users you have viewed
+**Auth required**: Yes
+**Tags**: User, ProfileView
+
+### Responses
+- `200`: List of profiles you viewed
+```json
+{
+  "data": [
+    {
+      "username": "alicewonder",
+      "first_name": "Alice",
+      "last_name": "Wonder",
+      "viewed_at": "2025-04-12T09:00:00Z"
+    }
+  ]
 }
 ```
 
@@ -1218,6 +1093,199 @@
       "username": "alicewonder"
     }
   ]
+}
+```
+
+---
+## `GET` /me
+**Description**: Get the currently authenticated user
+**Auth required**: Yes
+**Tags**: User
+
+### Responses
+- `200`: User object
+```json
+{
+  "data": {
+    "id": 1,
+    "username": "johndoe",
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john@example.com",
+    "gender": "male",
+    "sexual_preferences": "everyone",
+    "biography": "Just a regular person.",
+    "latitude": 48.8566,
+    "longitude": 2.3522
+  }
+}
+```
+- `403`: User not confirmed or banned
+```json
+{
+  "error": "Access forbidden"
+}
+```
+
+---
+## `PATCH` /me
+**Description**: Update profile fields for the current authenticated user
+**Auth required**: Yes
+**Tags**: User
+
+### Parameters
+- `username` (String)  - New username (must be unique)
+- `first_name` (String)  - 
+- `last_name` (String)  - 
+- `gender` (String)  - One of: male, female, other
+- `sexual_preferences` (String)  - One of: male, female, non_binary, everyone
+- `biography` (String)  - 
+- `latitude` (Float)  - 
+- `longitude` (Float)  - 
+
+### Responses
+- `200`: Profile updated & user object
+```json
+{
+  "message": "Profile updated!",
+  "data": {
+    "id": 1,
+    "username": "newname",
+    "biography": "Updated bio."
+  }
+}
+```
+- `422`: Validation failed
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "username": [
+      "has already been taken"
+    ]
+  }
+}
+```
+
+---
+## `GET` /users/:username
+**Description**: Fetch the public profile of a user by their username
+**Auth required**: Yes
+**Tags**: User, PublicProfile
+
+### Parameters
+- `username` (String) **(required)** - The unique username of the user
+
+### Responses
+- `200`: Public user data
+```json
+{
+  "data": {
+    "username": "janedoe",
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "biography": "Hi there!",
+    "gender": "female",
+    "sexual_preferences": "male",
+    "profile_picture_id": 42,
+    "online_status": true,
+    "last_seen_at": "2025-04-11T14:53:00Z"
+  }
+}
+```
+- `404`: User not found or banned
+```json
+{
+  "error": "User not found"
+}
+```
+- `404`: User blocked you
+```json
+{
+  "error": "User blocked you"
+}
+```
+- `404`: User is blocked
+```json
+{
+  "error": "User is blocked"
+}
+```
+
+---
+## `DELETE` /me
+**Description**: Delete the current authenticated user account and all related data
+**Auth required**: Yes
+**Tags**: User
+
+### Responses
+- `204`: User deleted
+
+---
+## `GET` /me/notifications
+**Description**: List notifications for the current user
+**Auth required**: Yes
+**Tags**: User, Notifications
+
+### Responses
+- `200`: List of notifications
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "message": "You have a new like!",
+      "read": false,
+      "from_username": "bob",
+      "created_at": "2025-04-13T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+## `PATCH` /me/notifications/:id
+**Description**: Mark a notification as read
+**Auth required**: Yes
+**Tags**: User, Notifications
+
+### Parameters
+- `id` (Integer) **(required)** - Notification ID
+
+### Responses
+- `200`: Notification marked as read
+```json
+{
+  "message": "Notification marked as read"
+}
+```
+- `404`: Notification not found
+```json
+{
+  "error": "Notification not found"
+}
+```
+
+---
+## `DELETE` /me/notifications/:id
+**Description**: Delete a notification
+**Auth required**: Yes
+**Tags**: User, Notifications
+
+### Parameters
+- `id` (Integer) **(required)** - Notification ID
+
+### Responses
+- `200`: Notification deleted
+```json
+{
+  "message": "Notification deleted"
+}
+```
+- `404`: Notification not found
+```json
+{
+  "error": "Notification not found"
 }
 ```
 

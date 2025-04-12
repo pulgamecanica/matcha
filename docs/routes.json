@@ -1,66 +1,6 @@
 [
   {
     "method": "GET",
-    "path": "/me/visits",
-    "description": "See who has viewed your profile",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "ProfileView"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of users who viewed you",
-        "example": {
-          "data": [
-            {
-              "username": "janedoe",
-              "first_name": "Jane",
-              "last_name": "Doe",
-              "viewed_at": "2025-04-12T10:00:00Z"
-            },
-            {
-              "username": "bobsmith",
-              "first_name": "Bob",
-              "last_name": "Smith",
-              "viewed_at": "2025-04-11T16:40:00Z"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/views",
-    "description": "See which users you have viewed",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "ProfileView"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of profiles you viewed",
-        "example": {
-          "data": [
-            {
-              "username": "alicewonder",
-              "first_name": "Alice",
-              "last_name": "Wonder",
-              "viewed_at": "2025-04-12T09:00:00Z"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
     "path": "/me/pictures",
     "description": "List all pictures uploaded by the current user",
     "auth_required": true,
@@ -660,203 +600,6 @@
   },
   {
     "method": "GET",
-    "path": "/me",
-    "description": "Get the currently authenticated user",
-    "auth_required": true,
-    "tags": [
-      "User"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "User object",
-        "example": {
-          "data": {
-            "id": 1,
-            "username": "johndoe",
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john@example.com",
-            "gender": "male",
-            "sexual_preferences": "everyone",
-            "biography": "Just a regular person.",
-            "latitude": 48.8566,
-            "longitude": 2.3522
-          }
-        }
-      },
-      {
-        "code": 403,
-        "desc": "User not confirmed or banned",
-        "example": {
-          "error": "Access forbidden"
-        }
-      }
-    ]
-  },
-  {
-    "method": "PATCH",
-    "path": "/me",
-    "description": "Update profile fields for the current authenticated user",
-    "auth_required": true,
-    "tags": [
-      "User"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": false,
-        "desc": "New username (must be unique)"
-      },
-      {
-        "name": "first_name",
-        "type": "String",
-        "required": false,
-        "desc": null
-      },
-      {
-        "name": "last_name",
-        "type": "String",
-        "required": false,
-        "desc": null
-      },
-      {
-        "name": "gender",
-        "type": "String",
-        "required": false,
-        "desc": "One of: male, female, other"
-      },
-      {
-        "name": "sexual_preferences",
-        "type": "String",
-        "required": false,
-        "desc": "One of: male, female, non_binary, everyone"
-      },
-      {
-        "name": "biography",
-        "type": "String",
-        "required": false,
-        "desc": null
-      },
-      {
-        "name": "latitude",
-        "type": "Float",
-        "required": false,
-        "desc": null
-      },
-      {
-        "name": "longitude",
-        "type": "Float",
-        "required": false,
-        "desc": null
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Profile updated & user object",
-        "example": {
-          "message": "Profile updated!",
-          "data": {
-            "id": 1,
-            "username": "newname",
-            "biography": "Updated bio."
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Validation failed",
-        "example": {
-          "error": "Validation failed",
-          "details": {
-            "username": [
-              "has already been taken"
-            ]
-          }
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/users/:username",
-    "description": "Fetch the public profile of a user by their username",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "PublicProfile"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The unique username of the user"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Public user data",
-        "example": {
-          "data": {
-            "username": "janedoe",
-            "first_name": "Jane",
-            "last_name": "Doe",
-            "biography": "Hi there!",
-            "gender": "female",
-            "sexual_preferences": "male",
-            "profile_picture_id": 42,
-            "online_status": true,
-            "last_seen_at": "2025-04-11T14:53:00Z"
-          }
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found or banned",
-        "example": {
-          "error": "User not found"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User blocked you",
-        "example": {
-          "error": "User blocked you"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User is blocked",
-        "example": {
-          "error": "User is blocked"
-        }
-      }
-    ]
-  },
-  {
-    "method": "DELETE",
-    "path": "/me",
-    "description": "Delete the current authenticated user account and all related data",
-    "auth_required": true,
-    "tags": [
-      "User"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 204,
-        "desc": "User deleted",
-        "example": null
-      }
-    ]
-  },
-  {
-    "method": "GET",
     "path": "/tags",
     "description": "List all tags",
     "auth_required": true,
@@ -1029,6 +772,66 @@
         "desc": "Missing or invalid tag",
         "example": {
           "error": "Tag not found"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/visits",
+    "description": "See who has viewed your profile",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "ProfileView"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of users who viewed you",
+        "example": {
+          "data": [
+            {
+              "username": "janedoe",
+              "first_name": "Jane",
+              "last_name": "Doe",
+              "viewed_at": "2025-04-12T10:00:00Z"
+            },
+            {
+              "username": "bobsmith",
+              "first_name": "Bob",
+              "last_name": "Smith",
+              "viewed_at": "2025-04-11T16:40:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/views",
+    "description": "See which users you have viewed",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "ProfileView"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of profiles you viewed",
+        "example": {
+          "data": [
+            {
+              "username": "alicewonder",
+              "first_name": "Alice",
+              "last_name": "Wonder",
+              "viewed_at": "2025-04-12T09:00:00Z"
+            }
+          ]
         }
       }
     ]
@@ -1701,6 +1504,299 @@
               "username": "alicewonder"
             }
           ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me",
+    "description": "Get the currently authenticated user",
+    "auth_required": true,
+    "tags": [
+      "User"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "User object",
+        "example": {
+          "data": {
+            "id": 1,
+            "username": "johndoe",
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john@example.com",
+            "gender": "male",
+            "sexual_preferences": "everyone",
+            "biography": "Just a regular person.",
+            "latitude": 48.8566,
+            "longitude": 2.3522
+          }
+        }
+      },
+      {
+        "code": 403,
+        "desc": "User not confirmed or banned",
+        "example": {
+          "error": "Access forbidden"
+        }
+      }
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/me",
+    "description": "Update profile fields for the current authenticated user",
+    "auth_required": true,
+    "tags": [
+      "User"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": false,
+        "desc": "New username (must be unique)"
+      },
+      {
+        "name": "first_name",
+        "type": "String",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "last_name",
+        "type": "String",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "gender",
+        "type": "String",
+        "required": false,
+        "desc": "One of: male, female, other"
+      },
+      {
+        "name": "sexual_preferences",
+        "type": "String",
+        "required": false,
+        "desc": "One of: male, female, non_binary, everyone"
+      },
+      {
+        "name": "biography",
+        "type": "String",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "latitude",
+        "type": "Float",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "longitude",
+        "type": "Float",
+        "required": false,
+        "desc": null
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Profile updated & user object",
+        "example": {
+          "message": "Profile updated!",
+          "data": {
+            "id": 1,
+            "username": "newname",
+            "biography": "Updated bio."
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Validation failed",
+        "example": {
+          "error": "Validation failed",
+          "details": {
+            "username": [
+              "has already been taken"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/users/:username",
+    "description": "Fetch the public profile of a user by their username",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "PublicProfile"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The unique username of the user"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Public user data",
+        "example": {
+          "data": {
+            "username": "janedoe",
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "biography": "Hi there!",
+            "gender": "female",
+            "sexual_preferences": "male",
+            "profile_picture_id": 42,
+            "online_status": true,
+            "last_seen_at": "2025-04-11T14:53:00Z"
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found or banned",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User blocked you",
+        "example": {
+          "error": "User blocked you"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User is blocked",
+        "example": {
+          "error": "User is blocked"
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me",
+    "description": "Delete the current authenticated user account and all related data",
+    "auth_required": true,
+    "tags": [
+      "User"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 204,
+        "desc": "User deleted",
+        "example": null
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/notifications",
+    "description": "List notifications for the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Notifications"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of notifications",
+        "example": {
+          "data": [
+            {
+              "id": 1,
+              "message": "You have a new like!",
+              "read": false,
+              "from_username": "bob",
+              "created_at": "2025-04-13T10:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "PATCH",
+    "path": "/me/notifications/:id",
+    "description": "Mark a notification as read",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Notifications"
+    ],
+    "params": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "required": true,
+        "desc": "Notification ID"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Notification marked as read",
+        "example": {
+          "message": "Notification marked as read"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "Notification not found",
+        "example": {
+          "error": "Notification not found"
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me/notifications/:id",
+    "description": "Delete a notification",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Notifications"
+    ],
+    "params": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "required": true,
+        "desc": "Notification ID"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Notification deleted",
+        "example": {
+          "message": "Notification deleted"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "Notification not found",
+        "example": {
+          "error": "Notification not found"
         }
       }
     ]
