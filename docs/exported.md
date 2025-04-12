@@ -436,6 +436,7 @@
 ## `POST` /auth/register
 **Description**: Register a new user
 **Auth required**: No
+**Tags**: Auth
 
 ### Parameters
 - `username` (String) **(required)** - Unique username (max 20 characters)
@@ -446,26 +447,73 @@
 
 ### Responses
 - `201`: User created
-- `422`: Validation error (missing fields, invalid values, or already taken)
+```json
+{
+  "message": "User created!"
+}
+```
+- `422`: Validation error
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "username": [
+      "is required"
+    ],
+    "email": [
+      "is invalid"
+    ]
+  }
+}
+```
+- `422`: Username or email taken
+```json
+{
+  "error": "Username or email already taken"
+}
+```
 
 ---
 ## `POST` /auth/login
 **Description**: Authenticate an existing user using username and password
 **Auth required**: No
+**Tags**: Auth
 
 ### Parameters
 - `username` (String) **(required)** - User's unique username
 - `password` (String) **(required)** - User's account password
 
 ### Responses
-- `200`: Login successful, session token returned
+- `200`: Login successful
+```json
+{
+  "token": "jwt.token.here"
+}
+```
 - `401`: Invalid credentials
-- `403`: Email not confirmed or user is banned
+```json
+{
+  "error": "Invalid credentials"
+}
+```
+- `403`: Email not confirmed
+```json
+{
+  "error": "Please confirm your email first."
+}
+```
+- `403`: User banned
+```json
+{
+  "error": "User is banned."
+}
+```
 
 ---
 ## `POST` /auth/social
 **Description**: Authenticate or register a user via social login (OAuth provider)
 **Auth required**: No
+**Tags**: Auth
 
 ### Parameters
 - `provider` (String) **(required)** - OAuth provider (e.g., 'google', 'github', 'intra')
@@ -474,21 +522,47 @@
 - `last_name` (String)  - User's last name (optional if new user)
 
 ### Responses
-- `200`: User authenticated successfully
+- `200`: User authenticated
+```json
+{
+  "token": "jwt.token.here"
+}
+```
 - `201`: User created via social login
+```json
+{
+  "token": "jwt.token.here"
+}
+```
 - `422`: Missing required social login fields
+```json
+{
+  "error": "Missing provider or UID"
+}
+```
 
 ---
 ## `POST` /auth/confirm
 **Description**: Confirm a user manually (simulated email confirmation)
 **Auth required**: No
+**Tags**: Auth
 
 ### Parameters
 - `username` (String) **(required)** - Username of the user to confirm
 
 ### Responses
 - `200`: User confirmed
+```json
+{
+  "message": "User confirmed!"
+}
+```
 - `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
 
 ---
 ## `GET` /me/location

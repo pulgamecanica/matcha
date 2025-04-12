@@ -619,7 +619,9 @@
     "path": "/auth/register",
     "description": "Register a new user",
     "auth_required": false,
-    "tags": [],
+    "tags": [
+      "Auth"
+    ],
     "params": [
       {
         "name": "username",
@@ -656,12 +658,31 @@
       {
         "code": 201,
         "desc": "User created",
-        "example": null
+        "example": {
+          "message": "User created!"
+        }
       },
       {
         "code": 422,
-        "desc": "Validation error (missing fields, invalid values, or already taken)",
-        "example": null
+        "desc": "Validation error",
+        "example": {
+          "error": "Validation failed",
+          "details": {
+            "username": [
+              "is required"
+            ],
+            "email": [
+              "is invalid"
+            ]
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Username or email taken",
+        "example": {
+          "error": "Username or email already taken"
+        }
       }
     ]
   },
@@ -670,7 +691,9 @@
     "path": "/auth/login",
     "description": "Authenticate an existing user using username and password",
     "auth_required": false,
-    "tags": [],
+    "tags": [
+      "Auth"
+    ],
     "params": [
       {
         "name": "username",
@@ -688,18 +711,31 @@
     "responses": [
       {
         "code": 200,
-        "desc": "Login successful, session token returned",
-        "example": null
+        "desc": "Login successful",
+        "example": {
+          "token": "jwt.token.here"
+        }
       },
       {
         "code": 401,
         "desc": "Invalid credentials",
-        "example": null
+        "example": {
+          "error": "Invalid credentials"
+        }
       },
       {
         "code": 403,
-        "desc": "Email not confirmed or user is banned",
-        "example": null
+        "desc": "Email not confirmed",
+        "example": {
+          "error": "Please confirm your email first."
+        }
+      },
+      {
+        "code": 403,
+        "desc": "User banned",
+        "example": {
+          "error": "User is banned."
+        }
       }
     ]
   },
@@ -708,7 +744,9 @@
     "path": "/auth/social",
     "description": "Authenticate or register a user via social login (OAuth provider)",
     "auth_required": false,
-    "tags": [],
+    "tags": [
+      "Auth"
+    ],
     "params": [
       {
         "name": "provider",
@@ -738,18 +776,24 @@
     "responses": [
       {
         "code": 200,
-        "desc": "User authenticated successfully",
-        "example": null
+        "desc": "User authenticated",
+        "example": {
+          "token": "jwt.token.here"
+        }
       },
       {
         "code": 201,
         "desc": "User created via social login",
-        "example": null
+        "example": {
+          "token": "jwt.token.here"
+        }
       },
       {
         "code": 422,
         "desc": "Missing required social login fields",
-        "example": null
+        "example": {
+          "error": "Missing provider or UID"
+        }
       }
     ]
   },
@@ -758,7 +802,9 @@
     "path": "/auth/confirm",
     "description": "Confirm a user manually (simulated email confirmation)",
     "auth_required": false,
-    "tags": [],
+    "tags": [
+      "Auth"
+    ],
     "params": [
       {
         "name": "username",
@@ -771,12 +817,16 @@
       {
         "code": 200,
         "desc": "User confirmed",
-        "example": null
+        "example": {
+          "message": "User confirmed!"
+        }
       },
       {
         "code": 404,
         "desc": "User not found",
-        "example": null
+        "example": {
+          "error": "User not found"
+        }
       }
     ]
   },
