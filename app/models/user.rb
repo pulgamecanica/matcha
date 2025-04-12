@@ -12,7 +12,7 @@ class User
   def self.all
     Database.pool.with do |conn|
       res = conn.exec('SELECT * FROM users ORDER BY username ASC')
-      res.to_a
+      res.map { |user| UserSerializer.public_view(user) }
     end
   end
 
@@ -99,12 +99,14 @@ class User
 
   def self.likes(user_id)
     ids = Like.liked_user_ids(user_id)
-    SQLHelper.find_many_by_ids(:users, ids)
+    res = SQLHelper.find_many_by_ids(:users, ids)
+    res.map { |user| UserSerializer.public_view(user) }
   end
 
   def self.liked_by(user_id)
     ids = Like.liked_by_user_ids(user_id)
-    SQLHelper.find_many_by_ids(:users, ids)
+    res = SQLHelper.find_many_by_ids(:users, ids)
+    res.map { |user| UserSerializer.public_view(user) }
   end
 
   def self.matches(user_id)
@@ -147,7 +149,7 @@ class User
     Connection.all_for_user(user_id)
   end
 
-  def self.connected_with?(user1_id, user2_id)
-    !!Connection.find_between(user1_id, user2_id)
+  def self.connected_with?(user_a_id, user_b_id)
+    !!Connection.find_between(user_a_id, user_b_id)
   end
 end

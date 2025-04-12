@@ -35,16 +35,18 @@ class ConnectionsController < BaseController
     response 200, 'Connection created', example: {
       message: 'Connected with janedoe',
       data: {
-        user_id: 1,
-        target_id: 2,
-        created_at: '2025-04-12T10:00:00Z'
+        id: 42,
+        user_a_id: 1,
+        user_b_id: 2,
+        created_at: '2025-04-12T10:00:00Z',
+        updated_at: '2025-04-12T10:00:00Z'
       }
     }
     response 403, 'User is not matched with you', example: { error: 'User is not matched with you' }
     response 404, 'User not found', example: { error: 'User not found' }
     response 422, 'Invalid request', example: {
       error: 'Validation failed',
-      details: { username: ['is required'] }
+      details: ['username is required']
     }
   end
 

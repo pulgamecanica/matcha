@@ -16,23 +16,25 @@ class ProfileView
 
   def self.visited(user_id)
     Database.pool.with do |conn|
-      conn.exec_params(<<~SQL, [user_id]).to_a
+      res = conn.exec_params(<<~SQL, [user_id]).to_a
         SELECT users.*, profile_views.visited_at FROM users
         JOIN profile_views ON profile_views.viewed_id = users.id
         WHERE profile_views.viewer_id = $1
         ORDER BY profile_views.visited_at DESC
       SQL
+      res.map { |user| UserSerializer.public_view(user) }
     end
   end
 
   def self.views(user_id)
     Database.pool.with do |conn|
-      conn.exec_params(<<~SQL, [user_id]).to_a
+      res = conn.exec_params(<<~SQL, [user_id]).to_a
         SELECT users.*, profile_views.visited_at FROM users
         JOIN profile_views ON profile_views.viewer_id = users.id
         WHERE profile_views.viewed_id = $1
         ORDER BY profile_views.visited_at DESC
       SQL
+      res.map { |user| UserSerializer.public_view(user) }
     end
   end
 end

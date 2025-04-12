@@ -42,7 +42,8 @@ class Like
     liked_ids   = Like.liked_user_ids(user_id)
     liker_ids   = Like.liked_by_user_ids(user_id)
     mutual_ids  = liked_ids & liker_ids
-    SQLHelper.find_many_by_ids(:users, mutual_ids)
+    res = SQLHelper.find_many_by_ids(:users, mutual_ids)
+    res.map { |user| UserSerializer.public_view(user) }
   end
 
   def self.exists?(liker_id, liked_id)

@@ -31,7 +31,7 @@ class UserTag
          WHERE ut.user_id = $1 AND ut.tag_id = $2",
         [user_id, tag_id]
       )
-      res&.first
+      UserSerializer.public_view(res&.first)
     end
   end
 
@@ -43,7 +43,7 @@ class UserTag
          WHERE ut.user_id = $1 AND ut.tag_id = $2",
         [user_id, tag_id]
       )
-      res&.first
+      UserSerializer.public_view(res&.first)
     end
   end
 end

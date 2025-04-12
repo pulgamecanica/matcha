@@ -15,7 +15,7 @@ class Connection
         WHERE connections.user_a_id = $1 OR connections.user_b_id = $1
         ORDER BY connections.created_at DESC
       SQL
-      res.to_a
+      res.map { |user| UserSerializer.public_view(user) }
     end
   end
 

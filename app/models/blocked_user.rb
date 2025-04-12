@@ -30,7 +30,7 @@ class BlockedUser
         JOIN blocked_users ON users.id = blocked_users.blocked_id
         WHERE blocked_users.blocker_id = $1
       SQL
-      res.to_a
+      res.map { |user| UserSerializer.public_view(user) }
     end
   end
 
@@ -41,7 +41,7 @@ class BlockedUser
         JOIN blocked_users ON users.id = blocked_users.blocker_id
         WHERE blocked_users.blocked_id = $1
       SQL
-      res.to_a
+      res.map { |user| UserSerializer.public_view(user) }
     end
   end
 
