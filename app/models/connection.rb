@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../helpers/database'
+require_relative '../helpers/user_serializer'
 
 class Connection
   def self.all_for_user(user_id)
@@ -16,6 +17,13 @@ class Connection
         ORDER BY connections.created_at DESC
       SQL
       res.map { |user| UserSerializer.public_view(user) }
+    end
+  end
+
+  def self.find_by_id(id)
+    Database.pool.with do |conn|
+      res = conn.exec_params('SELECT * FROM connections WHERE id = $1', [id])
+      res.to_a&.first
     end
   end
 

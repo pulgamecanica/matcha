@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative './base_controller'
 require_relative '../models/message'
 require_relative '../models/connection'
@@ -150,18 +152,8 @@ class MessagesController < BaseController
   end
 
   get '/me/messages' do
-    connections = User.connections(@current_user['id'])
+    messages = User.messages(@current_user['id'])
 
-    threads = connections.map do |user|
-      conn = Connection.find_between(@current_user['id'], user['id'])
-      next unless conn
-
-      {
-        user: user,
-        messages: Message.for_connection(conn['id'])
-      }
-    end.compact
-
-    { data: threads }.to_json
+    { data: messages }.to_json
   end
 end

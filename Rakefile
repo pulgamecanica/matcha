@@ -26,7 +26,6 @@ task 'doc:export' do
   puts "✅ Done! Markdown exported to: #{markdown_path}"
   puts "✅ Done! Data loaded to: #{webpage_path}"
   puts '📄 You can open it in any Markdown viewer or GitHub'
-  puts '📄 Refresh your browser to see the updated documentation'
   puts
 end
 

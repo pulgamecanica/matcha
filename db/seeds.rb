@@ -7,6 +7,10 @@ require_relative '../app/models/like'
 require_relative '../app/models/blocked_user'
 require_relative '../app/models/profile_view'
 require_relative '../app/models/picture'
+require_relative '../app/models/connection'
+require_relative '../app/models/message'
+require_relative '../app/models/date'
+
 require 'faker'
 require 'ruby-progressbar'
 
@@ -142,6 +146,71 @@ combos.each do |u1, u2|
 end
 
 # ---------------------------
+# Connections
+# ---------------------------
+puts "\n🔗 Creating connections for matches..."
+connection_bar = ProgressBar.create(title: 'Connections', total: users.size)
+
+users.each do |u1|
+  connection_bar.increment
+  users.each do |u2|
+    next if u1['id'] == u2['id']
+
+    # Only create a connection if mutual likes
+    if Like.exists?(u1['id'], u2['id']) && rand < 0.5
+      conn = Connection.create(u1['id'], u2['id'])
+      LOG[:connections] << "🔗 #{u1['username']} ↔ #{u2['username']}" if conn
+    end
+  end
+end
+
+# ---------------------------
+# Messages
+# ---------------------------
+puts "\n✉️ Generating messages..."
+message_bar = ProgressBar.create(title: 'Messages', total: users.size)
+
+users.each do |user|
+  message_bar.increment
+  connections = User.connections(user['id'])
+
+  connections.each do |partner|
+    conn = Connection.find_between(user['id'], partner['id'])
+    next unless conn
+
+    rand(1..3).times do
+      content = Faker::Lorem.sentence(word_count: rand(4..10))
+      Message.create(conn['id'], user['id'], content)
+      LOG[:messages] << "✉️ #{user['username']} → #{partner['username']}: #{content}"
+    end
+  end
+end
+
+# ---------------------------
+# Dates
+# ---------------------------
+puts "\n📅 Scheduling dates..."
+date_count = users.sum { |user| User.connections(user['id']).size }
+date_bar = ProgressBar.create(title: 'Dates', total: date_count)
+
+users.each do |user|
+  User.connections(user['id']).each do |partner|
+    date_bar.increment
+    conn = Connection.find_between(user['id'], partner['id'])
+    next unless conn
+    next unless rand < 0.2
+
+    time = Faker::Time.forward(days: rand(1..30), period: :evening).iso8601
+    location = Faker::Address.city
+    description = Faker::Lorem.sentence(word_count: 5)
+
+    Date.create(conn['id'], user['id'], location, time, description)
+    parsed_time = Time.parse(time.to_s)
+    LOG[:dates] << "📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}"
+  end
+end
+
+# ---------------------------
 # Final Summary
 # ---------------------------
 puts "\n✅ Done seeding!\n\n"
@@ -153,6 +222,9 @@ puts "🔗 User-Tag links: #{summary[:links].size}"
 puts "❤️ Likes: #{summary[:likes].size}"
 puts "👀 Views: #{summary[:views].size}"
 puts "🚫 Blocks: #{summary[:blocks].size}"
+puts "🔗 Connections: #{LOG[:connections].size}"
+puts "✉️ Messages: #{LOG[:messages].size}"
+puts "📅 Dates: #{LOG[:dates].size}"
 
 if VERBOSE
   puts "\n📘 Detailed Log:\n"

@@ -152,4 +152,22 @@ class User
   def self.connected_with?(user_a_id, user_b_id)
     !!Connection.find_between(user_a_id, user_b_id)
   end
+
+  def self.messages(user_id)
+    connections = User.connections(user_id)
+
+    connections.map do |user|
+      conn = Connection.find_between(user_id, user['id'])
+      next unless conn
+
+      {
+        user: UserSerializer.public_view(user),
+        messages: Message.for_connection(conn['id'])
+      }
+    end.compact
+  end
+
+  def self.dates(user_id)
+    Date.all_for_user(user_id)
+  end
 end

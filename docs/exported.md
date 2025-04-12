@@ -900,6 +900,108 @@
 ```
 
 ---
+## `POST` /me/dates
+**Description**: Schedule a date with a connected user
+**Auth required**: Yes
+**Tags**: User, Date
+
+### Parameters
+- `username` (String) **(required)** - The other user's username
+- `scheduled_at` (String) **(required)** - Scheduled time for the date (ISO 8601)
+- `location` (String)  - Optional location for the date
+- `note` (String)  - Oprional note for the date
+
+### Responses
+- `201`: Date scheduled
+```json
+{
+  "message": "Date scheduled",
+  "data": {
+    "id": "42",
+    "connection_id": "99",
+    "scheduled_at": "2025-04-12T20:00:00Z",
+    "location": "Café Luna",
+    "created_at": "2025-04-12T18:22:00Z"
+  }
+}
+```
+- `404`: User or connection not found
+```json
+{
+  "error": "No connection found with this user"
+}
+```
+- `422`: Validation error
+```json
+{
+  "error": "Invalid date creation",
+  "details": [
+    "scheduled_at must be a valid datetime string"
+  ]
+}
+```
+
+---
+## `GET` /me/dates
+**Description**: List all scheduled dates for the current user
+**Auth required**: Yes
+**Tags**: User, Date
+
+### Responses
+- `200`: Array of scheduled dates
+```json
+{
+  "data": [
+    {
+      "id": "42",
+      "connection_id": "99",
+      "scheduled_at": "2025-04-12T20:00:00Z",
+      "location": "Café Luna",
+      "created_at": "2025-04-12T18:22:00Z",
+      "username": "bob",
+      "first_name": "Bob",
+      "last_name": "Smith"
+    }
+  ]
+}
+```
+
+---
+## `DELETE` /me/dates/:id
+**Description**: Cancel or delete a date request
+**Auth required**: Yes
+**Tags**: Date
+
+### Parameters
+- `id` (Integer) **(required)** - ID of the date request
+
+### Responses
+- `200`: Date request deleted
+```json
+{
+  "message": "Date deleted"
+}
+```
+- `404`: Date not found
+```json
+{
+  "error": "Date not found"
+}
+```
+- `404`: Connection not found
+```json
+{
+  "error": "Connection not found"
+}
+```
+- `403`: Not authorized to delete this date
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
 ## `GET` /me/connections
 **Description**: Get all users you are connected with
 **Auth required**: Yes

@@ -1258,6 +1258,153 @@
     ]
   },
   {
+    "method": "POST",
+    "path": "/me/dates",
+    "description": "Schedule a date with a connected user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Date"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The other user's username"
+      },
+      {
+        "name": "scheduled_at",
+        "type": "String",
+        "required": true,
+        "desc": "Scheduled time for the date (ISO 8601)"
+      },
+      {
+        "name": "location",
+        "type": "String",
+        "required": false,
+        "desc": "Optional location for the date"
+      },
+      {
+        "name": "note",
+        "type": "String",
+        "required": false,
+        "desc": "Oprional note for the date"
+      }
+    ],
+    "responses": [
+      {
+        "code": 201,
+        "desc": "Date scheduled",
+        "example": {
+          "message": "Date scheduled",
+          "data": {
+            "id": "42",
+            "connection_id": "99",
+            "scheduled_at": "2025-04-12T20:00:00Z",
+            "location": "Café Luna",
+            "created_at": "2025-04-12T18:22:00Z"
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User or connection not found",
+        "example": {
+          "error": "No connection found with this user"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Validation error",
+        "example": {
+          "error": "Invalid date creation",
+          "details": [
+            "scheduled_at must be a valid datetime string"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/dates",
+    "description": "List all scheduled dates for the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Date"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Array of scheduled dates",
+        "example": {
+          "data": [
+            {
+              "id": "42",
+              "connection_id": "99",
+              "scheduled_at": "2025-04-12T20:00:00Z",
+              "location": "Café Luna",
+              "created_at": "2025-04-12T18:22:00Z",
+              "username": "bob",
+              "first_name": "Bob",
+              "last_name": "Smith"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me/dates/:id",
+    "description": "Cancel or delete a date request",
+    "auth_required": true,
+    "tags": [
+      "Date"
+    ],
+    "params": [
+      {
+        "name": "id",
+        "type": "Integer",
+        "required": true,
+        "desc": "ID of the date request"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Date request deleted",
+        "example": {
+          "message": "Date deleted"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "Date not found",
+        "example": {
+          "error": "Date not found"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "Connection not found",
+        "example": {
+          "error": "Connection not found"
+        }
+      },
+      {
+        "code": 403,
+        "desc": "Not authorized to delete this date",
+        "example": {
+          "error": "Unauthorized"
+        }
+      }
+    ]
+  },
+  {
     "method": "GET",
     "path": "/me/connections",
     "description": "Get all users you are connected with",

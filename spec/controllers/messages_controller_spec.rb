@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'MessagesController' do
@@ -38,10 +40,10 @@ describe 'MessagesController' do
     end
 
     it 'does not send a message to unconnected user' do
-      stranger = User.create({
-                               username: 'stranger', email: 'stranger@example.com', password: 'pass',
-                               first_name: 'Strange', last_name: 'Guy', gender: 'male', sexual_preferences: 'everyone'
-                             })
+      User.create({
+                    username: 'stranger', email: 'stranger@example.com', password: 'pass',
+                    first_name: 'Strange', last_name: 'Guy', gender: 'male', sexual_preferences: 'everyone'
+                  })
       payload = { username: 'stranger', content: 'Nope' }.to_json
       post '/me/messages', payload, auth_headers(@alice_token)
       expect(last_response.status).to eq(404)
