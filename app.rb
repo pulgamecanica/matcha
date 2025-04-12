@@ -23,6 +23,7 @@ class MatchaApp < Sinatra::Base
   use PicturesController
   use LocationController
   use ConnectionsController
+  use MessagesController
 end
 
 at_exit do

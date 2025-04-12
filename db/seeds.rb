@@ -46,7 +46,7 @@ puts '👤 Creating test user...'
 main_user = User.find_by_username('testuser') || User.create({
                                                                username: 'testuser',
                                                                email: 'test@example.com',
-                                                               password: 'secretpass',
+                                                               password: 'testuser',
                                                                first_name: 'Test',
                                                                last_name: 'User',
                                                                gender: 'other',
@@ -76,7 +76,7 @@ usernames.each do |username|
   user = User.find_by_username(username) || User.create({
                                                           username: username,
                                                           email: Faker::Internet.email(name: username),
-                                                          password: 'password123',
+                                                          password: username,
                                                           first_name: Faker::Name.first_name,
                                                           last_name: Faker::Name.last_name,
                                                           gender: %w[male female other].sample,

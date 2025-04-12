@@ -565,6 +565,139 @@
 ```
 
 ---
+## `POST` /me/messages
+**Description**: Send a message to a user (requires existing connection)
+**Auth required**: Yes
+**Tags**: Message
+
+### Parameters
+- `username` (String) **(required)** - Recipient's username
+- `content` (String) **(required)** - Message content
+
+### Responses
+- `200`: Message sent
+```json
+{
+  "message": "Message sent",
+  "data": {
+    "id": 40,
+    "connection_id": 42,
+    "sender_id": 121,
+    "content": "Hey there!",
+    "created_at": "2025-04-12 18:07:25.031215"
+  }
+}
+```
+- `404`: User or connection not found
+```json
+{
+  "error": "No connection found with janedoe"
+}
+```
+- `422`: Validation error
+```json
+{
+  "error": "Invalid request",
+  "details": [
+    "content must not be empty"
+  ]
+}
+```
+
+---
+## `GET` /me/messages/:username
+**Description**: Get all messages exchanged with a given user
+**Auth required**: Yes
+**Tags**: Message
+
+### Parameters
+- `username` (String) **(required)** - Other user's username
+
+### Responses
+- `200`: Message thread
+```json
+{
+  "data": {
+    "user": {
+      "id": 127,
+      "username": "bob",
+      "email": "bob@example.com",
+      "first_name": "Bob",
+      "last_name": "B",
+      "gender": "male",
+      "sexual_preferences": "female",
+      "biography": null,
+      "is_email_verified": true,
+      "is_banned": false,
+      "fame_rating": 0,
+      "latitude": null,
+      "longitude": null,
+      "online_status": false,
+      "last_seen_at": null,
+      "created_at": "2025-04-12 18:08:00.699235",
+      "updated_at": "2025-04-12 18:08:00.702444",
+      "profile_picture_id": null
+    },
+    "messages": [
+      {
+        "id": 41,
+        "connection_id": 44,
+        "sender_id": 127,
+        "content": "Hi Bob!",
+        "created_at": "2025-04-12 18:08:00.704577",
+        "sender_username": "bob"
+      }
+    ]
+  }
+}
+```
+- `404`: User or connection not found
+```json
+{
+  "error": "No connection found with bob"
+}
+```
+
+---
+## `GET` /me/messages
+**Description**: Get all conversations grouped by user
+**Auth required**: Yes
+**Tags**: Message
+
+### Responses
+- `200`: List of message threads
+```json
+{
+  "data": [
+    {
+      "user": {
+        "id": 129,
+        "username": "bob",
+        "first_name": "Bob",
+        "last_name": "B",
+        "biography": null,
+        "gender": "male",
+        "sexual_preferences": "female",
+        "profile_picture_id": null,
+        "online_status": false,
+        "last_seen_at": null
+      },
+      "messages": [
+        {
+          "id": 42,
+          "connection_id": 45,
+          "sender_id": 128,
+          "content": "Hey again!",
+          "created_at": "2025-04-12 18:08:09.476871",
+          "sender_username": "alice"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
 ## `GET` /me/location
 **Description**: Returns the last known latitude and longitude of the current user
 **Auth required**: Yes
@@ -806,9 +939,11 @@
 {
   "message": "Connected with janedoe",
   "data": {
-    "user_id": 1,
-    "target_id": 2,
-    "created_at": "2025-04-12T10:00:00Z"
+    "id": 42,
+    "user_a_id": 1,
+    "user_b_id": 2,
+    "created_at": "2025-04-12T10:00:00Z",
+    "updated_at": "2025-04-12T10:00:00Z"
   }
 }
 ```
@@ -828,11 +963,9 @@
 ```json
 {
   "error": "Validation failed",
-  "details": {
-    "username": [
-      "is required"
-    ]
-  }
+  "details": [
+    "username is required"
+  ]
 }
 ```
 

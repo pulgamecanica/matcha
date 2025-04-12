@@ -4,7 +4,7 @@ require_relative '../../app/helpers/database'
 
 Database.with_open_conn do |conn|
   conn.exec <<~SQL
-    CREATE TABLE connections (
+    CREATE TABLE IF NOT EXISTS connections (
       id SERIAL PRIMARY KEY,
       user_a_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       user_b_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
