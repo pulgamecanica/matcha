@@ -5,6 +5,22 @@ module SQLHelper
     Database.pool.with(&block)
   end
 
+  def self.parse_unique_violation(error)
+    if error.message =~ /unique constraint "(.*?)"/
+      constraint = Regexp.last_match(1)
+
+      case constraint
+      when /users_(\w+)_key/
+        field = Regexp.last_match(1)
+        ["#{field} is already taken"]
+      else
+        ['Unique constraint violation']
+      end
+    else
+      ['Unique constraint violation']
+    end
+  end
+
   def self.singularize(word)
     return word if word.end_with?('ss')
 
@@ -73,8 +89,12 @@ module SQLHelper
       SQL
 
       values << id
-      res = conn.exec_params(sql, values)
-      res&.first
+      begin
+        res = conn.exec_params(sql, values)
+        res&.first
+      rescue PG::UniqueViolation => e
+        raise Errors::ValidationError.new('Validation failed', parse_unique_violation(e))
+      end
     end
   end
 
@@ -83,7 +103,11 @@ module SQLHelper
       condition_sql = conditions.keys.each_with_index.map { |k, i| "#{k} = $#{i + 2}" }.join(' AND ')
       sql = "UPDATE #{table} SET #{column} = $1, updated_at = NOW() WHERE #{condition_sql}"
       values = [value] + conditions.values
-      conn.exec_params(sql, values)
+      begin
+        conn.exec_params(sql, values)
+      rescue PG::UniqueViolation => e
+        raise Errors::ValidationError.new('Validation failed', parse_unique_violation(e))
+      end
     end
   end
 
@@ -116,6 +140,8 @@ module SQLHelper
   def self.delete(table, id)
     with_conn do |conn|
       conn.exec_params("DELETE FROM #{table} WHERE id = $1", [id])
+    rescue PG::UniqueViolation => e
+      raise Errors::ValidationError.new('Validation failed', parse_unique_violation(e))
     end
   end
 

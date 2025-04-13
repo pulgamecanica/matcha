@@ -20,6 +20,7 @@ module UserValidator
     allowed_keys = %w[
       username first_name last_name biography
       gender sexual_preferences latitude longitude
+      birth_year
     ]
 
     unknown_keys = params.keys - allowed_keys
@@ -30,6 +31,9 @@ module UserValidator
       enums: {
         gender: VALID_GENDERS,
         sexual_preferences: VALID_PREFS
+      },
+      range: {
+        birth_year: { min: 1900, max: Time.now.year.to_i - 18 }
       }
     )
   end
