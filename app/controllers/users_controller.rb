@@ -157,19 +157,24 @@ class UsersController < BaseController
       data: [
         {
           user: {
-            id: 123,
+            id: '482',
             username: 'alice',
             first_name: 'Alice',
-            last_name: 'Wonder',
-            birth_year: 1995,
-            profile_picture_id: 10,
-            fame_rating: 27.4
+            last_name: 'A',
+            biography: 'null',
+            gender: 'female',
+            sexual_preferences: 'male',
+            birth_year: '2000',
+            profile_picture_id: 'null',
+            online_status: 'false',
+            last_seen_at: 'null'
           },
-          scores: {
-            location: 92.8,
-            tags: 66.0
-          },
-          total_score: 79.4
+          score: {
+            location_score: '100.0',
+            tag_score: '100.0',
+            fame_score: '0.0',
+            total: '66.67'
+          }
         }
       ]
     }

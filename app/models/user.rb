@@ -189,19 +189,10 @@ class User
   def self.discover(current, filters = {})
     return [] unless current
 
-    all_users = all(serialize_public_user: false).reject do |u|
-      u['id'].to_i == current['id'].to_i || u['is_banned'] == 't'
-    end
-
-    candidates = all_users.select do |u|
-      matches_preferences?(current, u)
-    end
-
-    candidates.select! do |u|
-      fame_ok = filters['min_fame'].nil? || u['fame_rating'].to_f >= filters['min_fame'].to_f
-      age_ok = age_filter_passes?(u, filters)
-      fame_ok && age_ok
-    end
+    candidates = discover_candidates(current)
+    candidates = filter_by_preferences(current, candidates)
+    candidates = filter_out_connections(current, candidates)
+    candidates = filter_by_fame_and_age(candidates, filters)
 
     candidates.map! do |u|
       distance_score = location_score(current, u, filters['location'])
@@ -209,10 +200,34 @@ class User
       fame_score = fame_rating_score(u['fame_rating'])
       {
         user: UserSerializer.public_view(u),
-        score: ((distance_score + tag_score + fame_score) / 3.0).round(2)
+        score: { location_score: distance_score, tag_score: tag_score, fame_score: fame_score,
+                 total: ((distance_score + tag_score + fame_score) / 3.0).round(2) }
       }
     end
-    candidates.sort_by { |x| -x[:score] }
+    candidates.sort_by { |x| -x[:score][:total] }
+  end
+
+  def self.discover_candidates(current)
+    all(serialize_public_user: false).reject do |u|
+      u['id'].to_i == current['id'].to_i || u['is_banned'] == 't'
+    end
+  end
+
+  def self.filter_by_preferences(current, candidates)
+    candidates.select { |u| matches_preferences?(current, u) }
+  end
+
+  def self.filter_out_connections(current, candidates)
+    connections_ids = connections(current['id']).map { |u| u['id'] }
+    candidates.reject { |u| connections_ids.include?(u['id']) }
+  end
+
+  def self.filter_by_fame_and_age(candidates, filters)
+    candidates.select do |u|
+      fame_ok = filters['min_fame'].nil? || u['fame_rating'].to_f >= filters['min_fame'].to_f
+      age_ok = age_filter_passes?(u, filters)
+      fame_ok && age_ok
+    end
   end
 
   def self.age_filter_passes?(user, filters)
@@ -226,7 +241,7 @@ class User
   end
 
   def self.location_score(current, other, location_filter)
-    return 1.0 unless location_filter
+    return 100.0 unless location_filter
 
     user_loc = location_filter || { latitude: current['latitude'], longitude: current['longitude'] }
     other_loc = {
@@ -252,7 +267,7 @@ class User
   end
 
   def self.tag_score(candidate, filter_tags)
-    return 1.0 if filter_tags.nil? || filter_tags.empty?
+    return 100.0 if filter_tags.nil? || filter_tags.empty?
 
     user_tags = tags(candidate['id']).map { |t| t['name'] }
 
@@ -265,6 +280,7 @@ class User
     [(fame.to_f / 100) * 100, 100].min.round(2)
   end
 
+  # TODO: Should we check for a mutual sexual preference?
   def self.matches_preferences?(user, other)
     case user['sexual_preferences']
     when 'everyone'

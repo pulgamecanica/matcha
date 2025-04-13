@@ -47,7 +47,7 @@ describe 'UserController -> Discover' do
     expect(last_response.status).to eq(200)
     data = JSON.parse(last_response.body)['data']
     expect(data.first['user']['username']).to eq('bob')
-    expect(data.first['score']).to be > 0
+    expect(data.first['score']['total']).to be > 0
   end
 
   it 'filters by age correctly' do
@@ -92,6 +92,6 @@ describe 'UserController -> Discover' do
     expect(last_response.status).to eq(200)
     data = JSON.parse(last_response.body)['data']
     expect(data.first['user']['username']).to eq('bob')
-    expect(data.first['score']).to be > 33
+    expect(data.first['score']['total']).to be > 33
   end
 end
