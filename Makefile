@@ -69,4 +69,8 @@ console:
 		${DOCKER_CONTAINER_NAME} \
 		irb -r ./app
 
+re: down build re_db
+
+re_db: drop create migrate seed
+
 .PHONY: docs test migrate

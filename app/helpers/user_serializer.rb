@@ -12,6 +12,7 @@ module UserSerializer
       'biography' => user['biography'],
       'gender' => user['gender'],
       'sexual_preferences' => user['sexual_preferences'],
+      'birth_year' => user['birth_year'],
       'profile_picture_id' => user['profile_picture_id'],
       'online_status' => user['online_status'] == 't',
       'last_seen_at' => user['last_seen_at']

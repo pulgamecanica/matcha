@@ -5,14 +5,15 @@ require 'bcrypt'
 require_relative '../helpers/database'
 require_relative '../helpers/sql_helper'
 require_relative '../helpers/request_helper'
+require_relative '../lib/geolocation'
 
 class User
   include BCrypt
 
-  def self.all
+  def self.all(serialize_public_user: true)
     Database.pool.with do |conn|
       res = conn.exec('SELECT * FROM users ORDER BY username ASC')
-      res.map { |user| UserSerializer.public_view(user) }
+      res.map { |user| serialize_public_user ? UserSerializer.public_view(user) : user }
     end
   end
 
@@ -22,7 +23,7 @@ class User
 
     allowed_fields = %w[
       username email password_digest first_name
-      last_name gender sexual_preferences
+      last_name gender sexual_preferences birth_year
     ]
 
     SQLHelper.create(:users, params, allowed_fields)
@@ -31,8 +32,8 @@ class User
   def self.update(user_id, fields)
     allowed_fields = %w[
       username first_name last_name biography
-      gender sexual_preferences latitude longitude
-      profile_picture_id
+      gender sexual_preferences birth_year
+      latitude longitude profile_picture_id
     ]
 
     SQLHelper.update(:users, user_id, fields, allowed_fields)
@@ -173,5 +174,105 @@ class User
 
   def self.notifications(user_id)
     Notification.for_user(user_id)
+  end
+
+  def self.age(user)
+    return nil unless user['birth_year']
+
+    Time.now.year - user['birth_year'].to_i
+  end
+
+  ############################
+  # DISCOVER ALGORITHM
+  ############################
+
+  def self.discover(current, filters = {})
+    return [] unless current
+
+    all_users = all(serialize_public_user: false).reject do |u|
+      u['id'].to_i == current['id'].to_i || u['is_banned'] == 't'
+    end
+
+    candidates = all_users.select do |u|
+      matches_preferences?(current, u)
+    end
+
+    candidates.select! do |u|
+      fame_ok = filters['min_fame'].nil? || u['fame_rating'].to_f >= filters['min_fame'].to_f
+      age_ok = age_filter_passes?(u, filters)
+      fame_ok && age_ok
+    end
+
+    candidates.map! do |u|
+      distance_score = location_score(current, u, filters['location'])
+      tag_score = tag_score(u, filters['tags'])
+      fame_score = fame_rating_score(u['fame_rating'])
+      {
+        user: UserSerializer.public_view(u),
+        score: ((distance_score + tag_score + fame_score) / 3.0).round(2)
+      }
+    end
+    candidates.sort_by { |x| -x[:score] }
+  end
+
+  def self.age_filter_passes?(user, filters)
+    return true unless filters['min_age'] || filters['max_age']
+
+    return false unless user['birth_year']
+
+    age = Time.now.year - user['birth_year'].to_i
+    (filters['min_age'].nil? || age >= filters['min_age'].to_i) &&
+      (filters['max_age'].nil? || age <= filters['max_age'].to_i)
+  end
+
+  def self.location_score(current, other, location_filter)
+    return 1.0 unless location_filter
+
+    user_loc = location_filter || { latitude: current['latitude'], longitude: current['longitude'] }
+    other_loc = {
+      latitude: other['latitude']&.to_f,
+      longitude: other['longitude']&.to_f
+    }
+
+    return 0 unless other_loc[:latitude] && other_loc[:longitude]
+
+    distance = Geolocation.haversine_distance(
+      user_loc['latitude'].to_f,
+      user_loc['longitude'].to_f,
+      other_loc[:latitude],
+      other_loc[:longitude]
+    )
+
+    return 0 unless distance
+
+    max = location_filter['max_distance_km']&.to_f || 1000.0
+    normalized = [1 - [distance / max, 1.0].min, 0].max
+
+    (normalized * 100).round(2)
+  end
+
+  def self.tag_score(candidate, filter_tags)
+    return 1.0 if filter_tags.nil? || filter_tags.empty?
+
+    user_tags = tags(candidate['id']).map { |t| t['name'] }
+
+    shared = (user_tags & filter_tags).size
+    total = filter_tags.size
+    ((shared.to_f / total) * 100).round(2)
+  end
+
+  def self.fame_rating_score(fame)
+    [(fame.to_f / 100) * 100, 100].min.round(2)
+  end
+
+  def self.matches_preferences?(user, other)
+    case user['sexual_preferences']
+    when 'everyone'
+      true
+    when 'non_binary'
+      other['gender'] == 'other'
+    else
+      user['sexual_preferences'] == other['gender']
+    end
   end
 end

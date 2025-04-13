@@ -55,7 +55,8 @@ main_user = User.find_by_username('testuser') || User.create({
                                                                first_name: 'Test',
                                                                last_name: 'User',
                                                                gender: 'other',
-                                                               sexual_preferences: 'everyone'
+                                                               sexual_preferences: 'everyone',
+                                                               birth_year: '2000'
                                                              })
 User.confirm!('testuser')
 summary[:users] << 'testuser'
@@ -85,7 +86,8 @@ usernames.each do |username|
                                                           first_name: Faker::Name.first_name,
                                                           last_name: Faker::Name.last_name,
                                                           gender: %w[male female other].sample,
-                                                          sexual_preferences: %w[male female non_binary everyone].sample
+                                                          sexual_preferences: %w[male female non_binary everyone].sample,
+                                                          birth_year: Faker::Number.between(from: 1970, to: 2006)
                                                         })
   User.confirm!(user['username'])
   users << user
@@ -207,7 +209,9 @@ users.each do |user|
 
     Date.create(conn['id'], user['id'], location, time, description)
     parsed_time = Time.parse(time.to_s)
-    LOG[:dates] << "📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}"
+    LOG[:dates] << <<~LOG_ENTRY.chomp
+      📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}
+    LOG_ENTRY
   end
 end
 

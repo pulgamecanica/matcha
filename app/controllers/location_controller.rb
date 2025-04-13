@@ -2,6 +2,7 @@
 
 require_relative './base_controller'
 require_relative '../models/location_history'
+require_relative '../lib/geolocation'
 
 class LocationController < BaseController
   # ---------------------------

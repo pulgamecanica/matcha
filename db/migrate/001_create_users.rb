@@ -17,6 +17,7 @@ Database.with_open_conn do |conn|
       is_email_verified BOOLEAN DEFAULT FALSE,
       is_banned BOOLEAN DEFAULT FALSE,
       fame_rating FLOAT DEFAULT 0.0,
+      birth_year INTEGER,
       latitude FLOAT,
       longitude FLOAT,
       online_status BOOLEAN DEFAULT FALSE,

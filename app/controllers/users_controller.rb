@@ -47,6 +47,7 @@ class UsersController < BaseController
     param :gender, String, required: false, desc: 'One of: male, female, other'
     param :sexual_preferences, String, required: false, desc: 'One of: male, female, non_binary, everyone'
     param :biography, String, required: false
+    param :birth_year, Integer, required: false
     param :latitude, Float, required: false
     param :longitude, Float, required: false
     response 200, 'Profile updated & user object', example: {
@@ -90,6 +91,7 @@ class UsersController < BaseController
         biography: 'Hi there!',
         gender: 'female',
         sexual_preferences: 'male',
+        birth_year: '2000',
         profile_picture_id: 42,
         online_status: true,
         last_seen_at: '2025-04-11T14:53:00Z'
@@ -116,6 +118,7 @@ class UsersController < BaseController
       biography: user['biography'],
       gender: user['gender'],
       sexual_preferences: user['sexual_preferences'],
+      birth_year: user['birth_year'],
       profile_picture_id: user['profile_picture_id'],
       online_status: user['online_status'] == 't',
       last_seen_at: user['last_seen_at']
@@ -137,5 +140,44 @@ class UsersController < BaseController
     halt 401, { error: 'Unauthorized' }.to_json unless @current_user
     User.delete(@current_user['id'])
     status 204
+  end
+
+  # ---------------------------
+  # DISCOVER USERS
+  # ---------------------------
+  api_doc '/me/discover', method: :post do
+    tags 'User', 'Discover'
+    description 'Discover users based on preferences (location, age, fame, tags)'
+    param :location, Hash, required: false, desc: 'Latitude, longitude and max_distance_km'
+    param :min_age, Integer, required: false, desc: 'Minimum age filter'
+    param :max_age, Integer, required: false, desc: 'Maximum age filter'
+    param :min_fame, Float, required: false, desc: 'Minimum fame rating filter'
+    param :tags, Array, required: false, desc: 'Filter by shared tags'
+    response 200, 'Returns list of recommended users', example: {
+      data: [
+        {
+          user: {
+            id: 123,
+            username: 'alice',
+            first_name: 'Alice',
+            last_name: 'Wonder',
+            birth_year: 1995,
+            profile_picture_id: 10,
+            fame_rating: 27.4
+          },
+          scores: {
+            location: 92.8,
+            tags: 66.0
+          },
+          total_score: 79.4
+        }
+      ]
+    }
+  end
+
+  post '/me/discover' do
+    filters = json_body
+    candidates = User.discover(@current_user, filters)
+    { data: candidates }.to_json
   end
 end
