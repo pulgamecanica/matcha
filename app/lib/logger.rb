@@ -8,7 +8,7 @@ LOG_LEVELS = {
   'WARN' => Logger::WARN,
   'ERROR' => Logger::ERROR,
   'FATAL' => Logger::FATAL
-}
+}.freeze
 
 level_str = ENV.fetch('RUBY_LOG_LEVEL', 'INFO').upcase
 level     = LOG_LEVELS[level_str] || Logger::INFO
