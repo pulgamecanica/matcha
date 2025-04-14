@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'logger'
 require_relative './config/environment'
 require_relative './app/lib/cors'
+require_relative './app/lib/logger'
 
 class MatchaApp < Sinatra::Base
   configure do

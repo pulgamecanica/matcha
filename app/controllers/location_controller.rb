@@ -2,7 +2,6 @@
 
 require_relative './base_controller'
 require_relative '../models/location_history'
-require_relative '../lib/geolocation'
 
 class LocationController < BaseController
   # ---------------------------
@@ -51,18 +50,7 @@ class LocationController < BaseController
     user_agent = request.user_agent
 
     begin
-      location = Geolocation.lookup(ip_address)
-      raise Errors::ValidationError, 'Geolocation service failed' unless location
-
-      record = LocationHistory.record(
-        user_id: @current_user['id'],
-        latitude: location[:latitude],
-        longitude: location[:longitude],
-        city: location[:city],
-        country: location[:country],
-        ip_address: ip_address,
-        user_agent: user_agent
-      )
+      record = LocationHistory.record(@current_user['id'], ip_address, user_agent)
 
       { message: 'Location recorded', data: record }.to_json
     rescue Errors::ValidationError => e

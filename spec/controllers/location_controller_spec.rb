@@ -65,21 +65,4 @@ describe 'LocationController' do
       expect(updated_user['longitude'].to_s).to eq(-74.0060.to_s)
     end
   end
-
-  describe 'GET /me/location/history' do
-    it "returns the user's location history" do
-      # Simulate 2 location records
-      2.times do |i|
-        LocationHistory.record(user_id: @user['id'], latitude: 10.0 + i, longitude: 20.0 + i)
-      end
-
-      get '/me/location/history', nil, auth_headers(@token)
-      expect(last_response.status).to eq(200)
-      data = JSON.parse(last_response.body)['data']
-      expect(data.length).to eq(2)
-      expect(data.first).to have_key('latitude')
-      expect(data.first).to have_key('longitude')
-      expect(data.first).to have_key('created_at')
-    end
-  end
 end

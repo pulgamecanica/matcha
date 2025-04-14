@@ -16,7 +16,7 @@ module Geolocation
     data = JSON.parse(response.body)
 
     unless data['status'] == 'success'
-      raise Errors::ValidationError, "Geolocation failed: #{data['message'] || 'unknown error'}"
+      raise Errors::ValidationError, "Geolocation failed: #{data['message'] || 'unknown error'}. IP: [#{ip}]."
     end
 
     {

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'logger'
 require_relative './base_controller'
 require_relative '../models/blocked_user'
 require_relative '../models/profile_view'
+require_relative '../lib/logger'
 
 class UsersController < BaseController
   # ---------------------------
@@ -65,11 +67,20 @@ class UsersController < BaseController
   end
 
   patch '/me' do
+    ip_address = request.ip
+    user_agent = request.user_agent
     data = json_body
+
+    begin
+      LocationHistory.record(@current_user['id'], ip_address, user_agent)
+    rescue Errors::ValidationError => e
+      LOGGER.error("LocationHistory failed for user #{@current_user['id']}: #{e.message}")
+    end
 
     begin
       UserValidator.validate_update!(data)
       updated_user = User.update(@current_user['id'], data)
+
       { message: 'Profile updated!', data: updated_user.reject { |k, _| k == 'password_digest' } }.to_json
     rescue Errors::ValidationError => e
       halt 422, { error: e.message, details: e.details }.to_json
