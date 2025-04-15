@@ -20,10 +20,12 @@ class User
   def self.create(params)
     params = RequestHelper.normalize_params(params)
     params['password_digest'] = Password.create(params.delete('password'))
+    params['fame_rating'] = 1.0
 
     allowed_fields = %w[
       username email password_digest first_name
       last_name gender sexual_preferences birth_year
+      fame_rating
     ]
 
     SQLHelper.create(:users, params, allowed_fields)
