@@ -8,14 +8,15 @@ class Date
   end
 
   def self.create(connection_id, initiator_id, location, scheduled_at, note = nil)
-    db.with do |conn|
-      res = conn.exec_params(<<~SQL, [connection_id, initiator_id, location, scheduled_at, note])
+    date = db.with do |conn|
+      conn.exec_params(<<~SQL, [connection_id, initiator_id, location, scheduled_at, note])
         INSERT INTO dates (connection_id, initiator_id, location, scheduled_at, note, created_at)
         VALUES ($1, $2, $3, $4, $5, NOW())
         RETURNING *
       SQL
-      res.to_a&.first
-    end
+    end.to_a&.first
+    User.update_fame!(initiator_id)
+    date
   end
 
   def self.find_by_id(id)

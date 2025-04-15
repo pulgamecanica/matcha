@@ -161,30 +161,58 @@ class UsersController < BaseController
     description 'Discover users based on preferences (location, age, fame, tags)'
     param :location, Hash, required: false, desc: 'Latitude, longitude and max_distance_km'
     param :min_age, Integer, required: false, desc: 'Minimum age filter'
+    param :max_distance_km, Integer, required: false, desc: 'Maximum distance in km'
     param :max_age, Integer, required: false, desc: 'Maximum age filter'
     param :min_fame, Float, required: false, desc: 'Minimum fame rating filter'
     param :tags, Array, required: false, desc: 'Filter by shared tags'
     response 200, 'Returns list of recommended users', example: {
-      data: [
+      "data": [
         {
-          user: {
-            id: '482',
-            username: 'alice',
-            first_name: 'Alice',
-            last_name: 'A',
-            biography: 'null',
-            gender: 'female',
-            sexual_preferences: 'male',
-            birth_year: '2000',
-            profile_picture_id: 'null',
-            online_status: 'false',
-            last_seen_at: 'null'
+          "user": {
+            "id": '247',
+            "username": 'marquerite',
+            "first_name": 'Savannah',
+            "last_name": 'Anderson',
+            "biography": 'null',
+            "gender": 'female',
+            "sexual_preferences": 'everyone',
+            "birth_year": '2003',
+            "fame_rating": '3.75',
+            "profile_picture_id": 'null',
+            "online_status": false,
+            "last_seen_at": 'null',
+            "tags": [
+              {
+                "id": '33',
+                "name": 'yoga'
+              },
+              {
+                "id": '37',
+                "name": 'dogs'
+              },
+              {
+                "id": '40',
+                "name": 'dancing'
+              }
+            ],
+            "pictures": [
+              {
+                "id": '28',
+                "user_id": '247',
+                "url": 'https://robohash.org/marquerite.png?size=300x300&set=set1',
+                "is_profile": 't',
+                "created_at": '2025-04-15 19:03:26',
+                "updated_at": '2025-04-15 19:03:26'
+              }
+            ],
+            "views_count": 5,
+            "likes_count": 4
           },
-          score: {
-            location_score: '100.0',
-            tag_score: '100.0',
-            fame_score: '0.0',
-            total: '66.67'
+          "score": {
+            "location_score": 100.0,
+            "tag_score": 100.0,
+            "fame_score": 3.75,
+            "total": 67.92
           }
         }
       ]

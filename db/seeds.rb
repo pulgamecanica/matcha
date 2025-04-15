@@ -90,6 +90,13 @@ usernames.each do |username|
                                                           birth_year: Faker::Number.between(from: 1970, to: 2006)
                                                         })
   User.confirm!(user['username'])
+
+  lat_offset = rand(-1.8..1.8)
+  lon_offset = rand(-1.8..1.8)
+  params = {}
+  params['latitude'] = 19.43 + lat_offset
+  params['longitude'] = -99.13 + lon_offset
+  User.update(user['id'], params)
   users << user
   summary[:users] << username
   LOG[:users] << "👤 Created user: #{username}"

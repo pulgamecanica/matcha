@@ -12,6 +12,7 @@ class ProfileView
         VALUES ($1, $2, NOW())
       SQL
     end
+    User.update_fame!(viewed_id)
   end
 
   def self.visited(user_id)

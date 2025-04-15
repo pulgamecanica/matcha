@@ -43,13 +43,16 @@ class Connection
     return if user_a_id == user_b_id
     return if find_between(user_a_id, user_b_id)
 
-    Database.pool.with do |conn|
+    connection = Database.pool.with do |conn|
       conn.exec_params(<<~SQL, [user_a_id, user_b_id])
         INSERT INTO connections (user_a_id, user_b_id, created_at)
         VALUES ($1, $2, NOW())
         RETURNING *
       SQL
     end&.to_a&.first
+    User.update_fame!(user_a_id)
+    User.update_fame!(user_b_id)
+    connection
   end
 
   def self.delete_between(user_a_id, user_b_id)
@@ -60,5 +63,7 @@ class Connection
            OR (user_a_id = $3 AND user_b_id = $4)
       SQL
     end
+    User.update_fame!(user_a_id)
+    User.update_fame!(user_b_id)
   end
 end

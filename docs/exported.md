@@ -1008,6 +1008,7 @@
 ### Parameters
 - `location` (Hash)  - Latitude, longitude and max_distance_km
 - `min_age` (Integer)  - Minimum age filter
+- `max_distance_km` (Integer)  - Maximum distance in km
 - `max_age` (Integer)  - Maximum age filter
 - `min_fame` (Float)  - Minimum fame rating filter
 - `tags` (Array)  - Filter by shared tags
@@ -1019,23 +1020,50 @@
   "data": [
     {
       "user": {
-        "id": "482",
-        "username": "alice",
-        "first_name": "Alice",
-        "last_name": "A",
+        "id": "247",
+        "username": "marquerite",
+        "first_name": "Savannah",
+        "last_name": "Anderson",
         "biography": "null",
         "gender": "female",
-        "sexual_preferences": "male",
-        "birth_year": "2000",
+        "sexual_preferences": "everyone",
+        "birth_year": "2003",
+        "fame_rating": "3.75",
         "profile_picture_id": "null",
-        "online_status": "false",
-        "last_seen_at": "null"
+        "online_status": false,
+        "last_seen_at": "null",
+        "tags": [
+          {
+            "id": "33",
+            "name": "yoga"
+          },
+          {
+            "id": "37",
+            "name": "dogs"
+          },
+          {
+            "id": "40",
+            "name": "dancing"
+          }
+        ],
+        "pictures": [
+          {
+            "id": "28",
+            "user_id": "247",
+            "url": "https://robohash.org/marquerite.png?size=300x300&set=set1",
+            "is_profile": "t",
+            "created_at": "2025-04-15 19:03:26",
+            "updated_at": "2025-04-15 19:03:26"
+          }
+        ],
+        "views_count": 5,
+        "likes_count": 4
       },
       "score": {
-        "location_score": "100.0",
-        "tag_score": "100.0",
-        "fame_score": "0.0",
-        "total": "66.67"
+        "location_score": 100.0,
+        "tag_score": 100.0,
+        "fame_score": 3.75,
+        "total": 67.92
       }
     }
   ]
@@ -1116,129 +1144,6 @@
       "country": "Germany",
       "ip_address": "192.0.2.2",
       "recorded_at": "2025-04-10T16:45:00Z"
-    }
-  ]
-}
-```
-
----
-## `POST` /me/like
-**Description**: Like another user
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to like
-
-### Responses
-- `200`: User liked
-```json
-{
-  "message": "You liked janedoe"
-}
-```
-- `404`: User not found or unavailable
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Invalid request
-```json
-{
-  "error": "You cannot like yourself"
-}
-```
-
----
-## `DELETE` /me/like
-**Description**: Unlike a user
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to unlike
-
-### Responses
-- `200`: User unliked
-```json
-{
-  "message": "janedoe has been unliked"
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Like does not exist
-```json
-{
-  "error": "You haven't liked this user yet"
-}
-```
-
----
-## `GET` /me/likes
-**Description**: Get list of users you have liked
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Responses
-- `200`: Array of liked user objects
-```json
-{
-  "data": [
-    {
-      "username": "janedoe",
-      "first_name": "Jane",
-      "last_name": "Doe"
-    },
-    {
-      "username": "bobsmith",
-      "first_name": "Bob",
-      "last_name": "Smith"
-    }
-  ]
-}
-```
-
----
-## `GET` /me/liked_by
-**Description**: Get list of users who liked you
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Responses
-- `200`: Array of users who liked you
-```json
-{
-  "data": [
-    {
-      "username": "alicewonder",
-      "first_name": "Alice",
-      "last_name": "Wonder"
-    }
-  ]
-}
-```
-
----
-## `GET` /me/matches
-**Description**: Get list of users who liked you back (matches)
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Responses
-- `200`: Array of matched user objects
-```json
-{
-  "data": [
-    {
-      "username": "janedoe",
-      "first_name": "Jane",
-      "last_name": "Doe"
     }
   ]
 }
@@ -1419,6 +1324,129 @@
 ```json
 {
   "error": "User is blocked"
+}
+```
+
+---
+## `POST` /me/like
+**Description**: Like another user
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to like
+
+### Responses
+- `200`: User liked
+```json
+{
+  "message": "You liked janedoe"
+}
+```
+- `404`: User not found or unavailable
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Invalid request
+```json
+{
+  "error": "You cannot like yourself"
+}
+```
+
+---
+## `DELETE` /me/like
+**Description**: Unlike a user
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to unlike
+
+### Responses
+- `200`: User unliked
+```json
+{
+  "message": "janedoe has been unliked"
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Like does not exist
+```json
+{
+  "error": "You haven't liked this user yet"
+}
+```
+
+---
+## `GET` /me/likes
+**Description**: Get list of users you have liked
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Responses
+- `200`: Array of liked user objects
+```json
+{
+  "data": [
+    {
+      "username": "janedoe",
+      "first_name": "Jane",
+      "last_name": "Doe"
+    },
+    {
+      "username": "bobsmith",
+      "first_name": "Bob",
+      "last_name": "Smith"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/liked_by
+**Description**: Get list of users who liked you
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Responses
+- `200`: Array of users who liked you
+```json
+{
+  "data": [
+    {
+      "username": "alicewonder",
+      "first_name": "Alice",
+      "last_name": "Wonder"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/matches
+**Description**: Get list of users who liked you back (matches)
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Responses
+- `200`: Array of matched user objects
+```json
+{
+  "data": [
+    {
+      "username": "janedoe",
+      "first_name": "Jane",
+      "last_name": "Doe"
+    }
+  ]
 }
 ```
 

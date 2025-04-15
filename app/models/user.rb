@@ -201,7 +201,12 @@ class User
       tag_score = tag_score(u, filters['tags'])
       fame_score = fame_rating_score(u['fame_rating'])
       {
-        user: UserSerializer.public_view(u),
+        user: UserSerializer.public_view(u).merge(
+          tags: User.tags(u['id']),
+          pictures: User.pictures(u['id']),
+          views_count: User.visitors_for(u['id']).size,
+          likes_count: User.liked_by(u['id']).size
+        ),
         score: { location_score: distance_score, tag_score: tag_score, fame_score: fame_score,
                  total: ((distance_score + tag_score + fame_score) / 3.0).round(2) }
       }
@@ -290,6 +295,38 @@ class User
       other['gender'] == 'other'
     else
       user['sexual_preferences'] == other['gender']
+    end
+  end
+
+  ############################
+  # FAME ALGORITHM
+  ############################
+
+  FAME_FORMULA = {
+    messages_weight: 0.1,
+    views_weight: 0.2,
+    likes_weight: 0.3,
+    connections_weight: 0.25,
+    dates_weight: 0.15
+  }.freeze
+
+  def self.update_fame!(user_id)
+    views = User.visitors_for(user_id).size
+    likes = User.liked_by(user_id).size
+    messages = User.messages(user_id).size
+    connections = User.connections(user_id).size
+    dates = User.dates(user_id).size
+
+    score = (
+      messages * FAME_FORMULA[:messages_weight] +
+      views * FAME_FORMULA[:views_weight] +
+      likes * FAME_FORMULA[:likes_weight] +
+      connections * FAME_FORMULA[:connections_weight] +
+      dates * FAME_FORMULA[:dates_weight]
+    ).round(2)
+
+    Database.pool.with do |conn|
+      conn.exec_params('UPDATE users SET fame_rating = $1, updated_at = NOW() WHERE id = $2', [score, user_id])
     end
   end
 end

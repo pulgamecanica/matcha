@@ -13,6 +13,7 @@ class Like
         [liker_id, liked_id]
       )
     end
+    User.update_fame!(liked_id)
   end
 
   def self.unlike!(liker_id, liked_id)
@@ -22,6 +23,7 @@ class Like
         [liker_id, liked_id]
       )
     end
+    User.update_fame!(liked_id)
   end
 
   def self.liked_user_ids(user_id)
