@@ -21,6 +21,7 @@ class User
     params = RequestHelper.normalize_params(params)
     params['password_digest'] = Password.create(params.delete('password'))
     params['fame_rating'] = 1.0
+    params['sexual_preferences'] = params['sexual_preferences'] || 'everyone'
 
     allowed_fields = %w[
       username email password_digest first_name

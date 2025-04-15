@@ -190,8 +190,8 @@ end
 - [x] SQLHelper abstraction
 - [x] Tag system
 - [x] Connections, Likes
-- [ ] Notifications
-- [ ] Admin endpoints
+- [X] Notifications
+- [ ] Commonly used English words should not be accepted as passwords.
 - [ ] Real-time messaging (WebSocket or polling)
 - [ ] Full CI/CD pipeline
 
