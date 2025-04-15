@@ -120,4 +120,25 @@ describe 'TagsController' do
       expect(last_response.status).to eq(422)
     end
   end
+
+  describe 'GET /users/:username/tags' do
+    it 'get tags from a user' do
+      tag1 = Tag.create('movies')
+      tag2 = Tag.create('pizza')
+      user_id = User.find_by_username(user_data[:username])['id']
+      UserTag.add_tag(user_id, tag1['id'])
+      UserTag.add_tag(user_id, tag2['id'])
+
+      get "/users/#{user_data[:username]}/tags", nil, auth_headers
+      expect(last_response.status).to eq(200)
+      tags = parse_data(last_response.body)
+      expect(tags.map { |t| t['name'] }).to include('movies')
+      expect(tags.map { |t| t['name'] }).to include('pizza')
+    end
+
+    it 'fails to remove a non-existent user' do
+      get '/users/nouser/tags', nil, auth_headers
+      expect(last_response.status).to eq(404)
+    end
+  end
 end

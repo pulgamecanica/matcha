@@ -255,6 +255,184 @@
 ```
 
 ---
+## `GET` /tags
+**Description**: List all tags
+**Auth required**: Yes
+**Tags**: Tag
+
+### Responses
+- `200`: Returns a list of available tags
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "travel"
+    },
+    {
+      "id": 2,
+      "name": "music"
+    }
+  ]
+}
+```
+
+---
+## `POST` /tags
+**Description**: Create a new tag
+**Auth required**: Yes
+**Tags**: Tag
+
+### Parameters
+- `name` (String) **(required)** - The name of the tag
+
+### Responses
+- `201`: Tag created
+```json
+{
+  "message": "Tag created",
+  "data": {
+    "id": 3,
+    "name": "photography"
+  }
+}
+```
+- `422`: Missing or invalid name
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "name": [
+      "is too short"
+    ]
+  }
+}
+```
+- `422`: Tag name already taken
+```json
+{
+  "error": "Tag name already taken"
+}
+```
+
+---
+## `GET` /me/tags
+**Description**: List all tags for the current user
+**Auth required**: Yes
+**Tags**: User, Tag
+
+### Responses
+- `200`: Returns user’s tags
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "travel"
+    },
+    {
+      "id": 3,
+      "name": "photography"
+    }
+  ]
+}
+```
+
+---
+## `POST` /me/tags
+**Description**: Add a tag to the current user
+**Auth required**: Yes
+**Tags**: User, Tag
+
+### Parameters
+- `name` (String) **(required)** - The name of the tag to add, if tag doesn't exist it's created
+
+### Responses
+- `200`: Tag added to user
+```json
+{
+  "message": "Tag added",
+  "data": {
+    "id": 4,
+    "name": "sports"
+  }
+}
+```
+- `422`: Tag name missing or invalid
+```json
+{
+  "error": "Missing tag name"
+}
+```
+
+---
+## `DELETE` /me/tags
+**Description**: Remove a tag from the current user
+**Auth required**: Yes
+**Tags**: User, Tag
+
+### Parameters
+- `name` (String) **(required)** - The name of the tag to remove
+
+### Responses
+- `200`: Tag removed
+```json
+{
+  "message": "Tag removed"
+}
+```
+- `422`: Missing or invalid tag
+```json
+{
+  "error": "Tag not found"
+}
+```
+
+---
+## `GET` /users/:username/tags
+**Description**: Fetch the tags of a user by their username
+**Auth required**: Yes
+**Tags**: User, PublicProfile, Tag
+
+### Parameters
+- `username` (String) **(required)** - The unique username of the user
+
+### Responses
+- `200`: Public user data
+```json
+{
+  "data": [
+    {
+      "id": 4,
+      "name": "sports"
+    },
+    {
+      "id": 5,
+      "name": "cycling"
+    }
+  ]
+}
+```
+- `404`: User not found or banned
+```json
+{
+  "error": "User not found"
+}
+```
+- `404`: User blocked you
+```json
+{
+  "error": "User blocked you"
+}
+```
+- `404`: User is blocked
+```json
+{
+  "error": "User is blocked"
+}
+```
+
+---
 ## `POST` /me/dates
 **Description**: Schedule a date with a connected user
 **Auth required**: Yes
@@ -1197,140 +1375,6 @@
       "last_name": "Doe"
     }
   ]
-}
-```
-
----
-## `GET` /tags
-**Description**: List all tags
-**Auth required**: Yes
-**Tags**: Tag
-
-### Responses
-- `200`: Returns a list of available tags
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "travel"
-    },
-    {
-      "id": 2,
-      "name": "music"
-    }
-  ]
-}
-```
-
----
-## `POST` /tags
-**Description**: Create a new tag
-**Auth required**: Yes
-**Tags**: Tag
-
-### Parameters
-- `name` (String) **(required)** - The name of the tag
-
-### Responses
-- `201`: Tag created
-```json
-{
-  "message": "Tag created",
-  "data": {
-    "id": 3,
-    "name": "photography"
-  }
-}
-```
-- `422`: Missing or invalid name
-```json
-{
-  "error": "Validation failed",
-  "details": {
-    "name": [
-      "is too short"
-    ]
-  }
-}
-```
-- `422`: Tag name already taken
-```json
-{
-  "error": "Tag name already taken"
-}
-```
-
----
-## `GET` /me/tags
-**Description**: List all tags for the current user
-**Auth required**: Yes
-**Tags**: User, Tag
-
-### Responses
-- `200`: Returns user’s tags
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "name": "travel"
-    },
-    {
-      "id": 3,
-      "name": "photography"
-    }
-  ]
-}
-```
-
----
-## `POST` /me/tags
-**Description**: Add a tag to the current user
-**Auth required**: Yes
-**Tags**: User, Tag
-
-### Parameters
-- `name` (String) **(required)** - The name of the tag to add, if tag doesn't exist it's created
-
-### Responses
-- `200`: Tag added to user
-```json
-{
-  "message": "Tag added",
-  "data": {
-    "id": 4,
-    "name": "sports"
-  }
-}
-```
-- `422`: Tag name missing or invalid
-```json
-{
-  "error": "Missing tag name"
-}
-```
-
----
-## `DELETE` /me/tags
-**Description**: Remove a tag from the current user
-**Auth required**: Yes
-**Tags**: User, Tag
-
-### Parameters
-- `name` (String) **(required)** - The name of the tag to remove
-
-### Responses
-- `200`: Tag removed
-```json
-{
-  "message": "Tag removed"
-}
-```
-- `422`: Missing or invalid tag
-```json
-{
-  "error": "Tag not found"
 }
 ```
 

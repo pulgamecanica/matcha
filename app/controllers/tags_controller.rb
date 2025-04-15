@@ -119,4 +119,38 @@ class TagsController < BaseController
     UserTag.remove_tag(@current_user['id'], tag['id'])
     { message: 'Tag removed' }.to_json
   end
+
+  # ---------------------------
+  # LOOKUP USER TAGS
+  # ---------------------------
+  api_doc '/users/:username/tags', method: :get do
+    tags 'User', 'PublicProfile', 'Tag'
+    description 'Fetch the tags of a user by their username'
+    param :username, String, required: true, desc: 'The unique username of the user'
+    response 200, 'Public user data', example: {
+      data: [
+        {
+          id: 4, name: 'sports'
+        },
+        {
+          id: 5, name: 'cycling'
+        }
+      ]
+    }
+    response 404, 'User not found or banned', example: { error: 'User not found' }
+    response 404, 'User blocked you', example: { error: 'User blocked you' }
+    response 404, 'User is blocked', example: { error: 'User is blocked' }
+  end
+
+  get '/users/:username/tags' do
+    user = User.find_by_username(params[:username])
+    halt 404, { error: 'User not found' }.to_json unless user
+    halt 404, { error: 'User not available' }.to_json if user['is_banned'] == 't'
+    halt 404, { error: 'User blocked you' }.to_json if BlockedUser.blocked?(user['id'], @current_user['id'])
+    halt 404, { error: 'User is blocked' }.to_json if BlockedUser.blocked?(@current_user['id'], user['id'])
+
+    tags = User.tags(user['id'])
+
+    { data: tags }.to_json
+  end
 end
