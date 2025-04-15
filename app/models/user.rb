@@ -214,7 +214,7 @@ class User
   end
 
   def self.filter_by_preferences(current, candidates)
-    candidates.select { |u| matches_preferences?(current, u) }
+    candidates.select { |u| matches_preferences?(current, u) && matches_preferences?(u, current) }
   end
 
   def self.filter_out_connections(current, candidates)
@@ -280,7 +280,6 @@ class User
     [(fame.to_f / 100) * 100, 100].min.round(2)
   end
 
-  # TODO: Should we check for a mutual sexual preference?
   def self.matches_preferences?(user, other)
     case user['sexual_preferences']
     when 'everyone'
