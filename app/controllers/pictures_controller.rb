@@ -125,4 +125,40 @@ class PicturesController < BaseController
 
     { message: 'Picture deleted' }.to_json
   end
+
+  # ---------------------------
+  # LOOKUP USER PICTURES
+  # ---------------------------
+  api_doc '/users/:username/pictures', method: :get do
+    tags 'User', 'PublicProfile', 'Picture'
+    description 'Fetch the pictures of a user by their username'
+    param :username, String, required: true, desc: 'The unique username of the user'
+    response 200, 'Public user data', example: {
+      data: [
+        {
+          id: 217,
+          user_id: 2248,
+          url: 'https://robohash.org/wallace.png?size=300x300&set=set1',
+          is_profile: 't',
+          created_at: '2025-04-15 07:49:41',
+          updated_at: '2025-04-15 07:49:41'
+        }
+      ]
+    }
+    response 404, 'User not found or banned', example: { error: 'User not found' }
+    response 404, 'User blocked you', example: { error: 'User blocked you' }
+    response 404, 'User is blocked', example: { error: 'User is blocked' }
+  end
+
+  get '/users/:username/pictures' do
+    user = User.find_by_username(params[:username])
+    halt 404, { error: 'User not found' }.to_json unless user
+    halt 404, { error: 'User not available' }.to_json if user['is_banned'] == 't'
+    halt 404, { error: 'User blocked you' }.to_json if BlockedUser.blocked?(user['id'], @current_user['id'])
+    halt 404, { error: 'User is blocked' }.to_json if BlockedUser.blocked?(@current_user['id'], user['id'])
+
+    pictures = User.pictures(user['id'])
+
+    { data: pictures }.to_json
+  end
 end

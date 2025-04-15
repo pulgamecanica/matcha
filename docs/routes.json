@@ -387,242 +387,6 @@
     ]
   },
   {
-    "method": "GET",
-    "path": "/tags",
-    "description": "List all tags",
-    "auth_required": true,
-    "tags": [
-      "Tag"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns a list of available tags",
-        "example": {
-          "data": [
-            {
-              "id": 1,
-              "name": "travel"
-            },
-            {
-              "id": 2,
-              "name": "music"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/tags",
-    "description": "Create a new tag",
-    "auth_required": true,
-    "tags": [
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "name",
-        "type": "String",
-        "required": true,
-        "desc": "The name of the tag"
-      }
-    ],
-    "responses": [
-      {
-        "code": 201,
-        "desc": "Tag created",
-        "example": {
-          "message": "Tag created",
-          "data": {
-            "id": 3,
-            "name": "photography"
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Missing or invalid name",
-        "example": {
-          "error": "Validation failed",
-          "details": {
-            "name": [
-              "is too short"
-            ]
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Tag name already taken",
-        "example": {
-          "error": "Tag name already taken"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/tags",
-    "description": "List all tags for the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Tag"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns user’s tags",
-        "example": {
-          "data": [
-            {
-              "id": 1,
-              "name": "travel"
-            },
-            {
-              "id": 3,
-              "name": "photography"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/me/tags",
-    "description": "Add a tag to the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "name",
-        "type": "String",
-        "required": true,
-        "desc": "The name of the tag to add, if tag doesn't exist it's created"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Tag added to user",
-        "example": {
-          "message": "Tag added",
-          "data": {
-            "id": 4,
-            "name": "sports"
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Tag name missing or invalid",
-        "example": {
-          "error": "Missing tag name"
-        }
-      }
-    ]
-  },
-  {
-    "method": "DELETE",
-    "path": "/me/tags",
-    "description": "Remove a tag from the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "name",
-        "type": "String",
-        "required": true,
-        "desc": "The name of the tag to remove"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Tag removed",
-        "example": {
-          "message": "Tag removed"
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Missing or invalid tag",
-        "example": {
-          "error": "Tag not found"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/users/:username/tags",
-    "description": "Fetch the tags of a user by their username",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "PublicProfile",
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The unique username of the user"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Public user data",
-        "example": {
-          "data": [
-            {
-              "id": 4,
-              "name": "sports"
-            },
-            {
-              "id": 5,
-              "name": "cycling"
-            }
-          ]
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found or banned",
-        "example": {
-          "error": "User not found"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User blocked you",
-        "example": {
-          "error": "User blocked you"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User is blocked",
-        "example": {
-          "error": "User is blocked"
-        }
-      }
-    ]
-  },
-  {
     "method": "POST",
     "path": "/me/dates",
     "description": "Schedule a date with a connected user",
@@ -1141,6 +905,64 @@
   },
   {
     "method": "GET",
+    "path": "/users/:username/pictures",
+    "description": "Fetch the pictures of a user by their username",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "PublicProfile",
+      "Picture"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The unique username of the user"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Public user data",
+        "example": {
+          "data": [
+            {
+              "id": 217,
+              "user_id": 2248,
+              "url": "https://robohash.org/wallace.png?size=300x300&set=set1",
+              "is_profile": "t",
+              "created_at": "2025-04-15 07:49:41",
+              "updated_at": "2025-04-15 07:49:41"
+            }
+          ]
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found or banned",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User blocked you",
+        "example": {
+          "error": "User blocked you"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User is blocked",
+        "example": {
+          "error": "User is blocked"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
     "path": "/me/notifications",
     "description": "List notifications for the current user",
     "auth_required": true,
@@ -1393,104 +1215,6 @@
                   "sender_username": "alice"
                 }
               ]
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/location",
-    "description": "Returns the last known latitude and longitude of the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Location"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns current location of the user",
-        "example": {
-          "data": {
-            "latitude": 48.8566,
-            "longitude": 2.3522,
-            "city": "Paris",
-            "country": "France",
-            "recorded_at": "2025-04-12T08:30:00Z"
-          }
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/me/location",
-    "description": "Record the current user's location (estimated from IP)",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Location"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Location saved",
-        "example": {
-          "message": "Location recorded",
-          "data": {
-            "latitude": 48.8566,
-            "longitude": 2.3522,
-            "city": "Paris",
-            "country": "France",
-            "ip_address": "192.0.2.1",
-            "recorded_at": "2025-04-12T08:30:00Z"
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Geolocation service failed",
-        "example": {
-          "error": "Geolocation service failed"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/location/history",
-    "description": "Get your full location history",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Location"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of location records",
-        "example": {
-          "data": [
-            {
-              "latitude": 48.8566,
-              "longitude": 2.3522,
-              "city": "Paris",
-              "country": "France",
-              "ip_address": "192.0.2.1",
-              "recorded_at": "2025-04-12T08:30:00Z"
-            },
-            {
-              "latitude": 52.52,
-              "longitude": 13.405,
-              "city": "Berlin",
-              "country": "Germany",
-              "ip_address": "192.0.2.2",
-              "recorded_at": "2025-04-10T16:45:00Z"
             }
           ]
         }
@@ -1775,6 +1499,104 @@
     ]
   },
   {
+    "method": "GET",
+    "path": "/me/location",
+    "description": "Returns the last known latitude and longitude of the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Location"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns current location of the user",
+        "example": {
+          "data": {
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "city": "Paris",
+            "country": "France",
+            "recorded_at": "2025-04-12T08:30:00Z"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/me/location",
+    "description": "Record the current user's location (estimated from IP)",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Location"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Location saved",
+        "example": {
+          "message": "Location recorded",
+          "data": {
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "city": "Paris",
+            "country": "France",
+            "ip_address": "192.0.2.1",
+            "recorded_at": "2025-04-12T08:30:00Z"
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Geolocation service failed",
+        "example": {
+          "error": "Geolocation service failed"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/location/history",
+    "description": "Get your full location history",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Location"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of location records",
+        "example": {
+          "data": [
+            {
+              "latitude": 48.8566,
+              "longitude": 2.3522,
+              "city": "Paris",
+              "country": "France",
+              "ip_address": "192.0.2.1",
+              "recorded_at": "2025-04-12T08:30:00Z"
+            },
+            {
+              "latitude": 52.52,
+              "longitude": 13.405,
+              "city": "Berlin",
+              "country": "Germany",
+              "ip_address": "192.0.2.2",
+              "recorded_at": "2025-04-10T16:45:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
     "method": "POST",
     "path": "/me/like",
     "description": "Like another user",
@@ -1935,6 +1757,242 @@
               "last_name": "Doe"
             }
           ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/tags",
+    "description": "List all tags",
+    "auth_required": true,
+    "tags": [
+      "Tag"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns a list of available tags",
+        "example": {
+          "data": [
+            {
+              "id": 1,
+              "name": "travel"
+            },
+            {
+              "id": 2,
+              "name": "music"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/tags",
+    "description": "Create a new tag",
+    "auth_required": true,
+    "tags": [
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "name",
+        "type": "String",
+        "required": true,
+        "desc": "The name of the tag"
+      }
+    ],
+    "responses": [
+      {
+        "code": 201,
+        "desc": "Tag created",
+        "example": {
+          "message": "Tag created",
+          "data": {
+            "id": 3,
+            "name": "photography"
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Missing or invalid name",
+        "example": {
+          "error": "Validation failed",
+          "details": {
+            "name": [
+              "is too short"
+            ]
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Tag name already taken",
+        "example": {
+          "error": "Tag name already taken"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/tags",
+    "description": "List all tags for the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Tag"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns user’s tags",
+        "example": {
+          "data": [
+            {
+              "id": 1,
+              "name": "travel"
+            },
+            {
+              "id": 3,
+              "name": "photography"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/me/tags",
+    "description": "Add a tag to the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "name",
+        "type": "String",
+        "required": true,
+        "desc": "The name of the tag to add, if tag doesn't exist it's created"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Tag added to user",
+        "example": {
+          "message": "Tag added",
+          "data": {
+            "id": 4,
+            "name": "sports"
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Tag name missing or invalid",
+        "example": {
+          "error": "Missing tag name"
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me/tags",
+    "description": "Remove a tag from the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "name",
+        "type": "String",
+        "required": true,
+        "desc": "The name of the tag to remove"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Tag removed",
+        "example": {
+          "message": "Tag removed"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Missing or invalid tag",
+        "example": {
+          "error": "Tag not found"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/users/:username/tags",
+    "description": "Fetch the tags of a user by their username",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "PublicProfile",
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The unique username of the user"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Public user data",
+        "example": {
+          "data": [
+            {
+              "id": 4,
+              "name": "sports"
+            },
+            {
+              "id": 5,
+              "name": "cycling"
+            }
+          ]
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found or banned",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User blocked you",
+        "example": {
+          "error": "User blocked you"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User is blocked",
+        "example": {
+          "error": "User is blocked"
         }
       }
     ]
