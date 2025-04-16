@@ -2,6 +2,7 @@
 
 require_relative './app/helpers/session_token'
 require_relative './app/models/user'
+require 'sinatra/base'
 require 'faye/websocket'
 require 'json'
 require 'concurrent'
