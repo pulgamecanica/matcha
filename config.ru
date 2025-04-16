@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
-# config.ru, for rackup
 require_relative './app'
-run MatchaApp
+require_relative './ws_server'
+
+map '/' do
+  run MatchaApp
+end
+
+map '/ws' do
+  run WebSocketServer
+end

@@ -185,6 +185,24 @@ class User
     Time.now.year - user['birth_year'].to_i
   end
 
+  def self.set_online!(user_id)
+    Database.pool.with do |conn|
+      conn.exec_params(
+        'UPDATE users SET online_status = TRUE WHERE id = $1',
+        [user_id]
+      )
+    end
+  end
+
+  def self.set_offline!(user_id)
+    Database.pool.with do |conn|
+      conn.exec_params(
+        'UPDATE users SET online_status = FALSE, last_seen_at = NOW() WHERE id = $1',
+        [user_id]
+      )
+    end
+  end
+
   ############################
   # DISCOVER ALGORITHM
   ############################
