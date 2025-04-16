@@ -121,6 +121,11 @@ class UsersController < BaseController
     halt 404, { error: 'User is blocked' }.to_json if BlockedUser.blocked?(@current_user['id'], user['id'])
 
     ProfileView.record(@current_user['id'], user['id'])
+    Notification.create(
+      user['id'],
+      "#{@current_user['username']} viewed your profile",
+      @current_user['id']
+    )
 
     public_data = {
       username: user['username'],

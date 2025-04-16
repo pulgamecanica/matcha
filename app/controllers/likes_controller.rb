@@ -37,6 +37,11 @@ class LikesController < BaseController
     halt 422, { error: 'You cannot like yourself' }.to_json if target['id'] == @current_user['id']
 
     Like.like!(@current_user['id'], target['id'])
+    Notification.create(
+      target['id'],
+      "#{current_user['username']} liked your profile",
+      @current_user['id']
+    )
     { message: "You liked #{data['username']}" }.to_json
   end
 

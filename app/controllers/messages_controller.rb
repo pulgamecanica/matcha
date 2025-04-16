@@ -50,6 +50,12 @@ class MessagesController < BaseController
     halt 404, { error: "No connection found with #{data['username']}" }.to_json unless connection
 
     message = Message.create(connection['id'], @current_user['id'], data['content'])
+
+    Notification.create(
+      recipient['id'],
+      message['content'],
+      @current_user['id']
+    )
     { message: 'Message sent', data: message }.to_json
   end
 
