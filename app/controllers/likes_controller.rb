@@ -39,7 +39,7 @@ class LikesController < BaseController
     Like.like!(@current_user['id'], target['id'])
     Notification.create(
       target['id'],
-      "#{current_user['username']} liked your profile",
+      "#{@current_user['username']} liked your profile",
       @current_user['id']
     )
     { message: "You liked #{data['username']}" }.to_json
