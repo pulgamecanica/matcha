@@ -2,6 +2,7 @@
 
 require_relative './base_controller'
 require_relative '../models/location_history'
+require_relative '../helpers/location_validator'
 
 class LocationController < BaseController
   # ---------------------------
@@ -30,7 +31,11 @@ class LocationController < BaseController
   # ---------------------------
   api_doc '/me/location', method: :post do
     tags 'User', 'Location'
-    description "Record the current user's location (estimated from IP)"
+    description "Record the current user's location (estimated from IP), or provided manually by the user"
+    param :latitude, Integer, required: false
+    param :longitude, Integer, required: false
+    param :city, String, required: false
+    param :country, String, required: false
     response 200, 'Location saved', example: {
       message: 'Location recorded',
       data: {
@@ -48,13 +53,32 @@ class LocationController < BaseController
   post '/me/location' do
     ip_address = request.ip
     user_agent = request.user_agent
+    data = json_body
 
     begin
-      record = LocationHistory.record(@current_user['id'], ip_address, user_agent)
+      puts "The params are: #{data}"
+      if LocationValidator.manual_location_params?(data)
+        LocationValidator.validate_manual_location!(data)
 
-      { message: 'Location recorded', data: record }.to_json
+        location_history = LocationHistory.record(
+          @current_user['id'],
+          ip_address,
+          user_agent,
+          location: {
+            country: data['country'],
+            city: data['city'],
+            latitude: data['latitude'],
+            longitude: data['longitude']
+          }
+        )
+
+        { message: 'Location recorded', data: location_history }.to_json
+      else
+        record = LocationHistory.record(@current_user['id'], ip_address, user_agent)
+        { message: 'Location recorded', data: record }.to_json
+      end
     rescue Errors::ValidationError => e
-      halt 422, { error: e.message }.to_json
+      halt 422, { error: e.message, details: e.details }.to_json
     end
   end
 

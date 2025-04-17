@@ -50,8 +50,6 @@ class UsersController < BaseController
     param :sexual_preferences, String, required: false, desc: 'One of: male, female, non_binary, everyone'
     param :biography, String, required: false
     param :birth_year, Integer, required: false
-    param :latitude, Float, required: false
-    param :longitude, Float, required: false
     response 200, 'Profile updated & user object', example: {
       message: 'Profile updated!',
       data: {

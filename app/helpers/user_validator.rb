@@ -19,8 +19,7 @@ module UserValidator
   def self.validate_update!(params)
     allowed_keys = %w[
       username first_name last_name biography
-      gender sexual_preferences latitude longitude
-      birth_year
+      gender sexual_preferences birth_year
     ]
 
     unknown_keys = params.keys - allowed_keys

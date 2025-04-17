@@ -230,6 +230,11 @@ class User
                  total: ((distance_score + tag_score + fame_score) / 3.0).round(2) }
       }
     end
+    if filters['location'] && filters['location']['max_distance_km']&.positive?
+      candidates.reject! do |c|
+        c[:score][:location_score] <= 0
+      end
+    end
     candidates.sort_by { |x| -x[:score][:total] }
   end
 

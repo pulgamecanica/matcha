@@ -535,66 +535,6 @@
   },
   {
     "method": "GET",
-    "path": "/me/visits",
-    "description": "See who has viewed your profile",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "ProfileView"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of users who viewed you",
-        "example": {
-          "data": [
-            {
-              "username": "janedoe",
-              "first_name": "Jane",
-              "last_name": "Doe",
-              "viewed_at": "2025-04-12T10:00:00Z"
-            },
-            {
-              "username": "bobsmith",
-              "first_name": "Bob",
-              "last_name": "Smith",
-              "viewed_at": "2025-04-11T16:40:00Z"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/views",
-    "description": "See which users you have viewed",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "ProfileView"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of profiles you viewed",
-        "example": {
-          "data": [
-            {
-              "username": "alicewonder",
-              "first_name": "Alice",
-              "last_name": "Wonder",
-              "viewed_at": "2025-04-12T09:00:00Z"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
     "path": "/me/connections",
     "description": "Get all users you are connected with",
     "auth_required": true,
@@ -719,6 +659,754 @@
         "desc": "User not found",
         "example": {
           "error": "User not found"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/tags",
+    "description": "List all tags",
+    "auth_required": true,
+    "tags": [
+      "Tag"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns a list of available tags",
+        "example": {
+          "data": [
+            {
+              "id": 1,
+              "name": "travel"
+            },
+            {
+              "id": 2,
+              "name": "music"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/tags",
+    "description": "Create a new tag",
+    "auth_required": true,
+    "tags": [
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "name",
+        "type": "String",
+        "required": true,
+        "desc": "The name of the tag"
+      }
+    ],
+    "responses": [
+      {
+        "code": 201,
+        "desc": "Tag created",
+        "example": {
+          "message": "Tag created",
+          "data": {
+            "id": 3,
+            "name": "photography"
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Missing or invalid name",
+        "example": {
+          "error": "Validation failed",
+          "details": {
+            "name": [
+              "is too short"
+            ]
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Tag name already taken",
+        "example": {
+          "error": "Tag name already taken"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/tags",
+    "description": "List all tags for the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Tag"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns user’s tags",
+        "example": {
+          "data": [
+            {
+              "id": 1,
+              "name": "travel"
+            },
+            {
+              "id": 3,
+              "name": "photography"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/me/tags",
+    "description": "Add a tag to the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "name",
+        "type": "String",
+        "required": true,
+        "desc": "The name of the tag to add, if tag doesn't exist it's created"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Tag added to user",
+        "example": {
+          "message": "Tag added",
+          "data": {
+            "id": 4,
+            "name": "sports"
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Tag name missing or invalid",
+        "example": {
+          "error": "Missing tag name"
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me/tags",
+    "description": "Remove a tag from the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "name",
+        "type": "String",
+        "required": true,
+        "desc": "The name of the tag to remove"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Tag removed",
+        "example": {
+          "message": "Tag removed"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Missing or invalid tag",
+        "example": {
+          "error": "Tag not found"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/users/:username/tags",
+    "description": "Fetch the tags of a user by their username",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "PublicProfile",
+      "Tag"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The unique username of the user"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Public user data",
+        "example": {
+          "data": [
+            {
+              "id": 4,
+              "name": "sports"
+            },
+            {
+              "id": 5,
+              "name": "cycling"
+            }
+          ]
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found or banned",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User blocked you",
+        "example": {
+          "error": "User blocked you"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User is blocked",
+        "example": {
+          "error": "User is blocked"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/visits",
+    "description": "See who has viewed your profile",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "ProfileView"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of users who viewed you",
+        "example": {
+          "data": [
+            {
+              "username": "janedoe",
+              "first_name": "Jane",
+              "last_name": "Doe",
+              "viewed_at": "2025-04-12T10:00:00Z"
+            },
+            {
+              "username": "bobsmith",
+              "first_name": "Bob",
+              "last_name": "Smith",
+              "viewed_at": "2025-04-11T16:40:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/views",
+    "description": "See which users you have viewed",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "ProfileView"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of profiles you viewed",
+        "example": {
+          "data": [
+            {
+              "username": "alicewonder",
+              "first_name": "Alice",
+              "last_name": "Wonder",
+              "viewed_at": "2025-04-12T09:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/me/messages",
+    "description": "Send a message to a user (requires existing connection)",
+    "auth_required": true,
+    "tags": [
+      "Message"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "Recipient's username"
+      },
+      {
+        "name": "content",
+        "type": "String",
+        "required": true,
+        "desc": "Message content"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Message sent",
+        "example": {
+          "message": "Message sent",
+          "data": {
+            "id": 40,
+            "connection_id": 42,
+            "sender_id": 121,
+            "content": "Hey there!",
+            "created_at": "2025-04-12 18:07:25.031215"
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User or connection not found",
+        "example": {
+          "error": "No connection found with janedoe"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Validation error",
+        "example": {
+          "error": "Invalid request",
+          "details": [
+            "content must not be empty"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/messages/:username",
+    "description": "Get all messages exchanged with a given user",
+    "auth_required": true,
+    "tags": [
+      "Message"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "Other user's username"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Message thread",
+        "example": {
+          "data": {
+            "user": {
+              "id": 127,
+              "username": "bob",
+              "email": "bob@example.com",
+              "first_name": "Bob",
+              "last_name": "B",
+              "gender": "male",
+              "sexual_preferences": "female",
+              "biography": null,
+              "is_email_verified": true,
+              "is_banned": false,
+              "fame_rating": 0,
+              "latitude": null,
+              "longitude": null,
+              "online_status": false,
+              "last_seen_at": null,
+              "created_at": "2025-04-12 18:08:00.699235",
+              "updated_at": "2025-04-12 18:08:00.702444",
+              "profile_picture_id": null
+            },
+            "messages": [
+              {
+                "id": 41,
+                "connection_id": 44,
+                "sender_id": 127,
+                "content": "Hi Bob!",
+                "created_at": "2025-04-12 18:08:00.704577",
+                "sender_username": "bob"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User or connection not found",
+        "example": {
+          "error": "No connection found with bob"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/messages",
+    "description": "Get all conversations grouped by user",
+    "auth_required": true,
+    "tags": [
+      "Message"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of message threads",
+        "example": {
+          "data": [
+            {
+              "user": {
+                "id": 129,
+                "username": "bob",
+                "first_name": "Bob",
+                "last_name": "B",
+                "biography": null,
+                "gender": "male",
+                "sexual_preferences": "female",
+                "profile_picture_id": null,
+                "online_status": false,
+                "last_seen_at": null
+              },
+              "messages": [
+                {
+                  "id": 42,
+                  "connection_id": 45,
+                  "sender_id": 128,
+                  "content": "Hey again!",
+                  "created_at": "2025-04-12 18:08:09.476871",
+                  "sender_username": "alice"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/location",
+    "description": "Returns the last known latitude and longitude of the current user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Location"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns current location of the user",
+        "example": {
+          "data": {
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "city": "Paris",
+            "country": "France",
+            "recorded_at": "2025-04-12T08:30:00Z"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/me/location",
+    "description": "Record the current user's location (estimated from IP), or provided manually by the user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Location"
+    ],
+    "params": [
+      {
+        "name": "latitude",
+        "type": "Integer",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "longitude",
+        "type": "Integer",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "city",
+        "type": "String",
+        "required": false,
+        "desc": null
+      },
+      {
+        "name": "country",
+        "type": "String",
+        "required": false,
+        "desc": null
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Location saved",
+        "example": {
+          "message": "Location recorded",
+          "data": {
+            "latitude": 48.8566,
+            "longitude": 2.3522,
+            "city": "Paris",
+            "country": "France",
+            "ip_address": "192.0.2.1",
+            "recorded_at": "2025-04-12T08:30:00Z"
+          }
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Geolocation service failed",
+        "example": {
+          "error": "Geolocation service failed"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/location/history",
+    "description": "Get your full location history",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Location"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "List of location records",
+        "example": {
+          "data": [
+            {
+              "latitude": 48.8566,
+              "longitude": 2.3522,
+              "city": "Paris",
+              "country": "France",
+              "ip_address": "192.0.2.1",
+              "recorded_at": "2025-04-12T08:30:00Z"
+            },
+            {
+              "latitude": 52.52,
+              "longitude": 13.405,
+              "city": "Berlin",
+              "country": "Germany",
+              "ip_address": "192.0.2.2",
+              "recorded_at": "2025-04-10T16:45:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/me/like",
+    "description": "Like another user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Like"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The username of the user to like"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "User liked",
+        "example": {
+          "message": "You liked janedoe"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found or unavailable",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Invalid request",
+        "example": {
+          "error": "You cannot like yourself"
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me/like",
+    "description": "Unlike a user",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Like"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The username of the user to unlike"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "User unliked",
+        "example": {
+          "message": "janedoe has been unliked"
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Like does not exist",
+        "example": {
+          "error": "You haven't liked this user yet"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/likes",
+    "description": "Get list of users you have liked",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Like"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Array of liked user objects",
+        "example": {
+          "data": [
+            {
+              "username": "janedoe",
+              "first_name": "Jane",
+              "last_name": "Doe"
+            },
+            {
+              "username": "bobsmith",
+              "first_name": "Bob",
+              "last_name": "Smith"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/liked_by",
+    "description": "Get list of users who liked you",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Like"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Array of users who liked you",
+        "example": {
+          "data": [
+            {
+              "username": "alicewonder",
+              "first_name": "Alice",
+              "last_name": "Wonder"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/matches",
+    "description": "Get list of users who liked you back (matches)",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Like"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Array of matched user objects",
+        "example": {
+          "data": [
+            {
+              "username": "janedoe",
+              "first_name": "Jane",
+              "last_name": "Doe"
+            }
+          ]
         }
       }
     ]
@@ -1058,170 +1746,6 @@
     ]
   },
   {
-    "method": "POST",
-    "path": "/me/messages",
-    "description": "Send a message to a user (requires existing connection)",
-    "auth_required": true,
-    "tags": [
-      "Message"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "Recipient's username"
-      },
-      {
-        "name": "content",
-        "type": "String",
-        "required": true,
-        "desc": "Message content"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Message sent",
-        "example": {
-          "message": "Message sent",
-          "data": {
-            "id": 40,
-            "connection_id": 42,
-            "sender_id": 121,
-            "content": "Hey there!",
-            "created_at": "2025-04-12 18:07:25.031215"
-          }
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User or connection not found",
-        "example": {
-          "error": "No connection found with janedoe"
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Validation error",
-        "example": {
-          "error": "Invalid request",
-          "details": [
-            "content must not be empty"
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/messages/:username",
-    "description": "Get all messages exchanged with a given user",
-    "auth_required": true,
-    "tags": [
-      "Message"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "Other user's username"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Message thread",
-        "example": {
-          "data": {
-            "user": {
-              "id": 127,
-              "username": "bob",
-              "email": "bob@example.com",
-              "first_name": "Bob",
-              "last_name": "B",
-              "gender": "male",
-              "sexual_preferences": "female",
-              "biography": null,
-              "is_email_verified": true,
-              "is_banned": false,
-              "fame_rating": 0,
-              "latitude": null,
-              "longitude": null,
-              "online_status": false,
-              "last_seen_at": null,
-              "created_at": "2025-04-12 18:08:00.699235",
-              "updated_at": "2025-04-12 18:08:00.702444",
-              "profile_picture_id": null
-            },
-            "messages": [
-              {
-                "id": 41,
-                "connection_id": 44,
-                "sender_id": 127,
-                "content": "Hi Bob!",
-                "created_at": "2025-04-12 18:08:00.704577",
-                "sender_username": "bob"
-              }
-            ]
-          }
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User or connection not found",
-        "example": {
-          "error": "No connection found with bob"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/messages",
-    "description": "Get all conversations grouped by user",
-    "auth_required": true,
-    "tags": [
-      "Message"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of message threads",
-        "example": {
-          "data": [
-            {
-              "user": {
-                "id": 129,
-                "username": "bob",
-                "first_name": "Bob",
-                "last_name": "B",
-                "biography": null,
-                "gender": "male",
-                "sexual_preferences": "female",
-                "profile_picture_id": null,
-                "online_status": false,
-                "last_seen_at": null
-              },
-              "messages": [
-                {
-                  "id": 42,
-                  "connection_id": 45,
-                  "sender_id": 128,
-                  "content": "Hey again!",
-                  "created_at": "2025-04-12 18:08:09.476871",
-                  "sender_username": "alice"
-                }
-              ]
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
     "method": "GET",
     "path": "/me",
     "description": "Get the currently authenticated user",
@@ -1306,18 +1830,6 @@
       {
         "name": "birth_year",
         "type": "Integer",
-        "required": false,
-        "desc": null
-      },
-      {
-        "name": "latitude",
-        "type": "Float",
-        "required": false,
-        "desc": null
-      },
-      {
-        "name": "longitude",
-        "type": "Float",
         "required": false,
         "desc": null
       }
@@ -1525,505 +2037,6 @@
                 "fame_score": 3.75,
                 "total": 67.92
               }
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/location",
-    "description": "Returns the last known latitude and longitude of the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Location"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns current location of the user",
-        "example": {
-          "data": {
-            "latitude": 48.8566,
-            "longitude": 2.3522,
-            "city": "Paris",
-            "country": "France",
-            "recorded_at": "2025-04-12T08:30:00Z"
-          }
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/me/location",
-    "description": "Record the current user's location (estimated from IP)",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Location"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Location saved",
-        "example": {
-          "message": "Location recorded",
-          "data": {
-            "latitude": 48.8566,
-            "longitude": 2.3522,
-            "city": "Paris",
-            "country": "France",
-            "ip_address": "192.0.2.1",
-            "recorded_at": "2025-04-12T08:30:00Z"
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Geolocation service failed",
-        "example": {
-          "error": "Geolocation service failed"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/location/history",
-    "description": "Get your full location history",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Location"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "List of location records",
-        "example": {
-          "data": [
-            {
-              "latitude": 48.8566,
-              "longitude": 2.3522,
-              "city": "Paris",
-              "country": "France",
-              "ip_address": "192.0.2.1",
-              "recorded_at": "2025-04-12T08:30:00Z"
-            },
-            {
-              "latitude": 52.52,
-              "longitude": 13.405,
-              "city": "Berlin",
-              "country": "Germany",
-              "ip_address": "192.0.2.2",
-              "recorded_at": "2025-04-10T16:45:00Z"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/tags",
-    "description": "List all tags",
-    "auth_required": true,
-    "tags": [
-      "Tag"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns a list of available tags",
-        "example": {
-          "data": [
-            {
-              "id": 1,
-              "name": "travel"
-            },
-            {
-              "id": 2,
-              "name": "music"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/tags",
-    "description": "Create a new tag",
-    "auth_required": true,
-    "tags": [
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "name",
-        "type": "String",
-        "required": true,
-        "desc": "The name of the tag"
-      }
-    ],
-    "responses": [
-      {
-        "code": 201,
-        "desc": "Tag created",
-        "example": {
-          "message": "Tag created",
-          "data": {
-            "id": 3,
-            "name": "photography"
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Missing or invalid name",
-        "example": {
-          "error": "Validation failed",
-          "details": {
-            "name": [
-              "is too short"
-            ]
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Tag name already taken",
-        "example": {
-          "error": "Tag name already taken"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/tags",
-    "description": "List all tags for the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Tag"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns user’s tags",
-        "example": {
-          "data": [
-            {
-              "id": 1,
-              "name": "travel"
-            },
-            {
-              "id": 3,
-              "name": "photography"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/me/tags",
-    "description": "Add a tag to the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "name",
-        "type": "String",
-        "required": true,
-        "desc": "The name of the tag to add, if tag doesn't exist it's created"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Tag added to user",
-        "example": {
-          "message": "Tag added",
-          "data": {
-            "id": 4,
-            "name": "sports"
-          }
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Tag name missing or invalid",
-        "example": {
-          "error": "Missing tag name"
-        }
-      }
-    ]
-  },
-  {
-    "method": "DELETE",
-    "path": "/me/tags",
-    "description": "Remove a tag from the current user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "name",
-        "type": "String",
-        "required": true,
-        "desc": "The name of the tag to remove"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Tag removed",
-        "example": {
-          "message": "Tag removed"
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Missing or invalid tag",
-        "example": {
-          "error": "Tag not found"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/users/:username/tags",
-    "description": "Fetch the tags of a user by their username",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "PublicProfile",
-      "Tag"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The unique username of the user"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Public user data",
-        "example": {
-          "data": [
-            {
-              "id": 4,
-              "name": "sports"
-            },
-            {
-              "id": 5,
-              "name": "cycling"
-            }
-          ]
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found or banned",
-        "example": {
-          "error": "User not found"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User blocked you",
-        "example": {
-          "error": "User blocked you"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User is blocked",
-        "example": {
-          "error": "User is blocked"
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/me/like",
-    "description": "Like another user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Like"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The username of the user to like"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "User liked",
-        "example": {
-          "message": "You liked janedoe"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found or unavailable",
-        "example": {
-          "error": "User not found"
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Invalid request",
-        "example": {
-          "error": "You cannot like yourself"
-        }
-      }
-    ]
-  },
-  {
-    "method": "DELETE",
-    "path": "/me/like",
-    "description": "Unlike a user",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Like"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The username of the user to unlike"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "User unliked",
-        "example": {
-          "message": "janedoe has been unliked"
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found",
-        "example": {
-          "error": "User not found"
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Like does not exist",
-        "example": {
-          "error": "You haven't liked this user yet"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/likes",
-    "description": "Get list of users you have liked",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Like"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Array of liked user objects",
-        "example": {
-          "data": [
-            {
-              "username": "janedoe",
-              "first_name": "Jane",
-              "last_name": "Doe"
-            },
-            {
-              "username": "bobsmith",
-              "first_name": "Bob",
-              "last_name": "Smith"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/liked_by",
-    "description": "Get list of users who liked you",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Like"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Array of users who liked you",
-        "example": {
-          "data": [
-            {
-              "username": "alicewonder",
-              "first_name": "Alice",
-              "last_name": "Wonder"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/matches",
-    "description": "Get list of users who liked you back (matches)",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Like"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Array of matched user objects",
-        "example": {
-          "data": [
-            {
-              "username": "janedoe",
-              "first_name": "Jane",
-              "last_name": "Doe"
             }
           ]
         }

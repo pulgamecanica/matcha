@@ -5,8 +5,8 @@ require_relative '../helpers/sql_helper'
 require_relative '../lib/geolocation'
 
 class LocationHistory
-  def self.record(user_id, ip_address, user_agent)
-    location = Geolocation.lookup(ip_address)
+  def self.record(user_id, ip_address, user_agent, location: nil)
+    location ||= Geolocation.lookup(ip_address)
     raise Errors::ValidationError, 'Geolocation service failed' unless location
 
     location_history = SQLHelper.create(:location_history, {
