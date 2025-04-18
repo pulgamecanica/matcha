@@ -214,7 +214,6 @@ class User
     candidates = filter_by_preferences(current, candidates)
     candidates = filter_out_connections(current, candidates)
     candidates = filter_by_fame_and_age(candidates, filters)
-
     candidates.map! do |u|
       distance_score = location_score(current, u, filters['location'])
       tag_score = tag_score(u, filters['tags'])
@@ -292,8 +291,12 @@ class User
     return 0 unless distance
 
     max = location_filter['max_distance_km']&.to_f || 1000.0
-    normalized = [1 - [distance / max, 1.0].min, 0].max
-
+    normalized = begin
+      ratio = distance / max
+      [1 - [ratio, 1.0].min, 0.0].max
+    rescue ZeroDivisionError, FloatDomainError
+      0.0
+    end
     (normalized * 100).round(2)
   end
 
