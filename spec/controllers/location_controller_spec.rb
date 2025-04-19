@@ -33,7 +33,7 @@ describe 'LocationController' do
                                                           country: 'France'
                                                         })
 
-      post '/me/location', nil, auth_headers(@token)
+      post '/me/location', {}.to_json, auth_headers(@token)
       expect(last_response.status).to eq(200)
       json = JSON.parse(last_response.body)
       expect(json['message']).to match(/location recorded/i)
@@ -44,7 +44,7 @@ describe 'LocationController' do
     it 'returns an error when geolocation fails' do
       allow(Geolocation).to receive(:lookup).and_return(nil)
 
-      post '/me/location', nil, auth_headers(@token)
+      post '/me/location', {}.to_json, auth_headers(@token)
       expect(last_response.status).to eq(422)
       json = JSON.parse(last_response.body)
       expect(json['error']).to match(/geolocation service failed/i)
@@ -56,8 +56,8 @@ describe 'LocationController' do
                                                           longitude: -74.0060
                                                         })
 
-      post '/me/location', nil, auth_headers(@token)
-      get '/me/location', nil, auth_headers(@token)
+      post '/me/location', {}.to_json, auth_headers(@token)
+      get '/me/location', {}.to_json, auth_headers(@token)
       expect(last_response.status).to eq(200)
 
       updated_user = User.find_by_id(@user['id'])

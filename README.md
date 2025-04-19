@@ -192,6 +192,7 @@ end
 - [x] Connections, Likes
 - [X] Notifications
 - [ ] Commonly used English words should not be accepted as passwords.
+- [ ] Limit up to 5 pictures.
 - [ ] Real-time messaging (WebSocket or polling)
 - [ ] Full CI/CD pipeline
 

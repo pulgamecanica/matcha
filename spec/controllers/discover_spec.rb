@@ -73,14 +73,18 @@ describe 'UserController -> Discover' do
   end
 
   it 'prioritizes location if provided' do
-    allow(Geolocation).to receive(:lookup).and_return({
-                                                        latitude: 19.43,
-                                                        longitude: -99.13,
-                                                        city: 'Paris',
-                                                        country: 'France'
-                                                      })
-    post '/me/location', nil, auth_headers(@alice_token)
-    post '/me/location', nil, auth_headers(@bob_token)
+    post '/me/location', {
+      latitude: 19.43,
+      longitude: -99.13,
+      city: 'Paris',
+      country: 'France'
+    }.to_json, auth_headers(@alice_token)
+    post '/me/location', {
+      latitude: 19.43,
+      longitude: -99.13,
+      city: 'Paris',
+      country: 'France'
+    }.to_json, auth_headers(@bob_token)
     post '/me/discover', {
       location: {
         latitude: 19.43,

@@ -40,7 +40,8 @@ class LikesController < BaseController
     Notification.create(
       target['id'],
       "#{@current_user['username']} liked your profile",
-      @current_user['id']
+      @current_user['id'],
+      'like'
     )
     { message: "You liked #{data['username']}" }.to_json
   end
@@ -74,6 +75,12 @@ class LikesController < BaseController
     halt 422, { error: "You haven't liked this user yet" }.to_json unless Like.exists?(@current_user['id'], target['id'])
 
     Like.unlike!(@current_user['id'], target['id'])
+    Notification.create(
+      target['id'],
+      "#{@current_user['username']} removed the liked from your profile",
+      @current_user['id'],
+      'unlike'
+    )
     { message: "#{data['username']} has been unliked" }.to_json
   end
 

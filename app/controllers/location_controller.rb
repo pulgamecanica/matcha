@@ -56,7 +56,6 @@ class LocationController < BaseController
     data = json_body
 
     begin
-      puts "The params are: #{data}"
       if LocationValidator.manual_location_params?(data)
         LocationValidator.validate_manual_location!(data)
 
