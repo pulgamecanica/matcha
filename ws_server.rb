@@ -30,8 +30,25 @@ class WebSocketServer < Sinatra::Base
       end
 
       ws.on :message do |event|
-        puts "📩 From #{user['id']}: #{event.data}"
-        # You can echo back or forward to other users
+        next unless user
+
+        begin
+          data = JSON.parse(event.data)
+
+          type = data['type']
+          payload = data['payload']
+
+          case type
+          when 'message'
+            handle_message(user, payload)
+          when 'typing'
+            handle_typing(user, payload)
+          else
+            ws.send({ type: 'error', payload: 'Unknown message type' }.to_json)
+          end
+        rescue StandardError => e
+          ws.send({ type: 'error', payload: e.message }.to_json)
+        end
       end
 
       ws.on :close do |_event|
@@ -62,5 +79,40 @@ class WebSocketServer < Sinatra::Base
     return nil unless payload
 
     User.find_by_id(payload['user_id'])
+  end
+
+  def handle_message(sender, payload)
+    to_user_id = payload['to_user_id']
+    content = payload['content']
+
+    conn = Connection.find_between(sender['id'], to_user_id)
+    return unless conn
+
+    message = Message.create(conn['id'], sender['id'], content)
+
+    Notification.create(to_user_id, "#{sender['username']} sent you a message", sender['id'], 'message')
+
+    target_ws = CHANNELS[to_user_id]
+    return unless target_ws
+
+    target_ws.send({
+      type: 'message',
+      payload: message
+    }.to_json)
+  end
+
+  def handle_typing(sender, payload)
+    to_user_id = payload['to_user_id']
+
+    target_ws = CHANNELS[to_user_id]
+    return unless target_ws
+
+    target_ws.send({
+      type: 'typing',
+      payload: {
+        from: sender['id'],
+        connection_id: payload['connection_id']
+      }
+    }.to_json)
   end
 end

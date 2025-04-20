@@ -92,6 +92,7 @@ class UsersController < BaseController
     tags 'User', 'PublicProfile'
     description 'Fetch the public profile of a user by their username'
     param :username, String, required: true, desc: 'The unique username of the user'
+
     response 200, 'Public user data', example: {
       data: {
         username: 'janedoe',
@@ -103,9 +104,27 @@ class UsersController < BaseController
         birth_year: '2000',
         profile_picture_id: 42,
         online_status: true,
-        last_seen_at: '2025-04-11T14:53:00Z'
+        last_seen_at: '2025-04-11T14:53:00Z',
+
+        tags: %w[yoga hiking coding],
+        pictures: [
+          'https://yourdomain.com/uploads/pictures/12.jpg',
+          'https://yourdomain.com/uploads/pictures/13.jpg'
+        ],
+        views: 18,
+        visitors: [
+          {
+            id: 2,
+            username: 'johnsmith',
+            profile_picture_url: 'https://yourdomain.com/uploads/pictures/99.jpg',
+            viewed_at: '2025-04-11T14:53:00Z'
+          }
+        ],
+        total_likes_sent: 7,
+        total_likes_received: 8
       }
     }
+
     response 404, 'User not found or banned', example: { error: 'User not found' }
     response 404, 'User blocked you', example: { error: 'User blocked you' }
     response 404, 'User is blocked', example: { error: 'User is blocked' }
@@ -124,21 +143,19 @@ class UsersController < BaseController
       "#{@current_user['username']} viewed your profile",
       @current_user['id']
     )
+    base = UserSerializer.public_view(user)
 
-    public_data = {
-      username: user['username'],
-      first_name: user['first_name'],
-      last_name: user['last_name'],
-      biography: user['biography'],
-      gender: user['gender'],
-      sexual_preferences: user['sexual_preferences'],
-      birth_year: user['birth_year'],
-      profile_picture_id: user['profile_picture_id'],
-      online_status: user['online_status'] == 't',
-      last_seen_at: user['last_seen_at']
+    id = user['id']
+    additional = {
+      tags: User.tags(id),
+      pictures: User.pictures(id),
+      views: User.views(id),
+      visitors: User.visitors_for(id),
+      total_likes_sent: User.likes(id)&.size,
+      total_likes_received: User.liked_by(id)&.size
     }
 
-    { data: public_data }.to_json
+    { data: base.merge(additional) }.to_json
   end
 
   # ---------------------------
