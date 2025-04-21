@@ -2,6 +2,103 @@
 
 > **Note:** All authenticated endpoints require a valid token via `Authorization: Bearer <token>`.
 
+## `POST` /me/block
+**Description**: Block a user by username
+**Auth required**: Yes
+**Tags**: User, Block
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to block
+
+### Responses
+- `200`: User blocked
+```json
+{
+  "message": "User blocked",
+  "data": {
+    "username": "janedoe"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Cannot block yourself
+```json
+{
+  "error": "You cannot block yourself"
+}
+```
+
+---
+## `DELETE` /me/block
+**Description**: Unblock a user by username
+**Auth required**: Yes
+**Tags**: User, Block
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to unblock
+
+### Responses
+- `200`: User unblocked
+```json
+{
+  "message": "User unblocked",
+  "data": {
+    "username": "janedoe"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+
+---
+## `GET` /me/blocked
+**Description**: List users you've blocked
+**Auth required**: Yes
+**Tags**: User, Block
+
+### Responses
+- `200`: Returns a list of blocked users
+```json
+{
+  "data": [
+    {
+      "username": "janedoe"
+    },
+    {
+      "username": "bobsmith"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/blocked_by
+**Description**: List users who have blocked you
+**Auth required**: Yes
+**Tags**: User, Block
+
+### Responses
+- `200`: Returns a list of users who blocked you
+```json
+{
+  "data": [
+    {
+      "username": "alicewonder"
+    }
+  ]
+}
+```
+
+---
 ## `POST` /auth/register
 **Description**: Register a new user
 **Auth required**: No
@@ -355,103 +452,6 @@
 ```json
 {
   "error": "User not found"
-}
-```
-
----
-## `POST` /me/block
-**Description**: Block a user by username
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to block
-
-### Responses
-- `200`: User blocked
-```json
-{
-  "message": "User blocked",
-  "data": {
-    "username": "janedoe"
-  }
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Cannot block yourself
-```json
-{
-  "error": "You cannot block yourself"
-}
-```
-
----
-## `DELETE` /me/block
-**Description**: Unblock a user by username
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to unblock
-
-### Responses
-- `200`: User unblocked
-```json
-{
-  "message": "User unblocked",
-  "data": {
-    "username": "janedoe"
-  }
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-
----
-## `GET` /me/blocked
-**Description**: List users you've blocked
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Responses
-- `200`: Returns a list of blocked users
-```json
-{
-  "data": [
-    {
-      "username": "janedoe"
-    },
-    {
-      "username": "bobsmith"
-    }
-  ]
-}
-```
-
----
-## `GET` /me/blocked_by
-**Description**: List users who have blocked you
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Responses
-- `200`: Returns a list of users who blocked you
-```json
-{
-  "data": [
-    {
-      "username": "alicewonder"
-    }
-  ]
 }
 ```
 
@@ -1336,6 +1336,7 @@
 
 ### Parameters
 - `username` (String) **(required)** - The unique username of the user
+- `count_view` (bool)  - Whether to record the view and send notification (default: true)
 
 ### Responses
 - `200`: Public user data

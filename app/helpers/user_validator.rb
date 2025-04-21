@@ -5,7 +5,11 @@ require_relative './validator'
 module UserValidator
   VALID_GENDERS = %w[male female other].freeze
   VALID_PREFS   = %w[male female non_binary everyone].freeze
-
+  COMMON_PASSWORDS = %w[
+    password 123456 12345678 123456789 qwerty abc123 letmein admin welcome
+    iloveyou monkey football 123123 dragon sunshine aserty fuckit
+  ].freeze
+  
   def self.validate!(params)
     Validator.validate!(
       params: params,
@@ -14,6 +18,11 @@ module UserValidator
         first_name last_name
       ]
     )
+
+    if COMMON_PASSWORDS.include?(params['password'].to_s.downcase) || params['password'].size < 5
+      raise Errors::ValidationError.new('Password is too common or insecure', ['password is not valid'])
+    end
+  
   end
 
   def self.validate_update!(params)

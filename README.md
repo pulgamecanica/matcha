@@ -191,10 +191,12 @@ end
 - [x] Tag system
 - [x] Connections, Likes
 - [X] Notifications
-- [ ] Commonly used English words should not be accepted as passwords.
+- [X] Commonly used English words should not be accepted as passwords.
+- [X] If user unlikes, make sure to delete connection. (cascades all connection relationships such as messages).
 - [ ] Limit up to 5 pictures.
-- [ ] Real-time messaging (WebSocket or polling)
-- [ ] Full CI/CD pipeline
+- [X] Real-time messaging (WebSocket or polling)
+- [ ] Email acitons (confirm register / reset password)
+- [ ] VideoCalls
 
 ---
 

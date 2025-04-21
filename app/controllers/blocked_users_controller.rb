@@ -32,6 +32,9 @@ class BlockedUsersController < BaseController
     halt 422, { error: 'You cannot block yourself' }.to_json if target['id'].to_s == @current_user['id'].to_s
 
     BlockedUser.block!(@current_user['id'], target['id'])
+
+    Connection.delete_between(@current_user['id'], target['id'])
+    
     { message: 'User blocked', data: { username: target['username'] } }.to_json
   end
 

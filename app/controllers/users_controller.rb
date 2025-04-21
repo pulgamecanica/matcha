@@ -92,7 +92,7 @@ class UsersController < BaseController
     tags 'User', 'PublicProfile'
     description 'Fetch the public profile of a user by their username'
     param :username, String, required: true, desc: 'The unique username of the user'
-
+    param :count_view, :bool, required: false, desc: 'Whether to record the view and send notification (default: true)'
     response 200, 'Public user data', example: {
       data: {
         username: 'janedoe',
@@ -137,12 +137,16 @@ class UsersController < BaseController
     halt 404, { error: 'User blocked you' }.to_json if BlockedUser.blocked?(user['id'], @current_user['id'])
     halt 404, { error: 'User is blocked' }.to_json if BlockedUser.blocked?(@current_user['id'], user['id'])
 
-    ProfileView.record(@current_user['id'], user['id'])
-    Notification.create(
-      user['id'],
-      "#{@current_user['username']} viewed your profile",
-      @current_user['id']
-    )
+    count_view = params[:count_view].to_s != 'false'
+    if count_view
+      ProfileView.record(@current_user['id'], user['id'])
+      Notification.create(
+        user['id'],
+        "#{@current_user['username']} viewed your profile",
+        @current_user['id']
+      )
+    end
+    
     base = UserSerializer.public_view(user)
 
     id = user['id']

@@ -1,6 +1,138 @@
 [
   {
     "method": "POST",
+    "path": "/me/block",
+    "description": "Block a user by username",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Block"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The username of the user to block"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "User blocked",
+        "example": {
+          "message": "User blocked",
+          "data": {
+            "username": "janedoe"
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Cannot block yourself",
+        "example": {
+          "error": "You cannot block yourself"
+        }
+      }
+    ]
+  },
+  {
+    "method": "DELETE",
+    "path": "/me/block",
+    "description": "Unblock a user by username",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Block"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The username of the user to unblock"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "User unblocked",
+        "example": {
+          "message": "User unblocked",
+          "data": {
+            "username": "janedoe"
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found",
+        "example": {
+          "error": "User not found"
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/blocked",
+    "description": "List users you've blocked",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Block"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns a list of blocked users",
+        "example": {
+          "data": [
+            {
+              "username": "janedoe"
+            },
+            {
+              "username": "bobsmith"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "GET",
+    "path": "/me/blocked_by",
+    "description": "List users who have blocked you",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Block"
+    ],
+    "params": [],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "Returns a list of users who blocked you",
+        "example": {
+          "data": [
+            {
+              "username": "alicewonder"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "method": "POST",
     "path": "/auth/register",
     "description": "Register a new user",
     "auth_required": false,
@@ -527,138 +659,6 @@
         "desc": "User not found",
         "example": {
           "error": "User not found"
-        }
-      }
-    ]
-  },
-  {
-    "method": "POST",
-    "path": "/me/block",
-    "description": "Block a user by username",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Block"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The username of the user to block"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "User blocked",
-        "example": {
-          "message": "User blocked",
-          "data": {
-            "username": "janedoe"
-          }
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found",
-        "example": {
-          "error": "User not found"
-        }
-      },
-      {
-        "code": 422,
-        "desc": "Cannot block yourself",
-        "example": {
-          "error": "You cannot block yourself"
-        }
-      }
-    ]
-  },
-  {
-    "method": "DELETE",
-    "path": "/me/block",
-    "description": "Unblock a user by username",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Block"
-    ],
-    "params": [
-      {
-        "name": "username",
-        "type": "String",
-        "required": true,
-        "desc": "The username of the user to unblock"
-      }
-    ],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "User unblocked",
-        "example": {
-          "message": "User unblocked",
-          "data": {
-            "username": "janedoe"
-          }
-        }
-      },
-      {
-        "code": 404,
-        "desc": "User not found",
-        "example": {
-          "error": "User not found"
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/blocked",
-    "description": "List users you've blocked",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Block"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns a list of blocked users",
-        "example": {
-          "data": [
-            {
-              "username": "janedoe"
-            },
-            {
-              "username": "bobsmith"
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "method": "GET",
-    "path": "/me/blocked_by",
-    "description": "List users who have blocked you",
-    "auth_required": true,
-    "tags": [
-      "User",
-      "Block"
-    ],
-    "params": [],
-    "responses": [
-      {
-        "code": 200,
-        "desc": "Returns a list of users who blocked you",
-        "example": {
-          "data": [
-            {
-              "username": "alicewonder"
-            }
-          ]
         }
       }
     ]
@@ -1876,6 +1876,12 @@
         "type": "String",
         "required": true,
         "desc": "The unique username of the user"
+      },
+      {
+        "name": "count_view",
+        "type": "bool",
+        "required": false,
+        "desc": "Whether to record the view and send notification (default: true)"
       }
     ],
     "responses": [
