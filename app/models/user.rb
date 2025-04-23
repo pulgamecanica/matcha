@@ -150,8 +150,11 @@ class User
   end
 
   def self.connections(user_id)
-    Connection.all_for_user(user_id)
+    conns = Connection.all_for_user(user_id)
+    blocked_usernames = (User.blocked_users(user_id) + User.blocked_by(user_id)).map { |u| u['username'] }
+    conns.reject { |user| blocked_usernames.include?(user['username']) }
   end
+  
 
   def self.connected_with?(user_a_id, user_b_id)
     !!Connection.find_between(user_a_id, user_b_id)

@@ -155,8 +155,8 @@ class UsersController < BaseController
       pictures: User.pictures(id),
       views: User.views(id),
       visitors: User.visitors_for(id),
-      total_likes_sent: User.likes(id)&.size,
-      total_likes_received: User.liked_by(id)&.size
+      likes: User.likes(id),
+      liked_by: User.liked_by(id)
     }
 
     { data: base.merge(additional) }.to_json

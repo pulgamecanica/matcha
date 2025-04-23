@@ -197,6 +197,10 @@ end
 - [X] Real-time messaging (WebSocket or polling)
 - [ ] Email acitons (confirm register / reset password)
 - [ ] VideoCalls
+- [ ] Deploy with NGINX
+- [ ] Report account as fake
+- [ ] Notification when "matching" for the other user
+- [ ] Limit actions if user does not have a profile picture set: [connection is not possible]
 
 ---
 
