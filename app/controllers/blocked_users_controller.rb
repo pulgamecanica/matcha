@@ -34,7 +34,7 @@ class BlockedUsersController < BaseController
     BlockedUser.block!(@current_user['id'], target['id'])
 
     Connection.delete_between(@current_user['id'], target['id'])
-    
+
     { message: 'User blocked', data: { username: target['username'] } }.to_json
   end
 

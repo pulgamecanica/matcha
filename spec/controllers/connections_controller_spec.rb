@@ -17,7 +17,7 @@ describe 'ConnectionsController' do
                            first_name: 'Alice',
                            last_name: 'Wonder',
                            gender: 'female',
-                           sexual_preferences: 'male',
+                           sexual_preferences: 'male'
                          })
     @bob = User.create({
                          username: 'bob',
@@ -26,13 +26,13 @@ describe 'ConnectionsController' do
                          first_name: 'Bob',
                          last_name: 'Builder',
                          gender: 'male',
-                         sexual_preferences: 'female',
+                         sexual_preferences: 'female'
                        })
 
     alice_profile = Picture.create(@alice['id'], 'https://example.com', is_profile: true)
     bob_profile = Picture.create(@bob['id'], 'https://example.com', is_profile: true)
-    User.update(@alice['id'], {profile_picture_id: alice_profile['id']})
-    User.update(@bob['id'], {profile_picture_id: bob_profile['id']})
+    User.update(@alice['id'], { profile_picture_id: alice_profile['id'] })
+    User.update(@bob['id'], { profile_picture_id: bob_profile['id'] })
     User.confirm!('alice')
     User.confirm!('bob')
 

@@ -146,7 +146,7 @@ class UsersController < BaseController
         @current_user['id']
       )
     end
-    
+
     base = UserSerializer.public_view(user)
 
     id = user['id']

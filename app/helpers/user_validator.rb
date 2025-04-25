@@ -9,7 +9,7 @@ module UserValidator
     password 123456 12345678 123456789 qwerty abc123 letmein admin welcome
     iloveyou monkey football 123123 dragon sunshine aserty fuckit
   ].freeze
-  
+
   def self.validate!(params)
     Validator.validate!(
       params: params,
@@ -19,10 +19,9 @@ module UserValidator
       ]
     )
 
-    if COMMON_PASSWORDS.include?(params['password'].to_s.downcase) || params['password'].size < 5
-      raise Errors::ValidationError.new('Password is too common or insecure', ['password is not valid'])
-    end
-  
+    return unless COMMON_PASSWORDS.include?(params['password'].to_s.downcase) || params['password'].size < 5
+
+    raise Errors::ValidationError.new('Password is too common or insecure', ['password is not valid'])
   end
 
   def self.validate_update!(params)

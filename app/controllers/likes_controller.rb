@@ -43,7 +43,7 @@ class LikesController < BaseController
       @current_user['id'],
       'like'
     )
-    matches = User.matches(@current_user['id']) || [];
+    matches = User.matches(@current_user['id']) || []
     match = matches.find do |user|
       user['username'] == target['username']
     end
@@ -56,7 +56,7 @@ class LikesController < BaseController
       )
       Notification.create(
         @current_user['id'],
-        "#{@target['username']} matched with you",
+        "#{target['username']} matched with you",
         target['id'],
         'match'
       )

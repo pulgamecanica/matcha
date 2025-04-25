@@ -14,9 +14,12 @@ require_relative '../app/models/notification'
 
 require 'faker'
 require 'ruby-progressbar'
+require 'set'
+require 'time'
 
 VERBOSE = true
 LOG = Hash.new { |h, k| h[k] = [] }
+TOTALUSERS = 10
 
 puts '🌱 Seeding database...'
 
@@ -49,15 +52,15 @@ end
 # ---------------------------
 puts '👤 Creating test user...'
 main_user = User.find_by_username('testuser') || User.create({
-                                                               username: 'testuser',
-                                                               email: 'test@example.com',
-                                                               password: 'testuser',
-                                                               first_name: 'Test',
-                                                               last_name: 'User',
-                                                               gender: 'other',
-                                                               sexual_preferences: 'everyone',
-                                                               birth_year: '2000'
-                                                             })
+  username: 'testuser',
+  email: 'test@example.com',
+  password: 'testuser',
+  first_name: 'Test',
+  last_name: 'User',
+  gender: 'other',
+  sexual_preferences: 'everyone',
+  birth_year: '2000'
+})
 User.confirm!('testuser')
 summary[:users] << 'testuser'
 LOG[:users] << '✅ Created: testuser'
@@ -73,30 +76,31 @@ LOG[:links] << '🔗 Added tags to testuser'
 # ---------------------------
 puts '👥 Creating fake users...'
 users = [main_user]
-usernames = 10.times.map { Faker::Internet.unique.username(specifier: 5..10) }
+usernames = TOTALUSERS.times.map { Faker::Internet.unique.username(specifier: 5..10) }
 user_bar = ProgressBar.create(title: 'Users', total: usernames.size)
 
 usernames.each do |username|
   user_bar.increment
 
   user = User.find_by_username(username) || User.create({
-                                                          username: username,
-                                                          email: Faker::Internet.email(name: username),
-                                                          password: username,
-                                                          first_name: Faker::Name.first_name,
-                                                          last_name: Faker::Name.last_name,
-                                                          gender: %w[male female other].sample,
-                                                          sexual_preferences: %w[male female non_binary everyone].sample,
-                                                          birth_year: Faker::Number.between(from: 1970, to: 2006)
-                                                        })
+    username: username,
+    email: Faker::Internet.email(name: username),
+    password: username,
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name,
+    gender: %w[male female other].sample,
+    sexual_preferences: %w[male female non_binary everyone].sample,
+    birth_year: Faker::Number.between(from: 1970, to: 2006)
+  })
   User.confirm!(user['username'])
 
   lat_offset = rand(-1.8..1.8)
   lon_offset = rand(-1.8..1.8)
-  params = {}
-  params['latitude'] = 19.43 + lat_offset
-  params['longitude'] = -99.13 + lon_offset
-  User.update(user['id'], params)
+  User.update(user['id'], {
+    latitude: 19.43 + lat_offset,
+    longitude: -99.13 + lon_offset
+  })
+
   users << user
   summary[:users] << username
   LOG[:users] << "👤 Created user: #{username}"
@@ -110,67 +114,104 @@ usernames.each do |username|
 
   pic_url = Faker::Avatar.image(slug: username)
   pic = Picture.create(user['id'], pic_url, is_profile: true)
-  User.update(user['id'], {pic: pic})
+  User.update(user['id'], { "profile_picture_id": pic['id'] })
   summary[:pictures] << username
   LOG[:pictures] << "   🖼️ #{username} profile picture added"
 end
 
 # ---------------------------
-# Interactions
+# Blocked Users
 # ---------------------------
-puts '💘 Connecting users...'
+puts '🚫 Blocking users...'
 combos = users.combination(2).to_a
-combo_bar = ProgressBar.create(title: 'Interactions', total: combos.size)
+blocked_map = Hash.new { |h, k| h[k] = Set.new }
+block_bar = ProgressBar.create(title: 'Blocks', total: combos.size)
 
 combos.each do |u1, u2|
-  combo_bar.increment
+  block_bar.increment
+  next unless rand < 0.002
+
+  BlockedUser.block!(u1['id'], u2['id'])
+  blocked_map[u1['id']] << u2['id']
+  summary[:blocks] << "#{u1['username']} ⛔ #{u2['username']}"
+  LOG[:blocks] << "🚫 #{u1['username']} blocked #{u2['username']}"
+end
+
+# ---------------------------
+# Discoverable Users Cache
+# ---------------------------
+puts '🔍 Caching discoverable users...'
+discover_map = {}
+discover_bar = ProgressBar.create(title: 'Discoverables', total: users.size)
+
+users.each do |user|
+  discover_bar.increment
+  discover_map[user['id']] = User.discover(user).map { |u| u[:user]["id"] }
+end
+
+# ---------------------------
+# Likes and Views
+# ---------------------------
+puts '💘 Creating interactions (likes, views)...'
+likes = {}
+interaction_bar = ProgressBar.create(title: 'Interactions', total: combos.size)
+
+combos.each do |u1, u2|
+  interaction_bar.increment
+
+  next if blocked_map[u1['id']].include?(u2['id']) || blocked_map[u2['id']].include?(u1['id'])
+  next unless discover_map[u1['id']].include?(u2['id']) && discover_map[u2['id']].include?(u1['id'])
 
   if rand < 0.4
     Like.like!(u1['id'], u2['id'])
+    (likes[u1['id']] ||= Set.new) << u2['id']
     summary[:likes] << "#{u1['username']} → #{u2['username']}"
     LOG[:likes] << "❤️ #{u1['username']} liked #{u2['username']}"
+    Notification.create(u2['id'], "#{u1['username']} liked your profile", u1['id'], 'like')
+    LOG[:notifications] << "🔔 #{u1['username']} → #{u2['username']} (like)"
   end
 
   if rand < 0.3
     Like.like!(u2['id'], u1['id'])
+    (likes[u2['id']] ||= Set.new) << u1['id']
     summary[:likes] << "#{u2['username']} → #{u1['username']}"
     LOG[:likes] << "❤️ #{u2['username']} liked #{u1['username']}"
+    Notification.create(u1['id'], "#{u2['username']} liked your profile", u2['id'], 'like')
+    LOG[:notifications] << "🔔 #{u2['username']} → #{u1['username']} (like)"
   end
 
   if rand < 0.5
     ProfileView.record(u1['id'], u2['id'])
     summary[:views] << "#{u1['username']} → #{u2['username']}"
     LOG[:views] << "👀 #{u1['username']} viewed #{u2['username']}"
+    Notification.create(u2['id'], "#{u1['username']} viewed your profile", u1['id'], 'like')
+    LOG[:notifications] << "🔔 #{u1['username']} → #{u2['username']} (view)"
   end
 
   if rand < 0.5
     ProfileView.record(u2['id'], u1['id'])
     summary[:views] << "#{u2['username']} → #{u1['username']}"
     LOG[:views] << "👀 #{u2['username']} viewed #{u1['username']}"
+    Notification.create(u1['id'], "#{u2['username']} viewed your profile", u2['id'], 'like')
+    LOG[:notifications] << "🔔 #{u1['username']} → #{u2['username']} (view)"
   end
-
-  next unless rand < 0.1
-
-  BlockedUser.block!(u1['id'], u2['id'])
-  summary[:blocks] << "#{u1['username']} ⛔ #{u2['username']}"
-  LOG[:blocks] << "🚫 #{u1['username']} blocked #{u2['username']}"
 end
 
 # ---------------------------
 # Connections
 # ---------------------------
-puts "\n🔗 Creating connections for matches..."
+puts "🔗 Creating connections for matches..."
 connection_bar = ProgressBar.create(title: 'Connections', total: users.size)
 
 users.each do |u1|
   connection_bar.increment
-  users.each do |u2|
-    next if u1['id'] == u2['id']
+  (likes[u1['id']] || []).each do |liked_id|
+    next unless likes[liked_id]&.include?(u1['id'])
 
-    # Only create a connection if mutual likes
-    if Like.exists?(u1['id'], u2['id']) && rand < 0.5
-      conn = Connection.create(u1['id'], u2['id'])
-      LOG[:connections] << "🔗 #{u1['username']} ↔ #{u2['username']}" if conn
+    conn = Connection.create(u1['id'], liked_id)
+    if conn
+      u2 = users.find { |u| u['id'] == liked_id }
+      LOG[:connections] << "🔗 #{u1['username']} ↔ #{u2['username']}"
     end
   end
 end
@@ -178,14 +219,12 @@ end
 # ---------------------------
 # Messages
 # ---------------------------
-puts "\n✉️ Generating messages..."
+puts "✉️ Generating messages..."
 message_bar = ProgressBar.create(title: 'Messages', total: users.size)
 
 users.each do |user|
   message_bar.increment
-  connections = User.connections(user['id'])
-
-  connections.each do |partner|
+  User.connections(user['id']).each do |partner|
     conn = Connection.find_between(user['id'], partner['id'])
     next unless conn
 
@@ -193,6 +232,8 @@ users.each do |user|
       content = Faker::Lorem.sentence(word_count: rand(4..10))
       Message.create(conn['id'], user['id'], content)
       LOG[:messages] << "✉️ #{user['username']} → #{partner['username']}: #{content}"
+      Notification.create(partner['id'], "#{user['username']} sent you a message", user['id'], 'message')
+      LOG[:notifications] << "🔔 #{user['username']} → #{partner['username']} (message)"
     end
   end
 end
@@ -200,7 +241,7 @@ end
 # ---------------------------
 # Dates
 # ---------------------------
-puts "\n📅 Scheduling dates..."
+puts "📅 Scheduling dates..."
 date_count = users.sum { |user| User.connections(user['id']).size }
 date_bar = ProgressBar.create(title: 'Dates', total: date_count)
 
@@ -209,7 +250,7 @@ users.each do |user|
     date_bar.increment
     conn = Connection.find_between(user['id'], partner['id'])
     next unless conn
-    next unless rand < 0.2
+    next unless rand < 0.02
 
     time = Faker::Time.forward(days: rand(1..30), period: :evening).iso8601
     location = Faker::Address.city
@@ -217,39 +258,7 @@ users.each do |user|
 
     Date.create(conn['id'], user['id'], location, time, description)
     parsed_time = Time.parse(time.to_s)
-    LOG[:dates] << <<~LOG_ENTRY.chomp
-      📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}
-    LOG_ENTRY
-  end
-end
-
-# ---------------------------
-# Notifications
-# ---------------------------
-puts "\n🔔 Sending notifications..."
-notif_bar = ProgressBar.create(title: 'Notifications', total: users.size)
-
-users.each do |user|
-  notif_bar.increment
-
-  rand(1..3).times do
-    from_user = users.reject { |u| u['id'] == user['id'] }.sample
-    next unless from_user
-
-    message = [
-      'liked your profile',
-      'sent you a message',
-      'scheduled a date with you',
-      'viewed your profile'
-    ].sample
-
-    Notification.create(
-      user['id'],
-      "#{from_user['username']} #{message}",
-      from_user['id']
-    )
-
-    LOG[:notifications] << "🔔 #{from_user['username']} → #{user['username']}: #{message}"
+    LOG[:dates] << "📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}"
   end
 end
 
@@ -258,21 +267,20 @@ end
 # ---------------------------
 puts "\n✅ Done seeding!\n\n"
 
-puts "👤 Users created (#{summary[:users].size})"
-puts "🏷️ Tags created (#{summary[:tags].size})"
-puts "🖼️ Pictures added: #{summary[:pictures].size}"
-puts "🔗 User-Tag links: #{summary[:links].size}"
-puts "❤️ Likes: #{summary[:likes].size}"
-puts "👀 Views: #{summary[:views].size}"
-puts "🚫 Blocks: #{summary[:blocks].size}"
-puts "🔗 Connections: #{LOG[:connections].size}"
-puts "✉️ Messages: #{LOG[:messages].size}"
-puts "📅 Dates: #{LOG[:dates].size}"
-puts "🔔 Notifications: #{LOG[:notifications].size}"
+puts "👤 Users created: (#{summary[:users].size})"
+puts "🏷️ Tags created: (#{summary[:tags].size})"
+puts "🖼️ Pictures added: (#{summary[:pictures].size})"
+puts "🔗 User-Tag links: (#{summary[:links].size})"
+puts "❤️ Likes: (#{summary[:likes].size})"
+puts "👀 Views: (#{summary[:views].size})"
+puts "🚫 Blocks: (#{summary[:blocks].size})"
+puts "🔗 Connections: (#{LOG[:connections].size})"
+puts "✉️ Messages: (#{LOG[:messages].size})"
+puts "📅 Dates: (#{LOG[:dates].size})"
+puts "🔔 Notifications: (#{LOG[:notifications].size})"
 
 if VERBOSE
   puts "\n📘 Detailed Log:\n"
-
   LOG.each do |section, lines|
     puts "\n🔹 #{section.capitalize} (#{lines.size})"
     lines.each { |line| puts "  #{line}" }
