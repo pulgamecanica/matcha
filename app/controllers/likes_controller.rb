@@ -99,6 +99,8 @@ class LikesController < BaseController
       @current_user['id'],
       'unlike'
     )
+    Connection.delete_between(@current_user['id'], target['id'])
+
     { message: "#{data['username']} has been unliked" }.to_json
   end
 
