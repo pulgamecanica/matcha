@@ -19,7 +19,7 @@ require 'time'
 
 VERBOSE = true
 LOG = Hash.new { |h, k| h[k] = [] }
-TOTALUSERS = 10
+TOTALUSERS = 100
 
 puts '🌱 Seeding database...'
 

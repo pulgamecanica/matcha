@@ -197,7 +197,7 @@ end
 - [X] Real-time messaging (WebSocket or polling)
 - [X] Limit actions if user does not have a profile picture set: [connection is not possible]
 - [X] Notification when "matching" for the other user
-- [ ] add city and country to the user
+- [X] Add city and country to the user
 - [ ] Email acitons (confirm register / reset password)
 - [ ] VideoCalls
 - [ ] Report account as fake

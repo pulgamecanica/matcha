@@ -146,7 +146,9 @@ class User
     user = find_by_id(user_id)
     {
       latitude: user['latitude'],
-      longitude: user['longitude']
+      longitude: user['longitude'],
+      city: user['city'],
+      country: user['country']
     }
   end
 
