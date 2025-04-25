@@ -55,6 +55,7 @@ class ConnectionsController < BaseController
 
     begin
       ConnectionValidator.validate!(data)
+      raise Errors::ValidationError.new('User is missing fields', ["User must have a valid profile picture"]) unless @current_user['profile_picture_id']
     rescue Errors::ValidationError => e
       halt 422, { error: e.message, details: e.details }.to_json
     end

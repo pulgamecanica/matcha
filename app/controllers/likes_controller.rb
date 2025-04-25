@@ -43,6 +43,24 @@ class LikesController < BaseController
       @current_user['id'],
       'like'
     )
+    matches = User.matches(@current_user['id']) || [];
+    match = matches.find do |user|
+      user['username'] == target['username']
+    end
+    if match
+      Notification.create(
+        target['id'],
+        "#{@current_user['username']} matched with you",
+        @current_user['id'],
+        'match'
+      )
+      Notification.create(
+        @current_user['id'],
+        "#{@target['username']} matched with you",
+        target['id'],
+        'match'
+      )
+    end
     { message: "You liked #{data['username']}" }.to_json
   end
 

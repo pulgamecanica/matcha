@@ -39,7 +39,11 @@ class PicturesController < BaseController
     }
     response 422, 'Invalid data', example: {
       error: 'Validation failed',
-      details: { url: ['is not a valid URL'] }
+      details:['is not a valid URL']
+    }
+    response 422, 'Too many pictures', example: {
+      error: 'Too many pictures',
+      details: ['<= 5']
     }
   end
 
@@ -48,6 +52,8 @@ class PicturesController < BaseController
 
     begin
       PictureValidator.validate_create!(data)
+      amount_of_pictures = User.pictures(@current_user['id'])&.size || 0
+      raise Errors::ValidationError.new('Too many pictures', ["<= 5"]) unless amount_of_pictures < 5
     rescue Errors::ValidationError => e
       halt 422, { error: e.message, details: e.details }.to_json
     end

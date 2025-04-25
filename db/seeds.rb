@@ -109,7 +109,8 @@ usernames.each do |username|
   end
 
   pic_url = Faker::Avatar.image(slug: username)
-  Picture.create(user['id'], pic_url, is_profile: true)
+  pic = Picture.create(user['id'], pic_url, is_profile: true)
+  User.update(user['id'], {pic: pic})
   summary[:pictures] << username
   LOG[:pictures] << "   🖼️ #{username} profile picture added"
 end

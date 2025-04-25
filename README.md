@@ -193,14 +193,15 @@ end
 - [X] Notifications
 - [X] Commonly used English words should not be accepted as passwords.
 - [X] If user unlikes, make sure to delete connection. (cascades all connection relationships such as messages).
-- [ ] Limit up to 5 pictures.
+- [X] Limit up to 5 pictures.
 - [X] Real-time messaging (WebSocket or polling)
+- [X] Limit actions if user does not have a profile picture set: [connection is not possible]
+- [X] Notification when "matching" for the other user
+- [ ] add city and country to the user
 - [ ] Email acitons (confirm register / reset password)
 - [ ] VideoCalls
-- [ ] Deploy with NGINX
 - [ ] Report account as fake
-- [ ] Notification when "matching" for the other user
-- [ ] Limit actions if user does not have a profile picture set: [connection is not possible]
+- [ ] Deploy with NGINX
 
 ---
 
