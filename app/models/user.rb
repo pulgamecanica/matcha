@@ -36,7 +36,8 @@ class User
     allowed_fields = %w[
       username first_name last_name biography
       gender sexual_preferences birth_year
-      latitude longitude profile_picture_id
+      latitude longitude city country
+      profile_picture_id
     ]
 
     SQLHelper.update(:users, user_id, fields, allowed_fields)

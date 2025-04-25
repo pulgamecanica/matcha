@@ -20,6 +20,8 @@ Database.with_open_conn do |conn|
       birth_year INTEGER,
       latitude FLOAT,
       longitude FLOAT,
+      city VARCHAR(255),
+      country VARCHAR(255),
       online_status BOOLEAN DEFAULT FALSE,
       last_seen_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

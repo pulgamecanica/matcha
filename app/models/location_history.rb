@@ -21,7 +21,9 @@ class LocationHistory
                                         }, %w[user_id latitude longitude city country ip_address user_agent created_at])
     User.update(user_id, {
                   latitude: location[:latitude],
-                  longitude: location[:longitude]
+                  longitude: location[:longitude],
+                  country: location[:country],
+                  city: location[:city]
                 })
     location_history
   end

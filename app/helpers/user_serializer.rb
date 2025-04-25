@@ -16,6 +16,8 @@ module UserSerializer
       'fame_rating' => user['fame_rating'],
       'latitude' => user['latitude'].to_f.round(6),
       'longitude' => user['longitude'].to_f.round(6),
+      'country' => user['country'],
+      'city' => user['city'],
       'profile_picture_id' => user['profile_picture_id'],
       'online_status' => user['online_status'] == 't',
       'last_seen_at' => user['last_seen_at']
