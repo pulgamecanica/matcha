@@ -28,6 +28,7 @@ class MatchaApp < Sinatra::Base
   use MessagesController
   use DatesController
   use NotificationsController
+  use ReportsController
 end
 
 at_exit do

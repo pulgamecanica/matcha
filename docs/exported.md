@@ -634,6 +634,40 @@
 ```
 
 ---
+## `POST` /me/report
+**Description**: Report a user for inappropriate behavior
+**Auth required**: Yes
+**Tags**: User, Report
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to report
+- `reason` (String) **(required)** - enum: [fake_account scam sexual_harassment]
+- `description` (String)  - Optional description for the report
+
+### Responses
+- `200`: User reported successfully
+```json
+{
+  "message": "User reported successfully",
+  "data": {
+    "username": "fakeuser"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Cannot report yourself
+```json
+{
+  "error": "You cannot report yourself"
+}
+```
+
+---
 ## `GET` /me/visits
 **Description**: See who has viewed your profile
 **Auth required**: Yes
@@ -1073,11 +1107,18 @@
 ```json
 {
   "error": "Validation failed",
-  "details": {
-    "url": [
-      "is not a valid URL"
-    ]
-  }
+  "details": [
+    "is not a valid URL"
+  ]
+}
+```
+- `422`: Too many pictures
+```json
+{
+  "error": "Too many pictures",
+  "details": [
+    "<= 5"
+  ]
 }
 ```
 

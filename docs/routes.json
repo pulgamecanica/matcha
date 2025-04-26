@@ -900,6 +900,62 @@
     ]
   },
   {
+    "method": "POST",
+    "path": "/me/report",
+    "description": "Report a user for inappropriate behavior",
+    "auth_required": true,
+    "tags": [
+      "User",
+      "Report"
+    ],
+    "params": [
+      {
+        "name": "username",
+        "type": "String",
+        "required": true,
+        "desc": "The username of the user to report"
+      },
+      {
+        "name": "reason",
+        "type": "String",
+        "required": true,
+        "desc": "enum: [fake_account scam sexual_harassment]"
+      },
+      {
+        "name": "description",
+        "type": "String",
+        "required": false,
+        "desc": "Optional description for the report"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "desc": "User reported successfully",
+        "example": {
+          "message": "User reported successfully",
+          "data": {
+            "username": "fakeuser"
+          }
+        }
+      },
+      {
+        "code": 404,
+        "desc": "User not found",
+        "example": {
+          "error": "User not found"
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Cannot report yourself",
+        "example": {
+          "error": "You cannot report yourself"
+        }
+      }
+    ]
+  },
+  {
     "method": "GET",
     "path": "/me/visits",
     "description": "See who has viewed your profile",
@@ -1483,11 +1539,19 @@
         "desc": "Invalid data",
         "example": {
           "error": "Validation failed",
-          "details": {
-            "url": [
-              "is not a valid URL"
-            ]
-          }
+          "details": [
+            "is not a valid URL"
+          ]
+        }
+      },
+      {
+        "code": 422,
+        "desc": "Too many pictures",
+        "example": {
+          "error": "Too many pictures",
+          "details": [
+            "<= 5"
+          ]
         }
       }
     ]

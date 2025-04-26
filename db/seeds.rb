@@ -14,7 +14,6 @@ require_relative '../app/models/notification'
 
 require 'faker'
 require 'ruby-progressbar'
-require 'set'
 require 'time'
 
 VERBOSE = true
@@ -52,15 +51,15 @@ end
 # ---------------------------
 puts '👤 Creating test user...'
 main_user = User.find_by_username('testuser') || User.create({
-  username: 'testuser',
-  email: 'test@example.com',
-  password: 'testuser',
-  first_name: 'Test',
-  last_name: 'User',
-  gender: 'other',
-  sexual_preferences: 'everyone',
-  birth_year: '2000'
-})
+                                                               username: 'testuser',
+                                                               email: 'test@example.com',
+                                                               password: 'testuser',
+                                                               first_name: 'Test',
+                                                               last_name: 'User',
+                                                               gender: 'other',
+                                                               sexual_preferences: 'everyone',
+                                                               birth_year: '2000'
+                                                             })
 User.confirm!('testuser')
 summary[:users] << 'testuser'
 LOG[:users] << '✅ Created: testuser'
@@ -83,23 +82,23 @@ usernames.each do |username|
   user_bar.increment
 
   user = User.find_by_username(username) || User.create({
-    username: username,
-    email: Faker::Internet.email(name: username),
-    password: username,
-    first_name: Faker::Name.first_name,
-    last_name: Faker::Name.last_name,
-    gender: %w[male female other].sample,
-    sexual_preferences: %w[male female non_binary everyone].sample,
-    birth_year: Faker::Number.between(from: 1970, to: 2006)
-  })
+                                                          username: username,
+                                                          email: Faker::Internet.email(name: username),
+                                                          password: username,
+                                                          first_name: Faker::Name.first_name,
+                                                          last_name: Faker::Name.last_name,
+                                                          gender: %w[male female other].sample,
+                                                          sexual_preferences: %w[male female non_binary everyone].sample,
+                                                          birth_year: Faker::Number.between(from: 1970, to: 2006)
+                                                        })
   User.confirm!(user['username'])
 
   lat_offset = rand(-1.8..1.8)
   lon_offset = rand(-1.8..1.8)
   User.update(user['id'], {
-    latitude: 19.43 + lat_offset,
-    longitude: -99.13 + lon_offset
-  })
+                latitude: 19.43 + lat_offset,
+                longitude: -99.13 + lon_offset
+              })
 
   users << user
   summary[:users] << username
@@ -112,7 +111,8 @@ usernames.each do |username|
     LOG[:links] << "   🔗 #{username} tagged with #{tag['name']}"
   end
 
-  pic_url = Faker::Avatar.image(slug: username)
+  # pic_url = Faker::Avatar.image(slug: username)
+  pic_url = "https://i.pravatar.cc/300?u=#{username}"
   pic = Picture.create(user['id'], pic_url, is_profile: true)
   User.update(user['id'], { "profile_picture_id": pic['id'] })
   summary[:pictures] << username
@@ -146,7 +146,7 @@ discover_bar = ProgressBar.create(title: 'Discoverables', total: users.size)
 
 users.each do |user|
   discover_bar.increment
-  discover_map[user['id']] = User.discover(user).map { |u| u[:user]["id"] }
+  discover_map[user['id']] = User.discover(user).map { |u| u[:user]['id'] }
 end
 
 # ---------------------------
@@ -188,19 +188,19 @@ combos.each do |u1, u2|
     LOG[:notifications] << "🔔 #{u1['username']} → #{u2['username']} (view)"
   end
 
-  if rand < 0.5
-    ProfileView.record(u2['id'], u1['id'])
-    summary[:views] << "#{u2['username']} → #{u1['username']}"
-    LOG[:views] << "👀 #{u2['username']} viewed #{u1['username']}"
-    Notification.create(u1['id'], "#{u2['username']} viewed your profile", u2['id'], 'like')
-    LOG[:notifications] << "🔔 #{u1['username']} → #{u2['username']} (view)"
-  end
+  next unless rand < 0.5
+
+  ProfileView.record(u2['id'], u1['id'])
+  summary[:views] << "#{u2['username']} → #{u1['username']}"
+  LOG[:views] << "👀 #{u2['username']} viewed #{u1['username']}"
+  Notification.create(u1['id'], "#{u2['username']} viewed your profile", u2['id'], 'like')
+  LOG[:notifications] << "🔔 #{u1['username']} → #{u2['username']} (view)"
 end
 
 # ---------------------------
 # Connections
 # ---------------------------
-puts "🔗 Creating connections for matches..."
+puts '🔗 Creating connections for matches...'
 connection_bar = ProgressBar.create(title: 'Connections', total: users.size)
 
 users.each do |u1|
@@ -219,7 +219,7 @@ end
 # ---------------------------
 # Messages
 # ---------------------------
-puts "✉️ Generating messages..."
+puts '✉️ Generating messages...'
 message_bar = ProgressBar.create(title: 'Messages', total: users.size)
 
 users.each do |user|
@@ -241,7 +241,7 @@ end
 # ---------------------------
 # Dates
 # ---------------------------
-puts "📅 Scheduling dates..."
+puts '📅 Scheduling dates...'
 date_count = users.sum { |user| User.connections(user['id']).size }
 date_bar = ProgressBar.create(title: 'Dates', total: date_count)
 
