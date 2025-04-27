@@ -39,7 +39,9 @@ class AuthController < BaseController
 
     begin
       UserValidator.validate!(data)
-      User.create(data)
+      user = User.create(data)
+      action = EmailAction.create(user['id'], 'email_confirmation')
+      Mailer.send_confirmation_email(user['email'], action['code'])
       status 201
       { message: 'User created!' }.to_json
     rescue Errors::ValidationError => e

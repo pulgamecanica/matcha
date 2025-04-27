@@ -12,7 +12,9 @@ class BaseController < Sinatra::Base
     content_type :json
 
     next if request.request_method == 'OPTIONS'
-    next if request.path_info == '/' || request.path_info.start_with?('/auth')
+    if request.path_info == '/' || request.path_info.start_with?('/auth') || request.path_info.start_with?('/email/')
+      next
+    end
 
     require_auth!
   end

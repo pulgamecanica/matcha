@@ -61,7 +61,6 @@
 │   ├── migrate/         # DB migrations
 │   └── seeds.rb         # (optional)
 ├── spec/                # RSpec suite
-├── docker/              # Dockerfile
 ├── docker-compose.yml
 ├── Rakefile
 ├── Makefile
@@ -89,16 +88,7 @@ git clone https://github.com/pulgamecanica/matcha
 cd matcha
 
 # Build containers
-docker compose build
-
-# Start the app
-docker compose up
-
-# Open dev console
-make console
-
-# Run the test suite
-make test
+make build
 ```
 
 ---
@@ -121,9 +111,13 @@ make test
 ```bash
 make create   # db:create
 make migrate  # db:migrate
-make test     # run all specs
+make seed     # db:seed
+make test     # run all specs (you can provide a file)
 make console  # open IRB console
+make logs     # see the docker logs
 make docs     # export route documentation
+make re_db    # recreate database (empty)
+make seed     # generate database and seed data
 ```
 
 ---
@@ -166,15 +160,7 @@ end
 
 ## 🚀 Endpoints (Implemented)
 
-- `POST /auth/register`
-- `POST /auth/login`
-- `POST /auth/social`
-- `GET  /me`
-- `PATCH /me`
-- `DELETE /me`
-- `GET  /users/:username`
-
-(⚠️ All protected endpoints require JWT via `Authorization: Bearer <token>`)
+> Visit the [API Colleciton](https://pulgamecanica.github.io/matcha-docs/) to see all the API endpoints.
 
 ---
 
@@ -198,9 +184,9 @@ end
 - [X] Limit actions if user does not have a profile picture set: [connection is not possible]
 - [X] Notification when "matching" for the other user
 - [X] Add city and country to the user
-- [ ] Email acitons (confirm register / reset password)
+- [X] Email acitons (confirm register / reset password)
 - [ ] VideoCalls
-- [ ] Report account as fake
+- [X] Report account as fake
 - [ ] Deploy with NGINX
 
 ---

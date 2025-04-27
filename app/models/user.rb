@@ -32,6 +32,15 @@ class User
     SQLHelper.create(:users, params, allowed_fields)
   end
 
+  def self.update_password!(user_id, new_password)
+    params = {}
+    params['password_digest'] = Password.create(new_password)
+    allowed_fields = %w[
+      password_digest
+    ]
+    SQLHelper.update(:users, user_id, fields, allowed_fields)
+  end
+
   def self.update(user_id, fields)
     allowed_fields = %w[
       username first_name last_name biography
@@ -45,6 +54,10 @@ class User
 
   def self.find_by_username(username)
     SQLHelper.find_by(:users, :username, username)
+  end
+
+  def self.find_by_email(email)
+    SQLHelper.find_by(:users, :email, email)
   end
 
   def self.find_by_id(id)

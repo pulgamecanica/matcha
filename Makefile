@@ -30,28 +30,28 @@ docs:
 		rake doc:export
 
 create:
-	docker compose run \
+	-docker compose run \
 		-it \
 		--remove-orphans \
 		${DOCKER_CONTAINER_NAME} \
 		rake db:create
 
 migrate:
-	docker compose run \
+	-docker compose run \
 		-it \
 		--remove-orphans \
 		${DOCKER_CONTAINER_NAME} \
 		rake db:migrate
 
-seed:
-	docker compose run \
+seed: create migrate
+	-docker compose run \
 		-it \
 		--remove-orphans \
 		${DOCKER_CONTAINER_NAME} \
 		rake db:seed
 
 drop:
-	docker compose run \
+	-docker compose run \
 		-it \
 		--remove-orphans \
 		${DOCKER_CONTAINER_NAME} \
@@ -71,6 +71,6 @@ console:
 
 re: down build re_db
 
-re_db: drop create migrate seed
+re_db: drop create migrate
 
 .PHONY: docs test migrate

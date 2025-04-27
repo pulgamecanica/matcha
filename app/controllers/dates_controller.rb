@@ -19,7 +19,7 @@ class DatesController < BaseController
     description 'Schedule a date with a connected user'
     param :username, String, required: true, desc: "The other user's username"
     param :scheduled_at, String, required: true, desc: 'Scheduled time for the date (ISO 8601)'
-    param :location, String, required: false, desc: 'Optional location for the date'
+    param :location, String, required: true, desc: 'Optional location for the date'
     param :note, String, required: false, desc: 'Oprional note for the date'
     response 201, 'Date scheduled', example: {
       message: 'Date scheduled',
