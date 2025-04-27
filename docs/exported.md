@@ -2,103 +2,6 @@
 
 > **Note:** All authenticated endpoints require a valid token via `Authorization: Bearer <token>`.
 
-## `POST` /me/block
-**Description**: Block a user by username
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to block
-
-### Responses
-- `200`: User blocked
-```json
-{
-  "message": "User blocked",
-  "data": {
-    "username": "janedoe"
-  }
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Cannot block yourself
-```json
-{
-  "error": "You cannot block yourself"
-}
-```
-
----
-## `DELETE` /me/block
-**Description**: Unblock a user by username
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to unblock
-
-### Responses
-- `200`: User unblocked
-```json
-{
-  "message": "User unblocked",
-  "data": {
-    "username": "janedoe"
-  }
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-
----
-## `GET` /me/blocked
-**Description**: List users you've blocked
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Responses
-- `200`: Returns a list of blocked users
-```json
-{
-  "data": [
-    {
-      "username": "janedoe"
-    },
-    {
-      "username": "bobsmith"
-    }
-  ]
-}
-```
-
----
-## `GET` /me/blocked_by
-**Description**: List users who have blocked you
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Responses
-- `200`: Returns a list of users who blocked you
-```json
-{
-  "data": [
-    {
-      "username": "alicewonder"
-    }
-  ]
-}
-```
-
----
 ## `POST` /auth/register
 **Description**: Register a new user
 **Auth required**: No
@@ -255,283 +158,6 @@
 ```
 
 ---
-## `GET` /me/pictures
-**Description**: List all pictures uploaded by the current user
-**Auth required**: Yes
-**Tags**: User, Picture
-
-### Responses
-- `200`: Returns list of pictures
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "url": "https://cdn.example.com/pic1.jpg",
-      "is_profile": false
-    },
-    {
-      "id": 2,
-      "url": "https://cdn.example.com/pic2.jpg",
-      "is_profile": true
-    }
-  ]
-}
-```
-
----
-## `POST` /me/pictures
-**Description**: Upload a new picture
-**Auth required**: Yes
-**Tags**: User, Picture
-
-### Parameters
-- `url` (String) **(required)** - URL of the picture
-- `is_profile` (TrueClass)  - Set as profile picture
-
-### Responses
-- `201`: Picture created
-```json
-{
-  "message": "Picture uploaded!",
-  "data": {
-    "id": 3,
-    "url": "https://cdn.example.com/pic3.jpg",
-    "is_profile": false
-  }
-}
-```
-- `422`: Invalid data
-```json
-{
-  "error": "Validation failed",
-  "details": [
-    "is not a valid URL"
-  ]
-}
-```
-- `422`: Too many pictures
-```json
-{
-  "error": "Too many pictures",
-  "details": [
-    "<= 5"
-  ]
-}
-```
-
----
-## `PATCH` /me/pictures/:id
-**Description**: Edit a picture (e.g., set as profile)
-**Auth required**: Yes
-**Tags**: User, Picture
-
-### Parameters
-- `id` (Integer) **(required)** - 
-- `is_profile` (TrueClass)  - 
-- `url` (String)  - 
-
-### Responses
-- `200`: Picture updated
-```json
-{
-  "message": "Picture updated!",
-  "data": {
-    "id": 2,
-    "url": "https://cdn.example.com/updated.jpg",
-    "is_profile": true
-  }
-}
-```
-- `404`: Picture not found
-```json
-{
-  "error": "Picture not found"
-}
-```
-- `403`: Not your picture
-```json
-{
-  "error": "Unauthorized"
-}
-```
-
----
-## `DELETE` /me/pictures/:id
-**Description**: Delete a picture
-**Auth required**: Yes
-**Tags**: User, Picture
-
-### Parameters
-- `id` (Integer) **(required)** - 
-
-### Responses
-- `200`: Picture deleted
-```json
-{
-  "message": "Picture deleted"
-}
-```
-- `404`: Not found
-```json
-{
-  "error": "Picture not found"
-}
-```
-- `403`: Unauthorized
-```json
-{
-  "error": "Unauthorized"
-}
-```
-
----
-## `GET` /users/:username/pictures
-**Description**: Fetch the pictures of a user by their username
-**Auth required**: Yes
-**Tags**: User, PublicProfile, Picture
-
-### Parameters
-- `username` (String) **(required)** - The unique username of the user
-
-### Responses
-- `200`: Public user data
-```json
-{
-  "data": [
-    {
-      "id": 217,
-      "user_id": 2248,
-      "url": "https://robohash.org/wallace.png?size=300x300&set=set1",
-      "is_profile": "t",
-      "created_at": "2025-04-15 07:49:41",
-      "updated_at": "2025-04-15 07:49:41"
-    }
-  ]
-}
-```
-- `404`: User not found or banned
-```json
-{
-  "error": "User not found"
-}
-```
-- `404`: User blocked you
-```json
-{
-  "error": "User blocked you"
-}
-```
-- `404`: User is blocked
-```json
-{
-  "error": "User is blocked"
-}
-```
-
----
-## `POST` /me/dates
-**Description**: Schedule a date with a connected user
-**Auth required**: Yes
-**Tags**: User, Date
-
-### Parameters
-- `username` (String) **(required)** - The other user's username
-- `scheduled_at` (String) **(required)** - Scheduled time for the date (ISO 8601)
-- `location` (String) **(required)** - Optional location for the date
-- `note` (String)  - Oprional note for the date
-
-### Responses
-- `201`: Date scheduled
-```json
-{
-  "message": "Date scheduled",
-  "data": {
-    "id": "42",
-    "connection_id": "99",
-    "scheduled_at": "2025-04-12T20:00:00Z",
-    "location": "Café Luna",
-    "created_at": "2025-04-12T18:22:00Z"
-  }
-}
-```
-- `404`: User or connection not found
-```json
-{
-  "error": "No connection found with this user"
-}
-```
-- `422`: Validation error
-```json
-{
-  "error": "Invalid date creation",
-  "details": [
-    "scheduled_at must be a valid datetime string"
-  ]
-}
-```
-
----
-## `GET` /me/dates
-**Description**: List all scheduled dates for the current user
-**Auth required**: Yes
-**Tags**: User, Date
-
-### Responses
-- `200`: Array of scheduled dates
-```json
-{
-  "data": [
-    {
-      "id": "42",
-      "connection_id": "99",
-      "scheduled_at": "2025-04-12T20:00:00Z",
-      "location": "Café Luna",
-      "created_at": "2025-04-12T18:22:00Z",
-      "username": "bob",
-      "first_name": "Bob",
-      "last_name": "Smith"
-    }
-  ]
-}
-```
-
----
-## `DELETE` /me/dates/:id
-**Description**: Cancel or delete a date request
-**Auth required**: Yes
-**Tags**: Date
-
-### Parameters
-- `id` (Integer) **(required)** - ID of the date request
-
-### Responses
-- `200`: Date request deleted
-```json
-{
-  "message": "Date deleted"
-}
-```
-- `404`: Date not found
-```json
-{
-  "error": "Date not found"
-}
-```
-- `404`: Connection not found
-```json
-{
-  "error": "Connection not found"
-}
-```
-- `403`: Not authorized to delete this date
-```json
-{
-  "error": "Unauthorized"
-}
-```
-
----
 ## `GET` /me/connections
 **Description**: Get all users you are connected with
 **Auth required**: Yes
@@ -631,188 +257,99 @@
 ```
 
 ---
-## `POST` /email/reset-password
-**Description**: Send password reset email
+## `POST` /me/block
+**Description**: Block a user by username
 **Auth required**: Yes
-**Tags**: User, Email
+**Tags**: User, Block
 
 ### Parameters
-- `email` (String) **(required)** - Your account email
+- `username` (String) **(required)** - The username of the user to block
 
 ### Responses
-- `200`: Email sent
+- `200`: User blocked
 ```json
 {
-  "message": "Password reset email sent"
+  "message": "User blocked",
+  "data": {
+    "username": "janedoe"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Cannot block yourself
+```json
+{
+  "error": "You cannot block yourself"
 }
 ```
 
 ---
-## `GET` /email/confirm/:code
-**Description**: Validate confirmation code and confrim account
+## `DELETE` /me/block
+**Description**: Unblock a user by username
 **Auth required**: Yes
-**Tags**: User, Email
+**Tags**: User, Block
 
 ### Parameters
-- `code` (String) **(required)** - Confirmation code
+- `username` (String) **(required)** - The username of the user to unblock
 
 ### Responses
-- `200`: Account confirmed
+- `200`: User unblocked
 ```json
 {
-  "message": "Account confirmed"
+  "message": "User unblocked",
+  "data": {
+    "username": "janedoe"
+  }
 }
 ```
-- `404`: Invalid or expired code
+- `404`: User not found
 ```json
 {
-  "error": "Invalid or expired code"
+  "error": "User not found"
 }
 ```
 
 ---
-## `POST` /email/reset-password/:code
-**Description**: Reset your password using a valid reset code
+## `GET` /me/blocked
+**Description**: List users you've blocked
 **Auth required**: Yes
-**Tags**: User, Email
-
-### Parameters
-- `code` (String) **(required)** - Reset password code received by email
-- `new_password` (String) **(required)** - Your new password
+**Tags**: User, Block
 
 ### Responses
-- `200`: Password reset successfully
-```json
-{
-  "message": "Password reset successfully"
-}
-```
-- `404`: Invalid or expired code
-```json
-{
-  "error": "Invalid or expired code"
-}
-```
-- `422`: Missing or invalid input
-```json
-{
-  "error": "Invalid password"
-}
-```
-
----
-## `GET` /me/visits
-**Description**: See who has viewed your profile
-**Auth required**: Yes
-**Tags**: User, ProfileView
-
-### Responses
-- `200`: List of users who viewed you
+- `200`: Returns a list of blocked users
 ```json
 {
   "data": [
     {
-      "username": "janedoe",
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "viewed_at": "2025-04-12T10:00:00Z"
+      "username": "janedoe"
     },
     {
-      "username": "bobsmith",
-      "first_name": "Bob",
-      "last_name": "Smith",
-      "viewed_at": "2025-04-11T16:40:00Z"
+      "username": "bobsmith"
     }
   ]
 }
 ```
 
 ---
-## `GET` /me/views
-**Description**: See which users you have viewed
+## `GET` /me/blocked_by
+**Description**: List users who have blocked you
 **Auth required**: Yes
-**Tags**: User, ProfileView
+**Tags**: User, Block
 
 ### Responses
-- `200`: List of profiles you viewed
+- `200`: Returns a list of users who blocked you
 ```json
 {
   "data": [
     {
-      "username": "alicewonder",
-      "first_name": "Alice",
-      "last_name": "Wonder",
-      "viewed_at": "2025-04-12T09:00:00Z"
+      "username": "alicewonder"
     }
   ]
-}
-```
-
----
-## `GET` /me/notifications
-**Description**: List notifications for the current user
-**Auth required**: Yes
-**Tags**: User, Notifications
-
-### Responses
-- `200`: List of notifications
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "message": "You have a new like!",
-      "read": false,
-      "from_username": "bob",
-      "created_at": "2025-04-13T10:00:00Z"
-    }
-  ]
-}
-```
-
----
-## `PATCH` /me/notifications/:id
-**Description**: Mark a notification as read
-**Auth required**: Yes
-**Tags**: User, Notifications
-
-### Parameters
-- `id` (Integer) **(required)** - Notification ID
-
-### Responses
-- `200`: Notification marked as read
-```json
-{
-  "message": "Notification marked as read"
-}
-```
-- `404`: Notification not found
-```json
-{
-  "error": "Notification not found"
-}
-```
-
----
-## `DELETE` /me/notifications/:id
-**Description**: Delete a notification
-**Auth required**: Yes
-**Tags**: User, Notifications
-
-### Parameters
-- `id` (Integer) **(required)** - Notification ID
-
-### Responses
-- `200`: Notification deleted
-```json
-{
-  "message": "Notification deleted"
-}
-```
-- `404`: Notification not found
-```json
-{
-  "error": "Notification not found"
 }
 ```
 
@@ -1030,6 +567,108 @@
       }
     }
   ]
+}
+```
+
+---
+## `POST` /me/dates
+**Description**: Schedule a date with a connected user
+**Auth required**: Yes
+**Tags**: User, Date
+
+### Parameters
+- `username` (String) **(required)** - The other user's username
+- `scheduled_at` (String) **(required)** - Scheduled time for the date (ISO 8601)
+- `location` (String) **(required)** - Optional location for the date
+- `note` (String)  - Oprional note for the date
+
+### Responses
+- `201`: Date scheduled
+```json
+{
+  "message": "Date scheduled",
+  "data": {
+    "id": "42",
+    "connection_id": "99",
+    "scheduled_at": "2025-04-12T20:00:00Z",
+    "location": "Café Luna",
+    "created_at": "2025-04-12T18:22:00Z"
+  }
+}
+```
+- `404`: User or connection not found
+```json
+{
+  "error": "No connection found with this user"
+}
+```
+- `422`: Validation error
+```json
+{
+  "error": "Invalid date creation",
+  "details": [
+    "scheduled_at must be a valid datetime string"
+  ]
+}
+```
+
+---
+## `GET` /me/dates
+**Description**: List all scheduled dates for the current user
+**Auth required**: Yes
+**Tags**: User, Date
+
+### Responses
+- `200`: Array of scheduled dates
+```json
+{
+  "data": [
+    {
+      "id": "42",
+      "connection_id": "99",
+      "scheduled_at": "2025-04-12T20:00:00Z",
+      "location": "Café Luna",
+      "created_at": "2025-04-12T18:22:00Z",
+      "username": "bob",
+      "first_name": "Bob",
+      "last_name": "Smith"
+    }
+  ]
+}
+```
+
+---
+## `DELETE` /me/dates/:id
+**Description**: Cancel or delete a date request
+**Auth required**: Yes
+**Tags**: Date
+
+### Parameters
+- `id` (Integer) **(required)** - ID of the date request
+
+### Responses
+- `200`: Date request deleted
+```json
+{
+  "message": "Date deleted"
+}
+```
+- `404`: Date not found
+```json
+{
+  "error": "Date not found"
+}
+```
+- `404`: Connection not found
+```json
+{
+  "error": "Connection not found"
+}
+```
+- `403`: Not authorized to delete this date
+```json
+{
+  "error": "Unauthorized"
 }
 ```
 
@@ -1345,6 +984,226 @@
 ```
 
 ---
+## `POST` /email/reset-password
+**Description**: Send password reset email
+**Auth required**: Yes
+**Tags**: User, Email
+
+### Parameters
+- `email` (String) **(required)** - Your account email
+
+### Responses
+- `200`: Email sent
+```json
+{
+  "message": "Password reset email sent"
+}
+```
+
+---
+## `GET` /email/confirm/:code
+**Description**: Validate confirmation code and confrim account
+**Auth required**: Yes
+**Tags**: User, Email
+
+### Parameters
+- `code` (String) **(required)** - Confirmation code
+
+### Responses
+- `200`: Account confirmed
+```json
+{
+  "message": "Account confirmed"
+}
+```
+- `404`: Invalid or expired code
+```json
+{
+  "error": "Invalid or expired code"
+}
+```
+
+---
+## `POST` /email/reset-password/:code
+**Description**: Reset your password using a valid reset code
+**Auth required**: Yes
+**Tags**: User, Email
+
+### Parameters
+- `code` (String) **(required)** - Reset password code received by email
+- `new_password` (String) **(required)** - Your new password
+
+### Responses
+- `200`: Password reset successfully
+```json
+{
+  "message": "Password reset successfully"
+}
+```
+- `404`: Invalid or expired code
+```json
+{
+  "error": "Invalid or expired code"
+}
+```
+- `422`: Missing or invalid input
+```json
+{
+  "error": "Invalid password"
+}
+```
+
+---
+## `POST` /me/report
+**Description**: Report a user for inappropriate behavior
+**Auth required**: Yes
+**Tags**: User, Report
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to report
+- `reason` (String) **(required)** - enum: [fake_account scam sexual_harassment]
+- `description` (String)  - Optional description for the report
+
+### Responses
+- `200`: User reported successfully
+```json
+{
+  "message": "User reported successfully",
+  "data": {
+    "username": "fakeuser"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Cannot report yourself
+```json
+{
+  "error": "You cannot report yourself"
+}
+```
+
+---
+## `GET` /me/notifications
+**Description**: List notifications for the current user
+**Auth required**: Yes
+**Tags**: User, Notifications
+
+### Responses
+- `200`: List of notifications
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "message": "You have a new like!",
+      "read": false,
+      "from_username": "bob",
+      "created_at": "2025-04-13T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+## `PATCH` /me/notifications/:id
+**Description**: Mark a notification as read
+**Auth required**: Yes
+**Tags**: User, Notifications
+
+### Parameters
+- `id` (Integer) **(required)** - Notification ID
+
+### Responses
+- `200`: Notification marked as read
+```json
+{
+  "message": "Notification marked as read"
+}
+```
+- `404`: Notification not found
+```json
+{
+  "error": "Notification not found"
+}
+```
+
+---
+## `DELETE` /me/notifications/:id
+**Description**: Delete a notification
+**Auth required**: Yes
+**Tags**: User, Notifications
+
+### Parameters
+- `id` (Integer) **(required)** - Notification ID
+
+### Responses
+- `200`: Notification deleted
+```json
+{
+  "message": "Notification deleted"
+}
+```
+- `404`: Notification not found
+```json
+{
+  "error": "Notification not found"
+}
+```
+
+---
+## `GET` /me/visits
+**Description**: See who has viewed your profile
+**Auth required**: Yes
+**Tags**: User, ProfileView
+
+### Responses
+- `200`: List of users who viewed you
+```json
+{
+  "data": [
+    {
+      "username": "janedoe",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "viewed_at": "2025-04-12T10:00:00Z"
+    },
+    {
+      "username": "bobsmith",
+      "first_name": "Bob",
+      "last_name": "Smith",
+      "viewed_at": "2025-04-11T16:40:00Z"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/views
+**Description**: See which users you have viewed
+**Auth required**: Yes
+**Tags**: User, ProfileView
+
+### Responses
+- `200`: List of profiles you viewed
+```json
+{
+  "data": [
+    {
+      "username": "alicewonder",
+      "first_name": "Alice",
+      "last_name": "Wonder",
+      "viewed_at": "2025-04-12T09:00:00Z"
+    }
+  ]
+}
+```
+
+---
 ## `GET` /me/location
 **Description**: Returns the last known latitude and longitude of the current user
 **Auth required**: Yes
@@ -1430,36 +1289,177 @@
 ```
 
 ---
-## `POST` /me/report
-**Description**: Report a user for inappropriate behavior
+## `GET` /me/pictures
+**Description**: List all pictures uploaded by the current user
 **Auth required**: Yes
-**Tags**: User, Report
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to report
-- `reason` (String) **(required)** - enum: [fake_account scam sexual_harassment]
-- `description` (String)  - Optional description for the report
+**Tags**: User, Picture
 
 ### Responses
-- `200`: User reported successfully
+- `200`: Returns list of pictures
 ```json
 {
-  "message": "User reported successfully",
+  "data": [
+    {
+      "id": 1,
+      "url": "https://cdn.example.com/pic1.jpg",
+      "is_profile": false
+    },
+    {
+      "id": 2,
+      "url": "https://cdn.example.com/pic2.jpg",
+      "is_profile": true
+    }
+  ]
+}
+```
+
+---
+## `POST` /me/pictures
+**Description**: Upload a new picture
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Parameters
+- `url` (String) **(required)** - URL of the picture
+- `is_profile` (TrueClass)  - Set as profile picture
+
+### Responses
+- `201`: Picture created
+```json
+{
+  "message": "Picture uploaded!",
   "data": {
-    "username": "fakeuser"
+    "id": 3,
+    "url": "https://cdn.example.com/pic3.jpg",
+    "is_profile": false
   }
 }
 ```
-- `404`: User not found
+- `422`: Invalid data
+```json
+{
+  "error": "Validation failed",
+  "details": [
+    "is not a valid URL"
+  ]
+}
+```
+- `422`: Too many pictures
+```json
+{
+  "error": "Too many pictures",
+  "details": [
+    "<= 5"
+  ]
+}
+```
+
+---
+## `PATCH` /me/pictures/:id
+**Description**: Edit a picture (e.g., set as profile)
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Parameters
+- `id` (Integer) **(required)** - 
+- `is_profile` (TrueClass)  - 
+- `url` (String)  - 
+
+### Responses
+- `200`: Picture updated
+```json
+{
+  "message": "Picture updated!",
+  "data": {
+    "id": 2,
+    "url": "https://cdn.example.com/updated.jpg",
+    "is_profile": true
+  }
+}
+```
+- `404`: Picture not found
+```json
+{
+  "error": "Picture not found"
+}
+```
+- `403`: Not your picture
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+## `DELETE` /me/pictures/:id
+**Description**: Delete a picture
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Parameters
+- `id` (Integer) **(required)** - 
+
+### Responses
+- `200`: Picture deleted
+```json
+{
+  "message": "Picture deleted"
+}
+```
+- `404`: Not found
+```json
+{
+  "error": "Picture not found"
+}
+```
+- `403`: Unauthorized
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+## `GET` /users/:username/pictures
+**Description**: Fetch the pictures of a user by their username
+**Auth required**: Yes
+**Tags**: User, PublicProfile, Picture
+
+### Parameters
+- `username` (String) **(required)** - The unique username of the user
+
+### Responses
+- `200`: Public user data
+```json
+{
+  "data": [
+    {
+      "id": 217,
+      "user_id": 2248,
+      "url": "https://robohash.org/wallace.png?size=300x300&set=set1",
+      "is_profile": "t",
+      "created_at": "2025-04-15 07:49:41",
+      "updated_at": "2025-04-15 07:49:41"
+    }
+  ]
+}
+```
+- `404`: User not found or banned
 ```json
 {
   "error": "User not found"
 }
 ```
-- `422`: Cannot report yourself
+- `404`: User blocked you
 ```json
 {
-  "error": "You cannot report yourself"
+  "error": "User blocked you"
+}
+```
+- `404`: User is blocked
+```json
+{
+  "error": "User is blocked"
 }
 ```
 

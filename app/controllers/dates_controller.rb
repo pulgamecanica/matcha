@@ -57,6 +57,19 @@ class DatesController < BaseController
 
     date = Date.create(connection['id'], @current_user['id'], data['location'],
                        Time.parse(data['scheduled_at'], data['note']))
+    Notification.create(
+      other['id'],
+      "#{@current_user['username']} scheduled a date with you",
+      @current_user['id'],
+      'date'
+    )
+
+    Notification.create(
+      @current_user['id'],
+      "#{other['username']} and you now have date",
+      other['id'],
+      'date'
+    )
     status 201
     { message: 'Date scheduled', data: date }.to_json
   end
