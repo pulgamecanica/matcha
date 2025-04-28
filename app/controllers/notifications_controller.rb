@@ -5,8 +5,6 @@ require_relative '../models/notification'
 require_relative '../models/user'
 
 class NotificationsController < BaseController
-  before { require_auth! }
-
   # ---------------------------
   # GET /me/notifications
   # ---------------------------

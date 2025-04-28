@@ -31,8 +31,6 @@ class UsersController < BaseController
   end
 
   get '/me' do
-    require_auth!
-
     user_data = @current_user.reject { |k, _| k == 'password_digest' }
     { data: user_data }.to_json
   end

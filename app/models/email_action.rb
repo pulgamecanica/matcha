@@ -13,6 +13,7 @@ class EmailAction
     raise 'Invalid action type' unless ACTION_TYPES.include?(action_type)
 
     code = generate_unique_code
+    puts "code: #{code}"
     expires_at = Time.now + CODE_EXPIRATION[action_type]
 
     params = {}
@@ -25,8 +26,6 @@ class EmailAction
       user_id action_type code expires_at
     ]
     SQLHelper.create(:email_actions, params, allowed_fields)
-
-    code
   end
 
   def self.find_by_code(code)

@@ -38,7 +38,7 @@ class User
     allowed_fields = %w[
       password_digest
     ]
-    SQLHelper.update(:users, user_id, fields, allowed_fields)
+    SQLHelper.update(:users, user_id, params, allowed_fields)
   end
 
   def self.update(user_id, fields)

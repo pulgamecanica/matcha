@@ -111,8 +111,8 @@ usernames.each do |username|
     LOG[:links] << "   🔗 #{username} tagged with #{tag['name']}"
   end
 
-  # pic_url = Faker::Avatar.image(slug: username)
-  pic_url = "https://i.pravatar.cc/300?u=#{username}"
+  pic_url = Faker::Avatar.image(slug: username)
+  # pic_url = "https://i.pravatar.cc/300?u=#{username}"
   pic = Picture.create(user['id'], pic_url, is_profile: true)
   User.update(user['id'], { "profile_picture_id": pic['id'] })
   summary[:pictures] << username

@@ -7,10 +7,6 @@ require_relative '../models/date'
 require_relative '../helpers/date_validator'
 
 class DatesController < BaseController
-  before do
-    require_auth!
-  end
-
   # ---------------------------
   # CREATE DATE
   # ---------------------------
@@ -57,6 +53,7 @@ class DatesController < BaseController
 
     date = Date.create(connection['id'], @current_user['id'], data['location'],
                        Time.parse(data['scheduled_at'], data['note']))
+
     Notification.create(
       other['id'],
       "#{@current_user['username']} scheduled a date with you",

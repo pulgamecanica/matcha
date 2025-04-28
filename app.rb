@@ -17,6 +17,7 @@ class MatchaApp < Sinatra::Base
   end
 
   use AuthController
+  use EmailActionsController
   use UsersController
   use TagsController
   use BlockedUsersController
@@ -29,7 +30,6 @@ class MatchaApp < Sinatra::Base
   use DatesController
   use NotificationsController
   use ReportsController
-  use EmailActionsController
 end
 
 at_exit do
