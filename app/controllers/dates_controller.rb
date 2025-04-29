@@ -118,8 +118,22 @@ class DatesController < BaseController
     connection = Connection.find_by_id(date['connection_id'])
     halt 404, { error: 'Connection not found' }.to_json unless date
     connection_ids = [connection['user_a_id'], connection['user_b_id']]
-
+    other_id = connection_ids[0] == @current_user['id'] ? connection_ids[1] : connection_ids[0]
     halt 403, { error: 'Unauthorized' }.to_json unless connection_ids.include?(@current_user['id'])
+
+    Notification.create(
+      other_id,
+      "#{@current_user['username']} canceled a date with you",
+      @current_user['id'],
+      'date'
+    )
+
+    Notification.create(
+      @current_user['id'],
+      'Canceled the date',
+      other_id,
+      'date'
+    )
 
     Date.delete(date['id'])
     { message: 'Date deleted' }.to_json
