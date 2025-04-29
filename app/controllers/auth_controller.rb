@@ -92,6 +92,7 @@ class AuthController < BaseController
     param :provider_user_id, String, required: true, desc: 'Unique ID returned by the provider for this user'
     param :first_name, String, required: false, desc: "User's first name (optional if new user)"
     param :last_name, String, required: false, desc: "User's last name (optional if new user)"
+    param :picture_url, String, required: false, desc: "User's picture"
     response 200, 'User authenticated', example: { token: 'jwt.token.here' }
     response 201, 'User created via social login', example: { token: 'jwt.token.here' }
     response 422, 'Missing required social login fields', example: { error: 'Missing provider or UID' }
@@ -109,16 +110,21 @@ class AuthController < BaseController
 
     unless user
       user = User.create({
-                           username: "#{provider}_#{uid}",
-                           email: "#{uid}@#{provider}.matcha",
+                           username: "#{provider}_#{uid}".slice(0, 20),
+                           email: "#{uid.slice(0, 9)}@#{provider}.matcha",
                            password: SecureRandom.hex(16), # Not used, just for DB consistency
-                           first_name: data['first_name'] || '',
-                           last_name: data['last_name'] || '',
-                           gender: 'other',
-                           sexual_preferences: 'both',
+                           first_name: data['first_name'].slice(0, 20) || '',
+                           last_name: data['last_name'].slice(0, 20) || '',
+                           sexual_preferences: 'everyone',
                            is_email_verified: true
                          })
       User.link_social_login(user['id'], provider, uid)
+      User.confirm!(user['username'])
+
+      if data['picture_url']
+        pic = Picture.create(user['id'], data['picture_url'], is_profile: true)
+        Picture.set_profile(user['id'], pic['id'])
+      end
     end
 
     token = SessionToken.generate(user['id'])

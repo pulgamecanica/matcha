@@ -26,7 +26,7 @@ class User
     allowed_fields = %w[
       username email password_digest first_name
       last_name gender sexual_preferences birth_year
-      fame_rating
+      fame_rating is_email_verified
     ]
 
     SQLHelper.create(:users, params, allowed_fields)
