@@ -43,8 +43,11 @@ class WebSocketServer < Sinatra::Base
             handle_message(user, payload)
           when 'typing'
             handle_typing(user, payload)
+          when 'call:offer', 'call:answer', 'call:ice-candidate',
+                'call:end', 'call:decline', 'call:busy', 'call:unavailable'
+            relay_call_signal(user, type, payload)
           else
-            ws.send({ type: 'error', payload: 'Unknown message type' }.to_json)
+            ws.send({ type: 'error', payload: "Unknown message type [#{type} => #{payload}]" }.to_json)
           end
         rescue StandardError => e
           ws.send({ type: 'error', payload: e.message }.to_json)
@@ -67,6 +70,33 @@ class WebSocketServer < Sinatra::Base
   end
 
   private
+
+  def relay_call_signal(sender, type, payload)
+    puts "Call: [#{sender['id']} | #{type} | #{payload['to_user_id']}]"
+
+    to_user_id = payload['to_user_id']
+    return unless to_user_id
+
+    target_ws = CHANNELS[to_user_id]
+    return unless target_ws && target_ws.ready_state == Faye::WebSocket::API::OPEN
+
+    signal =
+      case type
+      when 'call:offer' then { offer: payload['offer'] }
+      when 'call:answer' then { answer: payload['answer'] }
+      when 'call:ice-candidate' then { candidate: payload['candidate'] }
+      end
+
+    message = {
+      type: type,
+      payload: {
+        from_user_id: sender['id']
+      }.merge(signal || {})
+    }
+    puts "Sending message: #{message}"
+
+    target_ws.send(message.to_json)
+  end
 
   def extract_current_user(env)
     return nil unless env

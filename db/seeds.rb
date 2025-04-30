@@ -20,6 +20,25 @@ VERBOSE = true
 LOG = Hash.new { |h, k| h[k] = [] }
 TOTALUSERS = 100
 
+COUNTRIES = {
+  'Mexico' => {
+    center: [23.6345, -102.5528],
+    bounds: { min_lat: 14.5, max_lat: 32.7, min_lon: -118.4, max_lon: -86.7 }
+  },
+  'France' => {
+    center: [46.6034, 1.8883],
+    bounds: { min_lat: 41.3, max_lat: 51.1, min_lon: -5.1, max_lon: 9.6 }
+  },
+  'Japan' => {
+    center: [36.2048, 138.2529],
+    bounds: { min_lat: 30.2, max_lat: 40.5, min_lon: 122.9, max_lon: 153.9 }
+  },
+  'USA' => {
+    center: [37.0902, -95.7129],
+    bounds: { min_lat: 24.5, max_lat: 49.4, min_lon: -125.0, max_lon: -66.9 }
+  }
+}
+
 puts '🌱 Seeding database...'
 
 summary = {
@@ -93,11 +112,15 @@ usernames.each do |username|
                                                         })
   User.confirm!(user['username'])
 
-  lat_offset = rand(-1.8..1.8)
-  lon_offset = rand(-1.8..1.8)
+  country_name, country_info = COUNTRIES.to_a.sample
+  bounds = country_info[:bounds]
+  latitude = rand(bounds[:min_lat]..bounds[:max_lat])
+  longitude = rand(bounds[:min_lon]..bounds[:max_lon])
+
   User.update(user['id'], {
-                latitude: 19.43 + lat_offset,
-                longitude: -99.13 + lon_offset
+                latitude: latitude,
+                longitude: longitude,
+                country: country_name
               })
 
   users << user
