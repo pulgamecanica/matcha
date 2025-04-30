@@ -72,8 +72,6 @@ class WebSocketServer < Sinatra::Base
   private
 
   def relay_call_signal(sender, type, payload)
-    puts "Call: [#{sender['id']} | #{type} | #{payload['to_user_id']}]"
-
     to_user_id = payload['to_user_id']
     return unless to_user_id
 
@@ -93,7 +91,6 @@ class WebSocketServer < Sinatra::Base
         from_user_id: sender['id']
       }.merge(signal || {})
     }
-    puts "Sending message: #{message}"
 
     target_ws.send(message.to_json)
   end

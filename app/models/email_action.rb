@@ -13,7 +13,6 @@ class EmailAction
     raise 'Invalid action type' unless ACTION_TYPES.include?(action_type)
 
     code = generate_unique_code
-    puts "code: #{code}"
     expires_at = Time.now + CODE_EXPIRATION[action_type]
 
     params = {}

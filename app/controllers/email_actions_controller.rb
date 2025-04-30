@@ -44,7 +44,6 @@ class EmailActionsController < BaseController
   get '/email/confirm/:code' do
     code = params[:code]
     action = EmailAction.find_by_code(code)
-    puts "email code: #{code}"
     halt 404, { error: 'Invalid or expired code' }.to_json unless action
     halt 404, { error: 'Wrong action type' }.to_json unless action['action_type'] == 'email_confirmation'
 
