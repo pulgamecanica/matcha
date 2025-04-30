@@ -52,7 +52,7 @@ class DatesController < BaseController
     halt 404, { error: 'No connection found with this user' }.to_json unless connection
 
     date = Date.create(connection['id'], @current_user['id'], data['location'],
-                       Time.parse(data['scheduled_at'], data['note']))
+                       Time.parse(data['scheduled_at']), data['note'])
 
     Notification.create(
       other['id'],
@@ -118,8 +118,9 @@ class DatesController < BaseController
     connection = Connection.find_by_id(date['connection_id'])
     halt 404, { error: 'Connection not found' }.to_json unless date
     connection_ids = [connection['user_a_id'], connection['user_b_id']]
-    other_id = connection_ids[0] == @current_user['id'] ? connection_ids[1] : connection_ids[0]
     halt 403, { error: 'Unauthorized' }.to_json unless connection_ids.include?(@current_user['id'])
+
+    other_id = connection_ids[0] == @current_user['id'] ? connection_ids[1] : connection_ids[0]
 
     Notification.create(
       other_id,
