@@ -8,6 +8,7 @@ require_relative './app/lib/logger'
 class MatchaApp < Sinatra::Base
   configure do
     set :show_exceptions, false
+    disable :protection
   end
 
   use CORS
