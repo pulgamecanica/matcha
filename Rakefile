@@ -33,7 +33,7 @@ namespace :db do
   desc 'Create the database'
   task :create do
     uri = URI.parse(ENV['DATABASE_URL'])
-    dbname = uri.path[1..]
+    dbname = uri.path[1..] || 'matcha_db'
     conn = PG.connect(dbname: 'postgres', user: uri.user, password: uri.password, host: uri.host)
     begin
       conn.exec("CREATE DATABASE #{dbname}")

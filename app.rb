@@ -7,8 +7,12 @@ require_relative './app/lib/logger'
 
 class MatchaApp < Sinatra::Base
   configure do
-    set :show_exceptions, false
-    disable :protection
+    set :protection, false
+    use Rack::Protection, permitted_origins: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://matcha42.fly.dev']
+    set :allow_hosts, ['matcha42.fly.dev']
+    set :host_authorization, {
+      permitted_hosts: []
+    }
   end
 
   use CORS
