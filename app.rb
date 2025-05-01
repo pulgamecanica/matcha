@@ -6,16 +6,14 @@ require_relative './app/lib/cors'
 require_relative './app/lib/logger'
 
 class MatchaApp < Sinatra::Base
-  configure do
-    set :protection, false
-    use Rack::Protection, permitted_origins: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://matcha42.fly.dev']
-    set :allow_hosts, ['matcha42.fly.dev']
-    set :host_authorization, {
-      permitted_hosts: []
-    }
+  configure :production do
+    puts '🛡️ Rack::Protection Middleware disabled'
+    # set :protection, false
+    use Rack::Protection::HostAuthorization, permitted_hosts: ['matcha42.fly.dev']
   end
 
   use CORS
+  set :protection, false
 
   get '/' do
     { message: 'Welcome to MatchaApp' }.to_json
