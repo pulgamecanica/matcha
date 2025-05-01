@@ -29,7 +29,7 @@ class LocationHistory
   end
 
   def self.for_user(user_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params(<<~SQL, [user_id]).to_a
         SELECT * FROM location_history
         WHERE user_id = $1

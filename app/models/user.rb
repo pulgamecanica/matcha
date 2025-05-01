@@ -11,7 +11,7 @@ class User
   include BCrypt
 
   def self.all(serialize_public_user: true)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec('SELECT * FROM users ORDER BY username ASC')
       res.map { |user| serialize_public_user ? UserSerializer.public_view(user) : user }
     end
@@ -65,7 +65,7 @@ class User
   end
 
   def self.find_by_social_login(provider, provider_user_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       sql = <<~SQL
         SELECT users.* FROM users
         JOIN user_social_logins usl ON usl.user_id = users.id
@@ -204,7 +204,7 @@ class User
   end
 
   def self.set_online!(user_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params(
         'UPDATE users SET online_status = TRUE WHERE id = $1',
         [user_id]
@@ -213,7 +213,7 @@ class User
   end
 
   def self.set_offline!(user_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params(
         'UPDATE users SET online_status = FALSE, last_seen_at = NOW() WHERE id = $1',
         [user_id]
@@ -370,7 +370,7 @@ class User
       dates * FAME_FORMULA[:dates_weight]
     ).round(2)
 
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params('UPDATE users SET fame_rating = $1, updated_at = NOW() WHERE id = $2', [score, user_id])
     end
   end

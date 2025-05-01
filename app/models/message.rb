@@ -4,7 +4,7 @@ require_relative '../helpers/database'
 
 class Message
   def self.create(connection_id, sender_id, content)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params(<<~SQL, [connection_id, sender_id, content])
         INSERT INTO messages (connection_id, sender_id, content, created_at)
         VALUES ($1, $2, $3, NOW())
@@ -15,7 +15,7 @@ class Message
   end
 
   def self.for_connection(connection_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params(<<~SQL, [connection_id])
         SELECT messages.*, users.username AS sender_username
         FROM messages

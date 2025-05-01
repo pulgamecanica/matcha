@@ -5,7 +5,7 @@ require_relative '../helpers/user_serializer'
 
 class Connection
   def self.all_for_user(user_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params(<<~SQL, [user_id])
         SELECT users.* FROM connections
         JOIN users
@@ -21,14 +21,14 @@ class Connection
   end
 
   def self.find_by_id(id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params('SELECT * FROM connections WHERE id = $1', [id])
       res.to_a&.first
     end
   end
 
   def self.find_between(user_a_id, user_b_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params(<<~SQL, [user_a_id, user_b_id, user_b_id, user_a_id])
         SELECT * FROM connections
         WHERE (user_a_id = $1 AND user_b_id = $2)
@@ -43,7 +43,7 @@ class Connection
     return if user_a_id == user_b_id
     return if find_between(user_a_id, user_b_id)
 
-    connection = Database.pool.with do |conn|
+    connection = Database.with_conn do |conn|
       conn.exec_params(<<~SQL, [user_a_id, user_b_id])
         INSERT INTO connections (user_a_id, user_b_id, created_at)
         VALUES ($1, $2, NOW())
@@ -56,7 +56,7 @@ class Connection
   end
 
   def self.delete_between(user_a_id, user_b_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params(<<~SQL, [user_a_id, user_b_id, user_b_id, user_a_id])
         DELETE FROM connections
         WHERE (user_a_id = $1 AND user_b_id = $2)

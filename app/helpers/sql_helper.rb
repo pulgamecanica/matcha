@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-module SQLHelper
-  def self.with_conn(&block)
-    Database.pool.with(&block)
-  end
+require_relative '../helpers/database'
 
+module SQLHelper
   def self.parse_unique_violation(error)
     if error.message =~ /unique constraint "(.*?)"/
       constraint = Regexp.last_match(1)
@@ -34,7 +32,7 @@ module SQLHelper
   end
 
   def self.table_exists?(table)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       sql = 'SELECT to_regclass($1) IS NOT NULL AS exists'
       result = conn.exec_params(sql, [table])
       result&.first&.[]('exists') == 't'
@@ -58,7 +56,7 @@ module SQLHelper
   end
 
   def self.create(table, fields, allowed_fields)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       normalized_fields = fields.transform_keys(&:to_s)
       filtered_fields = normalized_fields.select { |k, _| allowed_fields.include?(k) }
       keys = filtered_fields.keys
@@ -79,7 +77,7 @@ module SQLHelper
   def self.update(table, id, fields, allowed_fields)
     return find_by_id(table, id) if fields.empty?
 
-    with_conn do |conn|
+    Database.with_conn do |conn|
       set_clause, values = build_update_set(fields, allowed_fields)
       sql = <<~SQL
         UPDATE #{table}
@@ -99,7 +97,7 @@ module SQLHelper
   end
 
   def self.update_column(table, column, value, conditions)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       condition_sql = conditions.keys.each_with_index.map { |k, i| "#{k} = $#{i + 2}" }.join(' AND ')
       sql = "UPDATE #{table} SET #{column} = $1, updated_at = NOW() WHERE #{condition_sql}"
       values = [value] + conditions.values
@@ -112,14 +110,14 @@ module SQLHelper
   end
 
   def self.find_by(table, field, value)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       sql = "SELECT * FROM #{table} WHERE #{field} = $1 LIMIT 1"
       conn.exec_params(sql, [value])&.first
     end
   end
 
   def self.find_by_id(table, id)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params("SELECT * FROM #{table} WHERE id = $1", [id])
       res&.first
     end
@@ -128,7 +126,7 @@ module SQLHelper
   def self.find_many_by_ids(table, ids)
     return [] if ids.empty?
 
-    with_conn do |conn|
+    Database.with_conn do |conn|
       placeholders = ids.each_index.map { |i| "$#{i + 1}" }.join(', ')
       sql = "SELECT * FROM #{table} WHERE id IN (#{placeholders})"
 
@@ -138,7 +136,7 @@ module SQLHelper
   end
 
   def self.delete(table, id)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       conn.exec_params("DELETE FROM #{table} WHERE id = $1", [id])
     rescue PG::UniqueViolation => e
       raise Errors::ValidationError.new('Validation failed', parse_unique_violation(e))
@@ -146,7 +144,7 @@ module SQLHelper
   end
 
   def self.many_to_many(source_sym, target_sym, source_id)
-    with_conn do |conn|
+    Database.with_conn do |conn|
       source      = source_sym.to_s
       target      = target_sym.to_s
       join_table  = "#{source}_#{target}"

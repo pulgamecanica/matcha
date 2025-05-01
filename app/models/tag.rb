@@ -5,7 +5,7 @@ require_relative '../helpers/sql_helper'
 
 class Tag
   def self.all
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec('SELECT * FROM tags ORDER BY name ASC')
       res.to_a
     end

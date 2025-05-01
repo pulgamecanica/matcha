@@ -6,7 +6,7 @@ require_relative './tag'
 
 class UserTag
   def self.add_tag(user_id, tag_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params(
         'INSERT INTO user_tags (user_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
         [user_id, tag_id]
@@ -15,7 +15,7 @@ class UserTag
   end
 
   def self.remove_tag(user_id, tag_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       conn.exec_params(
         'DELETE FROM user_tags WHERE user_id = $1 AND tag_id = $2',
         [user_id, tag_id]
@@ -24,7 +24,7 @@ class UserTag
   end
 
   def self.user(user_id, tag_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params(
         "SELECT users.* FROM users
          JOIN user_tags ut ON ut.user_id = users.id
@@ -36,7 +36,7 @@ class UserTag
   end
 
   def self.tag(user_id, tag_id)
-    Database.pool.with do |conn|
+    Database.with_conn do |conn|
       res = conn.exec_params(
         "SELECT tags.* FROM tags
          JOIN user_tags ut ON ut.tag_id = tags.id
