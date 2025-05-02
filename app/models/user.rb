@@ -238,10 +238,8 @@ class User
       fame_score = fame_rating_score(u['fame_rating'])
       {
         user: UserSerializer.public_view(u).merge(
-          tags: User.tags(u['id']),
-          pictures: User.pictures(u['id']),
-          views_count: User.visitors_for(u['id']).size,
-          likes_count: User.liked_by(u['id']).size
+          tags: User.tags(u['id']), pictures: User.pictures(u['id']),
+          views_count: User.visitors_for(u['id']).size, likes_count: User.liked_by(u['id']).size
         ),
         score: { location_score: distance_score, tag_score: tag_score, fame_score: fame_score,
                  total: ((distance_score + tag_score + fame_score) / 3.0).round(2) }

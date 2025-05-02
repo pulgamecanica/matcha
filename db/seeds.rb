@@ -37,7 +37,7 @@ COUNTRIES = {
     center: [37.0902, -95.7129],
     bounds: { min_lat: 24.5, max_lat: 49.4, min_lon: -125.0, max_lon: -66.9 }
   }
-}
+}.freeze
 
 puts '🌱 Seeding database...'
 
@@ -281,7 +281,7 @@ users.each do |user|
 
     Date.create(conn['id'], user['id'], location, time, description)
     parsed_time = Time.parse(time.to_s)
-    LOG[:dates] << "📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}"
+    LOG[:dates] << "📅 #{user['username']} scheduled a date with #{partner['username']} at #{location} on #{parsed_time.strftime('%F %H:%M')}" # rubocop:disable Layout/LineLength
   end
 end
 

@@ -33,6 +33,7 @@ class MatchaApp < Sinatra::Base
   use DatesController
   use NotificationsController
   use ReportsController
+  use IceController
 end
 
 at_exit do

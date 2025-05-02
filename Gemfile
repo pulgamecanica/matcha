@@ -21,6 +21,7 @@ gem 'rspec'
 gem 'securerandom', '~> 0.4.1'
 gem 'sinatra'
 gem 'sinatra-contrib'
+gem 'twilio-ruby'
 
 group :development do
   gem 'faker'
