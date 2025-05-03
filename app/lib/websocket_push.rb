@@ -10,7 +10,7 @@ module WebSocketPush
 
     message = {
       type: 'notification',
-      payload:
+      payload: payload
     }
 
     ws.send(message.to_json)

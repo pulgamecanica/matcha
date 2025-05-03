@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'faraday'
 require 'sinatra/base'
 require 'securerandom'
 require_relative '../models/user'
@@ -7,6 +8,7 @@ require_relative '../helpers/user_validator'
 require_relative '../helpers/auth'
 require_relative '../helpers/session_token'
 require_relative './base_controller'
+require 'logger'
 
 class AuthController < BaseController
   # ---------------------------
@@ -129,5 +131,46 @@ class AuthController < BaseController
 
     token = SessionToken.generate(user['id'])
     { token: token }.to_json
+  end
+
+  api_doc '/auth/oauth/intra', method: :post do
+    tags 'Auth'
+    description 'Get user profile exchange with code'
+    param :code, String, required: true, desc: 'OAuth exchange code'
+    response 200, 'User authenticated', example: { token: 'jwt.token.here' }
+    response 500, 'Intra failed', example: { error: 'Token exchange failed' }
+    @data[:auth_required] = false
+  end
+
+  post '/auth/oauth/intra' do
+    data = json_body
+    code = data['code']
+    max_attempts = 3
+    delay = 1.0
+
+    attempt = 0
+
+    while attempt < max_attempts
+      attempt += 1
+      LOGGER.info("[DEBUG] Attempt #{attempt} - Exchanging Intra code...")
+
+      response = Faraday.post('https://api.intra.42.fr/oauth/token', {
+                                grant_type: 'authorization_code',
+                                client_id: ENV['INTRA_CLIENT_ID'],
+                                client_secret: ENV['INTRA_CLIENT_SECRET'],
+                                code: code,
+                                redirect_uri: ENV['INTRA_REDIRECT_URI']
+                              })
+
+      if response.success?
+        json_token = JSON.parse(response.body)
+        return { token: json_token }.to_json
+      else
+        LOGGER.warn("[WARN] Intra token exchange error: #{response.body}")
+        sleep(delay * attempt) if attempt < max_attempts
+      end
+    end
+
+    halt 500, { error: 'Token exchange failed' }.to_json
   end
 end

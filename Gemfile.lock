@@ -155,6 +155,7 @@ DEPENDENCIES
   connection_pool (~> 2.5)
   dotenv
   faker
+  faraday
   faye-websocket
   json (~> 2.10)
   mail

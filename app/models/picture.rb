@@ -44,5 +44,8 @@ class Picture
       conn.exec_params('UPDATE pictures SET is_profile = TRUE WHERE id = $1 AND user_id = $2', [picture_id, user_id])
       find_by_id(picture_id)
     end
+    params = {}
+    params['profile_picture_id'] = picture_id
+    User.update(user_id, params)
   end
 end
