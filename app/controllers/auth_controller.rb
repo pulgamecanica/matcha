@@ -149,28 +149,42 @@ class AuthController < BaseController
     delay = 1.0
 
     attempt = 0
-
-    while attempt < max_attempts
+    begin
       attempt += 1
-      LOGGER.info("[DEBUG] Attempt #{attempt} - Exchanging Intra code...")
+      LOGGER.warn("[DEBUG] Attempt #{attempt} - Exchanging Intra code...")
 
-      response = Faraday.post('https://api.intra.42.fr/oauth/token', {
-                                grant_type: 'authorization_code',
-                                client_id: ENV['INTRA_CLIENT_ID'],
-                                client_secret: ENV['INTRA_CLIENT_SECRET'],
-                                code: code,
-                                redirect_uri: ENV['INTRA_REDIRECT_URI']
-                              })
+      token_response = Faraday.post('https://api.intra.42.fr/oauth/token', {
+                                      grant_type: 'authorization_code',
+                                      client_id: ENV['INTRA_CLIENT_ID'],
+                                      client_secret: ENV['INTRA_CLIENT_SECRET'],
+                                      code: code,
+                                      redirect_uri: ENV['INTRA_REDIRECT_URI']
+                                    })
 
-      if response.success?
-        json_token = JSON.parse(response.body)
-        return { token: json_token }.to_json
-      else
-        LOGGER.warn("[WARN] Intra token exchange error: #{response.body}")
-        sleep(delay * attempt) if attempt < max_attempts
+      raise "Token exchange failed: #{token_response.body}" unless token_response.success?
+
+      token_data = JSON.parse(token_response.body)
+      access_token = token_data['access_token']
+
+      user_response = Faraday.get('https://api.intra.42.fr/v2/me') do |req|
+        req.headers['Authorization'] = "Bearer #{access_token}"
       end
-    end
 
-    halt 500, { error: 'Token exchange failed' }.to_json
+      raise "User info fetch failed: #{user_response.body}" unless user_response.success?
+
+      user_data = JSON.parse(user_response.body)
+      {
+        intra_user_id: user_data['id'].to_s,
+        first_name: user_data['first_name'],
+        last_name: user_data['last_name'],
+        email: user_data['email'],
+        picture_url: user_data.dig('image', 'versions', 'medium') || user_data.dig('image', 'link') || ''
+      }.to_json
+    rescue StandardError => e
+      LOGGER.warn("[ERROR] Intra login failed: #{e}")
+      sleep(delay * attempt) if attempt < max_attempts
+      retry if attempt < max_attempts
+      halt 500, { error: 'Intra login failed' }.to_json
+    end
   end
 end
