@@ -20,24 +20,58 @@ VERBOSE = true
 LOG = Hash.new { |h, k| h[k] = [] }
 TOTALUSERS = 100
 
-COUNTRIES = {
-  'Mexico' => {
-    center: [23.6345, -102.5528],
-    bounds: { min_lat: 14.5, max_lat: 32.7, min_lon: -118.4, max_lon: -86.7 }
-  },
-  'France' => {
-    center: [46.6034, 1.8883],
-    bounds: { min_lat: 41.3, max_lat: 51.1, min_lon: -5.1, max_lon: 9.6 }
-  },
-  'Japan' => {
-    center: [36.2048, 138.2529],
-    bounds: { min_lat: 30.2, max_lat: 40.5, min_lon: 122.9, max_lon: 153.9 }
-  },
-  'USA' => {
-    center: [37.0902, -95.7129],
-    bounds: { min_lat: 24.5, max_lat: 49.4, min_lon: -125.0, max_lon: -66.9 }
-  }
-}.freeze
+CITIES = [
+  { name: 'Bangkok', country: 'Thailand', latitude: 13.7563, longitude: 100.5018 },
+  { name: 'Paris', country: 'France', latitude: 48.8566, longitude: 2.3522 },
+  { name: 'London', country: 'United Kingdom', latitude: 51.5074, longitude: -0.1278 },
+  { name: 'Dubai', country: 'United Arab Emirates', latitude: 25.2048, longitude: 55.2708 },
+  { name: 'Singapore', country: 'Singapore', latitude: 1.3521, longitude: 103.8198 },
+  { name: 'Kuala Lumpur', country: 'Malaysia', latitude: 3.139, longitude: 101.6869 },
+  { name: 'New York', country: 'USA', latitude: 40.7128, longitude: -74.006 },
+  { name: 'Istanbul', country: 'Turkey', latitude: 41.0082, longitude: 28.9784 },
+  { name: 'Tokyo', country: 'Japan', latitude: 35.6895, longitude: 139.6917 },
+  { name: 'Seoul', country: 'South Korea', latitude: 37.5665, longitude: 126.978 },
+  { name: 'Antalya', country: 'Turkey', latitude: 36.8969, longitude: 30.7133 },
+  { name: 'Osaka', country: 'Japan', latitude: 34.6937, longitude: 135.5023 },
+  { name: 'Milan', country: 'Italy', latitude: 45.4642, longitude: 9.19 },
+  { name: 'Barcelona', country: 'Spain', latitude: 41.3851, longitude: 2.1734 },
+  { name: 'Hong Kong', country: 'China', latitude: 22.3193, longitude: 114.1694 },
+  { name: 'Mecca', country: 'Saudi Arabia', latitude: 21.3891, longitude: 39.8579 },
+  { name: 'Pattaya', country: 'Thailand', latitude: 12.9236, longitude: 100.8825 },
+  { name: 'Vienna', country: 'Austria', latitude: 48.2082, longitude: 16.3738 },
+  { name: 'Rome', country: 'Italy', latitude: 41.9028, longitude: 12.4964 },
+  { name: 'Shanghai', country: 'China', latitude: 31.2304, longitude: 121.4737 },
+  { name: 'Los Angeles', country: 'USA', latitude: 34.0522, longitude: -118.2437 },
+  { name: 'Las Vegas', country: 'USA', latitude: 36.1699, longitude: -115.1398 },
+  { name: 'Prague', country: 'Czech Republic', latitude: 50.0755, longitude: 14.4378 },
+  { name: 'Miami', country: 'USA', latitude: 25.7617, longitude: -80.1918 },
+  { name: 'Madrid', country: 'Spain', latitude: 40.4168, longitude: -3.7038 },
+  { name: 'Amsterdam', country: 'Netherlands', latitude: 52.3676, longitude: 4.9041 },
+  { name: 'Macau', country: 'China', latitude: 22.1987, longitude: 113.5439 },
+  { name: 'Ho Chi Minh City', country: 'Vietnam', latitude: 10.7769, longitude: 106.7009 },
+  { name: 'Cancún', country: 'Mexico', latitude: 21.1619, longitude: -86.8515 },
+  { name: 'Berlin', country: 'Germany', latitude: 52.52, longitude: 13.405 },
+  { name: 'San Francisco', country: 'USA', latitude: 37.7749, longitude: -122.4194 },
+  { name: 'Chicago', country: 'USA', latitude: 41.8781, longitude: -87.6298 },
+  { name: 'Moscow', country: 'Russia', latitude: 55.7558, longitude: 37.6173 },
+  { name: 'Lisbon', country: 'Portugal', latitude: 38.7169, longitude: -9.1399 },
+  { name: 'Toronto', country: 'Canada', latitude: 43.6532, longitude: -79.3832 },
+  { name: 'Beijing', country: 'China', latitude: 39.9042, longitude: 116.4074 },
+  { name: 'Athens', country: 'Greece', latitude: 37.9838, longitude: 23.7275 },
+  { name: 'Hanoi', country: 'Vietnam', latitude: 21.0278, longitude: 105.8342 },
+  { name: 'Florence', country: 'Italy', latitude: 43.7696, longitude: 11.2558 },
+  { name: 'Sydney', country: 'Australia', latitude: -33.8688, longitude: 151.2093 },
+  { name: 'Munich', country: 'Germany', latitude: 48.1351, longitude: 11.582 },
+  { name: 'Brussels', country: 'Belgium', latitude: 50.8503, longitude: 4.3517 },
+  { name: 'Dublin', country: 'Ireland', latitude: 53.3498, longitude: -6.2603 },
+  { name: 'Riyadh', country: 'Saudi Arabia', latitude: 24.7136, longitude: 46.6753 },
+  { name: 'Ha Long', country: 'Vietnam', latitude: 20.951, longitude: 107.0448 },
+  { name: 'Buenos Aires', country: 'Argentina', latitude: -34.6037, longitude: -58.3816 },
+  { name: 'Sao Paulo', country: 'Brazil', latitude: -23.5505, longitude: -46.6333 },
+  { name: 'Cape Town', country: 'South Africa', latitude: -33.9249, longitude: 18.4241 },
+  { name: 'Johannesburg', country: 'South Africa', latitude: -26.2041, longitude: 28.0473 },
+  { name: 'Jakarta', country: 'Indonesia', latitude: -6.2088, longitude: 106.8456 }
+].freeze
 
 puts '🌱 Seeding database...'
 
@@ -66,34 +100,10 @@ tags = tag_names.map do |name|
 end
 
 # ---------------------------
-# Main Test User
-# ---------------------------
-puts '👤 Creating test user...'
-main_user = User.find_by_username('testuser') || User.create({
-                                                               username: 'testuser',
-                                                               email: 'test@example.com',
-                                                               password: 'testuser',
-                                                               first_name: 'Test',
-                                                               last_name: 'User',
-                                                               gender: 'other',
-                                                               sexual_preferences: 'everyone',
-                                                               birth_year: '2000'
-                                                             })
-User.confirm!('testuser')
-summary[:users] << 'testuser'
-LOG[:users] << '✅ Created: testuser'
-
-UserTag.add_tag(main_user['id'], tags[0]['id'])
-UserTag.add_tag(main_user['id'], tags[2]['id'])
-UserTag.add_tag(main_user['id'], tags[5]['id'])
-summary[:links] << ['testuser', [tags[0]['name'], tags[2]['name'], tags[5]['name']]]
-LOG[:links] << '🔗 Added tags to testuser'
-
-# ---------------------------
 # Fake Users
 # ---------------------------
 puts '👥 Creating fake users...'
-users = [main_user]
+users = []
 usernames = TOTALUSERS.times.map { Faker::Internet.unique.username(specifier: 5..10) }
 user_bar = ProgressBar.create(title: 'Users', total: usernames.size)
 
@@ -112,15 +122,16 @@ usernames.each do |username|
                                                         })
   User.confirm!(user['username'])
 
-  country_name, country_info = COUNTRIES.to_a.sample
-  bounds = country_info[:bounds]
-  latitude = rand(bounds[:min_lat]..bounds[:max_lat])
-  longitude = rand(bounds[:min_lon]..bounds[:max_lon])
+  city = CITIES.sample
+  # Add small noise within ±0.1° for realism (~11km latitude, ~8km longitude)
+  latitude = city[:latitude] + rand(-0.1..0.1)
+  longitude = city[:longitude] + rand(-0.1..0.1)
 
   User.update(user['id'], {
-                latitude: latitude,
-                longitude: longitude,
-                country: country_name
+                latitude: latitude.round(6),
+                longitude: longitude.round(6),
+                country: city[:country],
+                city: city[:name]
               })
 
   users << user

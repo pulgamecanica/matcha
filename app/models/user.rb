@@ -254,8 +254,12 @@ class User
   end
 
   def self.discover_candidates(current)
+    blocked_ids = (blocked_users(current['id']) + blocked_by(current['id'])).map { |u| u['id'].to_i }
+
     all(serialize_public_user: false).reject do |u|
-      u['id'].to_i == current['id'].to_i || u['is_banned'] == 't'
+      u['id'].to_i == current['id'].to_i ||
+        u['is_banned'] == 't' ||
+        blocked_ids.include?(u['id'].to_i)
     end
   end
 

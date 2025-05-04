@@ -8,7 +8,6 @@ require_relative './app/lib/logger'
 class MatchaApp < Sinatra::Base
   configure :production do
     puts '🛡️ Rack::Protection Middleware disabled'
-    # set :protection, false
     use Rack::Protection::HostAuthorization, permitted_hosts: ['matcha42.fly.dev']
   end
 
