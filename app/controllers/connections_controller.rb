@@ -69,6 +69,12 @@ class ConnectionsController < BaseController
       u['id'] == target['id']
     end
 
+    Notification.create(
+      target['id'],
+      "#{@current_user['username']} connected with you",
+      @current_user['id'],
+      'other'
+    )
     connection = Connection.create(@current_user['id'], target['id'])
     if connection
       { message: "Connected with #{data['username']}", data: connection }.to_json
@@ -105,6 +111,12 @@ class ConnectionsController < BaseController
 
     halt 403, { error: "You and #{data['username']} are not connected" }.to_json unless User.connected_with?(
       @current_user['id'], target['id']
+    )
+    Notification.create(
+      target['id'],
+      "#{@current_user['username']} disconnected from you",
+      @current_user['id'],
+      'other'
     )
     Connection.delete_between(@current_user['id'], target['id'])
     { message: "Disconnected from #{data['username']}" }.to_json
