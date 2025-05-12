@@ -5,7 +5,7 @@ require 'mail'
 
 class Mailer
   FROM_EMAIL = 'pulgamecanica@matcha.com'
-  DOMAIN = ENV.fetch('APP_ENV', 'development') == 'development' ? 'http://localhost:5173' : 'http://localhost:4173'
+  DOMAIN = ENV.fetch('MAIL_REDIRECT_URL', 'http://localhost:5173')
 
   def self.setup
     Mail.defaults do

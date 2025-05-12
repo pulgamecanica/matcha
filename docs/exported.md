@@ -2,212 +2,6 @@
 
 > **Note:** All authenticated endpoints require a valid token via `Authorization: Bearer <token>`.
 
-## `POST` /me/block
-**Description**: Block a user by username
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to block
-
-### Responses
-- `200`: User blocked
-```json
-{
-  "message": "User blocked",
-  "data": {
-    "username": "janedoe"
-  }
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Cannot block yourself
-```json
-{
-  "error": "You cannot block yourself"
-}
-```
-
----
-## `DELETE` /me/block
-**Description**: Unblock a user by username
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to unblock
-
-### Responses
-- `200`: User unblocked
-```json
-{
-  "message": "User unblocked",
-  "data": {
-    "username": "janedoe"
-  }
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-
----
-## `GET` /me/blocked
-**Description**: List users you've blocked
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Responses
-- `200`: Returns a list of blocked users
-```json
-{
-  "data": [
-    {
-      "username": "janedoe"
-    },
-    {
-      "username": "bobsmith"
-    }
-  ]
-}
-```
-
----
-## `GET` /me/blocked_by
-**Description**: List users who have blocked you
-**Auth required**: Yes
-**Tags**: User, Block
-
-### Responses
-- `200`: Returns a list of users who blocked you
-```json
-{
-  "data": [
-    {
-      "username": "alicewonder"
-    }
-  ]
-}
-```
-
----
-## `POST` /auth/register
-**Description**: Register a new user
-**Auth required**: No
-**Tags**: Auth
-
-### Parameters
-- `username` (String) **(required)** - Unique username (max 20 characters)
-- `email` (String) **(required)** - User email address used for login and verification
-- `password` (String) **(required)** - User password (will be securely hashed)
-- `first_name` (String) **(required)** - User's first name
-- `last_name` (String) **(required)** - User's last name
-
-### Responses
-- `201`: User created
-```json
-{
-  "message": "User created!"
-}
-```
-- `422`: Validation error
-```json
-{
-  "error": "Validation failed",
-  "details": {
-    "username": [
-      "is required"
-    ],
-    "email": [
-      "is invalid"
-    ]
-  }
-}
-```
-- `422`: Username or email taken
-```json
-{
-  "error": "Username or email already taken"
-}
-```
-
----
-## `POST` /auth/login
-**Description**: Authenticate an existing user using username and password
-**Auth required**: No
-**Tags**: Auth
-
-### Parameters
-- `username` (String) **(required)** - User's unique username
-- `password` (String) **(required)** - User's account password
-
-### Responses
-- `200`: Login successful
-```json
-{
-  "token": "jwt.token.here"
-}
-```
-- `401`: Invalid credentials
-```json
-{
-  "error": "Invalid credentials"
-}
-```
-- `403`: Email not confirmed
-```json
-{
-  "error": "Please confirm your email first."
-}
-```
-- `403`: User banned
-```json
-{
-  "error": "User is banned."
-}
-```
-
----
-## `POST` /auth/social
-**Description**: Authenticate or register a user via social login (OAuth provider)
-**Auth required**: No
-**Tags**: Auth
-
-### Parameters
-- `provider` (String) **(required)** - OAuth provider (e.g., 'google', 'github', 'intra')
-- `provider_user_id` (String) **(required)** - Unique ID returned by the provider for this user
-- `first_name` (String)  - User's first name (optional if new user)
-- `last_name` (String)  - User's last name (optional if new user)
-
-### Responses
-- `200`: User authenticated
-```json
-{
-  "token": "jwt.token.here"
-}
-```
-- `201`: User created via social login
-```json
-{
-  "token": "jwt.token.here"
-}
-```
-- `422`: Missing required social login fields
-```json
-{
-  "error": "Missing provider or UID"
-}
-```
-
----
 ## `POST` /email/reset-password
 **Description**: Send password reset email
 **Auth required**: No
@@ -278,177 +72,169 @@
 ```
 
 ---
-## `GET` /me/pictures
-**Description**: List all pictures uploaded by the current user
+## `POST` /me/like
+**Description**: Like another user
 **Auth required**: Yes
-**Tags**: User, Picture
-
-### Responses
-- `200`: Returns list of pictures
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "url": "https://cdn.example.com/pic1.jpg",
-      "is_profile": false
-    },
-    {
-      "id": 2,
-      "url": "https://cdn.example.com/pic2.jpg",
-      "is_profile": true
-    }
-  ]
-}
-```
-
----
-## `POST` /me/pictures
-**Description**: Upload a new picture
-**Auth required**: Yes
-**Tags**: User, Picture
+**Tags**: User, Like
 
 ### Parameters
-- `url` (String) **(required)** - URL of the picture
-- `is_profile` (TrueClass)  - Set as profile picture
+- `username` (String) **(required)** - The username of the user to like
 
 ### Responses
-- `201`: Picture created
+- `200`: User liked
 ```json
 {
-  "message": "Picture uploaded!",
-  "data": {
-    "id": 3,
-    "url": "https://cdn.example.com/pic3.jpg",
-    "is_profile": false
-  }
+  "message": "You liked janedoe"
 }
 ```
-- `422`: Invalid data
-```json
-{
-  "error": "Validation failed",
-  "details": [
-    "is not a valid URL"
-  ]
-}
-```
-- `422`: Too many pictures
-```json
-{
-  "error": "Too many pictures",
-  "details": [
-    "<= 5"
-  ]
-}
-```
-
----
-## `PATCH` /me/pictures/:id
-**Description**: Edit a picture (e.g., set as profile)
-**Auth required**: Yes
-**Tags**: User, Picture
-
-### Parameters
-- `id` (Integer) **(required)** - 
-- `is_profile` (TrueClass)  - 
-- `url` (String)  - 
-
-### Responses
-- `200`: Picture updated
-```json
-{
-  "message": "Picture updated!",
-  "data": {
-    "id": 2,
-    "url": "https://cdn.example.com/updated.jpg",
-    "is_profile": true
-  }
-}
-```
-- `404`: Picture not found
-```json
-{
-  "error": "Picture not found"
-}
-```
-- `403`: Not your picture
-```json
-{
-  "error": "Unauthorized"
-}
-```
-
----
-## `DELETE` /me/pictures/:id
-**Description**: Delete a picture
-**Auth required**: Yes
-**Tags**: User, Picture
-
-### Parameters
-- `id` (Integer) **(required)** - 
-
-### Responses
-- `200`: Picture deleted
-```json
-{
-  "message": "Picture deleted"
-}
-```
-- `404`: Not found
-```json
-{
-  "error": "Picture not found"
-}
-```
-- `403`: Unauthorized
-```json
-{
-  "error": "Unauthorized"
-}
-```
-
----
-## `GET` /users/:username/pictures
-**Description**: Fetch the pictures of a user by their username
-**Auth required**: Yes
-**Tags**: User, PublicProfile, Picture
-
-### Parameters
-- `username` (String) **(required)** - The unique username of the user
-
-### Responses
-- `200`: Public user data
-```json
-{
-  "data": [
-    {
-      "id": 217,
-      "user_id": 2248,
-      "url": "https://robohash.org/wallace.png?size=300x300&set=set1",
-      "is_profile": "t",
-      "created_at": "2025-04-15 07:49:41",
-      "updated_at": "2025-04-15 07:49:41"
-    }
-  ]
-}
-```
-- `404`: User not found or banned
+- `404`: User not found or unavailable
 ```json
 {
   "error": "User not found"
 }
 ```
-- `404`: User blocked you
+- `422`: Invalid request
 ```json
 {
-  "error": "User blocked you"
+  "error": "You cannot like yourself"
 }
 ```
-- `404`: User is blocked
+
+---
+## `DELETE` /me/like
+**Description**: Unlike a user
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to unlike
+
+### Responses
+- `200`: User unliked
 ```json
 {
-  "error": "User is blocked"
+  "message": "janedoe has been unliked"
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Like does not exist
+```json
+{
+  "error": "You haven't liked this user yet"
+}
+```
+
+---
+## `GET` /me/likes
+**Description**: Get list of users you have liked
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Responses
+- `200`: Array of liked user objects
+```json
+{
+  "data": [
+    {
+      "username": "janedoe",
+      "first_name": "Jane",
+      "last_name": "Doe"
+    },
+    {
+      "username": "bobsmith",
+      "first_name": "Bob",
+      "last_name": "Smith"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/liked_by
+**Description**: Get list of users who liked you
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Responses
+- `200`: Array of users who liked you
+```json
+{
+  "data": [
+    {
+      "username": "alicewonder",
+      "first_name": "Alice",
+      "last_name": "Wonder"
+    }
+  ]
+}
+```
+
+---
+## `GET` /me/matches
+**Description**: Get list of users who liked you back (matches)
+**Auth required**: Yes
+**Tags**: User, Like
+
+### Responses
+- `200`: Array of matched user objects
+```json
+{
+  "data": [
+    {
+      "username": "janedoe",
+      "first_name": "Jane",
+      "last_name": "Doe"
+    }
+  ]
+}
+```
+
+---
+## `GET` /ice
+**Description**: Retrieve ICE (STUN/TURN) servers from Twilio for WebRTC
+**Auth required**: Yes
+**Tags**: Ice, Voice
+
+### Responses
+- `200`: ICE Servers
+```json
+{
+  "message": "ICE servers retrieved",
+  "data": [
+    {
+      "url": "stun:global.stun.twilio.com:3478",
+      "urls": "stun:global.stun.twilio.com:3478"
+    },
+    {
+      "credential": "xxxx/xxxx",
+      "url": "turn:global.turn.twilio.com:3478?transport=udp",
+      "urls": "turn:global.turn.twilio.com:3478?transport=udp",
+      "username": "xxxx/xxxx"
+    },
+    {
+      "credential": "xxxx/xxxx",
+      "url": "turn:global.turn.twilio.com:3478?transport=tcp",
+      "urls": "turn:global.turn.twilio.com:3478?transport=tcp",
+      "username": "xxxx/xxxx"
+    },
+    {
+      "credential": "xxxx/xxxx",
+      "url": "turn:global.turn.twilio.com:443?transport=tcp",
+      "urls": "turn:global.turn.twilio.com:443?transport=tcp",
+      "username": "xxxx/xxxx"
+    }
+  ]
+}
+```
+- `500`: Twilio Error
+```json
+{
+  "error": "Failed to get ICE servers from Twilio"
 }
 ```
 
@@ -654,50 +440,232 @@
 ```
 
 ---
-## `GET` /me/visits
-**Description**: See who has viewed your profile
+## `POST` /me/block
+**Description**: Block a user by username
 **Auth required**: Yes
-**Tags**: User, ProfileView
+**Tags**: User, Block
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to block
 
 ### Responses
-- `200`: List of users who viewed you
+- `200`: User blocked
+```json
+{
+  "message": "User blocked",
+  "data": {
+    "username": "janedoe"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+- `422`: Cannot block yourself
+```json
+{
+  "error": "You cannot block yourself"
+}
+```
+
+---
+## `DELETE` /me/block
+**Description**: Unblock a user by username
+**Auth required**: Yes
+**Tags**: User, Block
+
+### Parameters
+- `username` (String) **(required)** - The username of the user to unblock
+
+### Responses
+- `200`: User unblocked
+```json
+{
+  "message": "User unblocked",
+  "data": {
+    "username": "janedoe"
+  }
+}
+```
+- `404`: User not found
+```json
+{
+  "error": "User not found"
+}
+```
+
+---
+## `GET` /me/blocked
+**Description**: List users you've blocked
+**Auth required**: Yes
+**Tags**: User, Block
+
+### Responses
+- `200`: Returns a list of blocked users
 ```json
 {
   "data": [
     {
-      "username": "janedoe",
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "viewed_at": "2025-04-12T10:00:00Z"
+      "username": "janedoe"
     },
     {
-      "username": "bobsmith",
-      "first_name": "Bob",
-      "last_name": "Smith",
-      "viewed_at": "2025-04-11T16:40:00Z"
+      "username": "bobsmith"
     }
   ]
 }
 ```
 
 ---
-## `GET` /me/views
-**Description**: See which users you have viewed
+## `GET` /me/blocked_by
+**Description**: List users who have blocked you
 **Auth required**: Yes
-**Tags**: User, ProfileView
+**Tags**: User, Block
 
 ### Responses
-- `200`: List of profiles you viewed
+- `200`: Returns a list of users who blocked you
 ```json
 {
   "data": [
     {
-      "username": "alicewonder",
-      "first_name": "Alice",
-      "last_name": "Wonder",
-      "viewed_at": "2025-04-12T09:00:00Z"
+      "username": "alicewonder"
     }
   ]
+}
+```
+
+---
+## `POST` /auth/register
+**Description**: Register a new user
+**Auth required**: No
+**Tags**: Auth
+
+### Parameters
+- `username` (String) **(required)** - Unique username (max 20 characters)
+- `email` (String) **(required)** - User email address used for login and verification
+- `password` (String) **(required)** - User password (will be securely hashed)
+- `first_name` (String) **(required)** - User's first name
+- `last_name` (String) **(required)** - User's last name
+
+### Responses
+- `201`: User created
+```json
+{
+  "message": "User created!"
+}
+```
+- `422`: Validation error
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "username": [
+      "is required"
+    ],
+    "email": [
+      "is invalid"
+    ]
+  }
+}
+```
+- `422`: Username or email taken
+```json
+{
+  "error": "Username or email already taken"
+}
+```
+
+---
+## `POST` /auth/login
+**Description**: Authenticate an existing user using username and password
+**Auth required**: No
+**Tags**: Auth
+
+### Parameters
+- `username` (String) **(required)** - User's unique username
+- `password` (String) **(required)** - User's account password
+
+### Responses
+- `200`: Login successful
+```json
+{
+  "token": "jwt.token.here"
+}
+```
+- `401`: Invalid credentials
+```json
+{
+  "error": "Invalid credentials"
+}
+```
+- `403`: Email not confirmed
+```json
+{
+  "error": "Please confirm your email first."
+}
+```
+- `403`: User banned
+```json
+{
+  "error": "User is banned."
+}
+```
+
+---
+## `POST` /auth/social
+**Description**: Authenticate or register a user via social login (OAuth provider)
+**Auth required**: No
+**Tags**: Auth
+
+### Parameters
+- `provider` (String) **(required)** - OAuth provider (e.g., 'google', 'github', 'intra')
+- `provider_user_id` (String) **(required)** - Unique ID returned by the provider for this user
+- `first_name` (String)  - User's first name (optional if new user)
+- `last_name` (String)  - User's last name (optional if new user)
+- `picture_url` (String)  - User's picture
+
+### Responses
+- `200`: User authenticated
+```json
+{
+  "token": "jwt.token.here"
+}
+```
+- `201`: User created via social login
+```json
+{
+  "token": "jwt.token.here"
+}
+```
+- `422`: Missing required social login fields
+```json
+{
+  "error": "Missing provider or UID"
+}
+```
+
+---
+## `POST` /auth/oauth/intra
+**Description**: Get user profile exchange with code
+**Auth required**: No
+**Tags**: Auth
+
+### Parameters
+- `code` (String) **(required)** - OAuth exchange code
+
+### Responses
+- `200`: User authenticated
+```json
+{
+  "token": "jwt.token.here"
+}
+```
+- `500`: Intra failed
+```json
+{
+  "error": "Token exchange failed"
 }
 ```
 
@@ -981,139 +949,6 @@
         "fame_score": 3.75,
         "total": 67.92
       }
-    }
-  ]
-}
-```
-
----
-## `POST` /me/messages
-**Description**: Send a message to a user (requires existing connection)
-**Auth required**: Yes
-**Tags**: Message
-
-### Parameters
-- `username` (String) **(required)** - Recipient's username
-- `content` (String) **(required)** - Message content
-
-### Responses
-- `200`: Message sent
-```json
-{
-  "message": "Message sent",
-  "data": {
-    "id": 40,
-    "connection_id": 42,
-    "sender_id": 121,
-    "content": "Hey there!",
-    "created_at": "2025-04-12 18:07:25.031215"
-  }
-}
-```
-- `404`: User or connection not found
-```json
-{
-  "error": "No connection found with janedoe"
-}
-```
-- `422`: Validation error
-```json
-{
-  "error": "Invalid request",
-  "details": [
-    "content must not be empty"
-  ]
-}
-```
-
----
-## `GET` /me/messages/:username
-**Description**: Get all messages exchanged with a given user
-**Auth required**: Yes
-**Tags**: Message
-
-### Parameters
-- `username` (String) **(required)** - Other user's username
-
-### Responses
-- `200`: Message thread
-```json
-{
-  "data": {
-    "user": {
-      "id": 127,
-      "username": "bob",
-      "email": "bob@example.com",
-      "first_name": "Bob",
-      "last_name": "B",
-      "gender": "male",
-      "sexual_preferences": "female",
-      "biography": null,
-      "is_email_verified": true,
-      "is_banned": false,
-      "fame_rating": 0,
-      "latitude": null,
-      "longitude": null,
-      "online_status": false,
-      "last_seen_at": null,
-      "created_at": "2025-04-12 18:08:00.699235",
-      "updated_at": "2025-04-12 18:08:00.702444",
-      "profile_picture_id": null
-    },
-    "messages": [
-      {
-        "id": 41,
-        "connection_id": 44,
-        "sender_id": 127,
-        "content": "Hi Bob!",
-        "created_at": "2025-04-12 18:08:00.704577",
-        "sender_username": "bob"
-      }
-    ]
-  }
-}
-```
-- `404`: User or connection not found
-```json
-{
-  "error": "No connection found with bob"
-}
-```
-
----
-## `GET` /me/messages
-**Description**: Get all conversations grouped by user
-**Auth required**: Yes
-**Tags**: Message
-
-### Responses
-- `200`: List of message threads
-```json
-{
-  "data": [
-    {
-      "user": {
-        "id": 129,
-        "username": "bob",
-        "first_name": "Bob",
-        "last_name": "B",
-        "biography": null,
-        "gender": "male",
-        "sexual_preferences": "female",
-        "profile_picture_id": null,
-        "online_status": false,
-        "last_seen_at": null
-      },
-      "messages": [
-        {
-          "id": 42,
-          "connection_id": 45,
-          "sender_id": 128,
-          "content": "Hey again!",
-          "created_at": "2025-04-12 18:08:09.476871",
-          "sender_username": "alice"
-        }
-      ]
     }
   ]
 }
@@ -1417,125 +1252,358 @@
 ```
 
 ---
-## `POST` /me/like
-**Description**: Like another user
+## `GET` /me/visits
+**Description**: See who has viewed your profile
 **Auth required**: Yes
-**Tags**: User, Like
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to like
+**Tags**: User, ProfileView
 
 ### Responses
-- `200`: User liked
-```json
-{
-  "message": "You liked janedoe"
-}
-```
-- `404`: User not found or unavailable
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Invalid request
-```json
-{
-  "error": "You cannot like yourself"
-}
-```
-
----
-## `DELETE` /me/like
-**Description**: Unlike a user
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Parameters
-- `username` (String) **(required)** - The username of the user to unlike
-
-### Responses
-- `200`: User unliked
-```json
-{
-  "message": "janedoe has been unliked"
-}
-```
-- `404`: User not found
-```json
-{
-  "error": "User not found"
-}
-```
-- `422`: Like does not exist
-```json
-{
-  "error": "You haven't liked this user yet"
-}
-```
-
----
-## `GET` /me/likes
-**Description**: Get list of users you have liked
-**Auth required**: Yes
-**Tags**: User, Like
-
-### Responses
-- `200`: Array of liked user objects
+- `200`: List of users who viewed you
 ```json
 {
   "data": [
     {
       "username": "janedoe",
       "first_name": "Jane",
-      "last_name": "Doe"
+      "last_name": "Doe",
+      "viewed_at": "2025-04-12T10:00:00Z"
     },
     {
       "username": "bobsmith",
       "first_name": "Bob",
-      "last_name": "Smith"
+      "last_name": "Smith",
+      "viewed_at": "2025-04-11T16:40:00Z"
     }
   ]
 }
 ```
 
 ---
-## `GET` /me/liked_by
-**Description**: Get list of users who liked you
+## `GET` /me/views
+**Description**: See which users you have viewed
 **Auth required**: Yes
-**Tags**: User, Like
+**Tags**: User, ProfileView
 
 ### Responses
-- `200`: Array of users who liked you
+- `200`: List of profiles you viewed
 ```json
 {
   "data": [
     {
       "username": "alicewonder",
       "first_name": "Alice",
-      "last_name": "Wonder"
+      "last_name": "Wonder",
+      "viewed_at": "2025-04-12T09:00:00Z"
     }
   ]
 }
 ```
 
 ---
-## `GET` /me/matches
-**Description**: Get list of users who liked you back (matches)
+## `POST` /me/messages
+**Description**: Send a message to a user (requires existing connection)
 **Auth required**: Yes
-**Tags**: User, Like
+**Tags**: Message
+
+### Parameters
+- `username` (String) **(required)** - Recipient's username
+- `content` (String) **(required)** - Message content
 
 ### Responses
-- `200`: Array of matched user objects
+- `200`: Message sent
+```json
+{
+  "message": "Message sent",
+  "data": {
+    "id": 40,
+    "connection_id": 42,
+    "sender_id": 121,
+    "content": "Hey there!",
+    "created_at": "2025-04-12 18:07:25.031215"
+  }
+}
+```
+- `404`: User or connection not found
+```json
+{
+  "error": "No connection found with janedoe"
+}
+```
+- `422`: Validation error
+```json
+{
+  "error": "Invalid request",
+  "details": [
+    "content must not be empty"
+  ]
+}
+```
+
+---
+## `GET` /me/messages/:username
+**Description**: Get all messages exchanged with a given user
+**Auth required**: Yes
+**Tags**: Message
+
+### Parameters
+- `username` (String) **(required)** - Other user's username
+
+### Responses
+- `200`: Message thread
+```json
+{
+  "data": {
+    "user": {
+      "id": 127,
+      "username": "bob",
+      "email": "bob@example.com",
+      "first_name": "Bob",
+      "last_name": "B",
+      "gender": "male",
+      "sexual_preferences": "female",
+      "biography": null,
+      "is_email_verified": true,
+      "is_banned": false,
+      "fame_rating": 0,
+      "latitude": null,
+      "longitude": null,
+      "online_status": false,
+      "last_seen_at": null,
+      "created_at": "2025-04-12 18:08:00.699235",
+      "updated_at": "2025-04-12 18:08:00.702444",
+      "profile_picture_id": null
+    },
+    "messages": [
+      {
+        "id": 41,
+        "connection_id": 44,
+        "sender_id": 127,
+        "content": "Hi Bob!",
+        "created_at": "2025-04-12 18:08:00.704577",
+        "sender_username": "bob"
+      }
+    ]
+  }
+}
+```
+- `404`: User or connection not found
+```json
+{
+  "error": "No connection found with bob"
+}
+```
+
+---
+## `GET` /me/messages
+**Description**: Get all conversations grouped by user
+**Auth required**: Yes
+**Tags**: Message
+
+### Responses
+- `200`: List of message threads
 ```json
 {
   "data": [
     {
-      "username": "janedoe",
-      "first_name": "Jane",
-      "last_name": "Doe"
+      "user": {
+        "id": 129,
+        "username": "bob",
+        "first_name": "Bob",
+        "last_name": "B",
+        "biography": null,
+        "gender": "male",
+        "sexual_preferences": "female",
+        "profile_picture_id": null,
+        "online_status": false,
+        "last_seen_at": null
+      },
+      "messages": [
+        {
+          "id": 42,
+          "connection_id": 45,
+          "sender_id": 128,
+          "content": "Hey again!",
+          "created_at": "2025-04-12 18:08:09.476871",
+          "sender_username": "alice"
+        }
+      ]
     }
   ]
+}
+```
+
+---
+## `GET` /me/pictures
+**Description**: List all pictures uploaded by the current user
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Responses
+- `200`: Returns list of pictures
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "url": "https://cdn.example.com/pic1.jpg",
+      "is_profile": false
+    },
+    {
+      "id": 2,
+      "url": "https://cdn.example.com/pic2.jpg",
+      "is_profile": true
+    }
+  ]
+}
+```
+
+---
+## `POST` /me/pictures
+**Description**: Upload a new picture
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Parameters
+- `url` (String) **(required)** - URL of the picture
+- `is_profile` (TrueClass)  - Set as profile picture
+
+### Responses
+- `201`: Picture created
+```json
+{
+  "message": "Picture uploaded!",
+  "data": {
+    "id": 3,
+    "url": "https://cdn.example.com/pic3.jpg",
+    "is_profile": false
+  }
+}
+```
+- `422`: Invalid data
+```json
+{
+  "error": "Validation failed",
+  "details": [
+    "is not a valid URL"
+  ]
+}
+```
+- `422`: Too many pictures
+```json
+{
+  "error": "Too many pictures",
+  "details": [
+    "<= 5"
+  ]
+}
+```
+
+---
+## `PATCH` /me/pictures/:id
+**Description**: Edit a picture (e.g., set as profile)
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Parameters
+- `id` (Integer) **(required)** - 
+- `is_profile` (TrueClass)  - 
+- `url` (String)  - 
+
+### Responses
+- `200`: Picture updated
+```json
+{
+  "message": "Picture updated!",
+  "data": {
+    "id": 2,
+    "url": "https://cdn.example.com/updated.jpg",
+    "is_profile": true
+  }
+}
+```
+- `404`: Picture not found
+```json
+{
+  "error": "Picture not found"
+}
+```
+- `403`: Not your picture
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+## `DELETE` /me/pictures/:id
+**Description**: Delete a picture
+**Auth required**: Yes
+**Tags**: User, Picture
+
+### Parameters
+- `id` (Integer) **(required)** - 
+
+### Responses
+- `200`: Picture deleted
+```json
+{
+  "message": "Picture deleted"
+}
+```
+- `404`: Not found
+```json
+{
+  "error": "Picture not found"
+}
+```
+- `403`: Unauthorized
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+## `GET` /users/:username/pictures
+**Description**: Fetch the pictures of a user by their username
+**Auth required**: Yes
+**Tags**: User, PublicProfile, Picture
+
+### Parameters
+- `username` (String) **(required)** - The unique username of the user
+
+### Responses
+- `200`: Public user data
+```json
+{
+  "data": [
+    {
+      "id": 217,
+      "user_id": 2248,
+      "url": "https://robohash.org/wallace.png?size=300x300&set=set1",
+      "is_profile": "t",
+      "created_at": "2025-04-15 07:49:41",
+      "updated_at": "2025-04-15 07:49:41"
+    }
+  ]
+}
+```
+- `404`: User not found or banned
+```json
+{
+  "error": "User not found"
+}
+```
+- `404`: User blocked you
+```json
+{
+  "error": "User blocked you"
+}
+```
+- `404`: User is blocked
+```json
+{
+  "error": "User is blocked"
 }
 ```
 
