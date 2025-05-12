@@ -11,7 +11,7 @@ class WebSocketServer < Sinatra::Base
   puts '🔧 WebSocketServer mounted at /ws'
 
   KEEPALIVE_TIME = 30 # in seconds
-  CHANNELS = Concurrent::Map.new
+  CHANNELS = Concurrent::Map.new # REDIS INSTANCE
 
   get '/' do
     if Faye::WebSocket.websocket?(env)

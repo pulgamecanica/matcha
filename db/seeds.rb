@@ -18,7 +18,7 @@ require 'time'
 
 VERBOSE = true
 LOG = Hash.new { |h, k| h[k] = [] }
-TOTALUSERS = 100
+TOTALUSERS = 50
 
 CITIES = [
   { name: 'Bangkok', country: 'Thailand', latitude: 13.7563, longitude: 100.5018 },

@@ -16,7 +16,18 @@ class Notification
         RETURNING *
       SQL
     end&.first
-    WebSocketPush.send_notification(user_id, notification)
+    return nil unless notification
+
+    enriched = db.with do |conn|
+      conn.exec_params(<<~SQL, [notification['id']])
+        SELECT notifications.*, u.username AS from_username
+        FROM notifications
+        LEFT JOIN users u ON u.id = notifications.from_user_id
+        WHERE notifications.id = $1
+      SQL
+    end&.first
+
+    WebSocketPush.send_notification(user_id, enriched)
     notification
   end
 

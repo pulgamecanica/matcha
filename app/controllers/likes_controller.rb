@@ -36,13 +36,13 @@ class LikesController < BaseController
     halt 404, { error: 'User not available' }.to_json if target['is_banned'] == 't'
     halt 422, { error: 'You cannot like yourself' }.to_json if target['id'] == @current_user['id']
 
-    Like.like!(@current_user['id'], target['id'])
     Notification.create(
       target['id'],
       "#{@current_user['username']} liked your profile",
       @current_user['id'],
       'like'
     )
+    Like.like!(@current_user['id'], target['id'])
     matches = User.matches(@current_user['id']) || []
     match = matches.find do |user|
       user['username'] == target['username']
@@ -92,13 +92,13 @@ class LikesController < BaseController
 
     halt 422, { error: "You haven't liked this user yet" }.to_json unless Like.exists?(@current_user['id'], target['id'])
 
-    Like.unlike!(@current_user['id'], target['id'])
     Notification.create(
       target['id'],
       "#{@current_user['username']} removed the liked from your profile",
       @current_user['id'],
       'unlike'
     )
+    Like.unlike!(@current_user['id'], target['id'])
     Connection.delete_between(@current_user['id'], target['id'])
 
     { message: "#{data['username']} has been unliked" }.to_json
